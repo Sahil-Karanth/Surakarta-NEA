@@ -5,6 +5,9 @@ class CircularList:
         self.__reverse_lst = lst[::-1]
         self.__current_index = 0
 
+    def __str__(self):
+        return self.__lst
+
     def set_current_index(self, index):
         if (index * -1) <= len(self.__lst):
             self.__current_index = index
