@@ -10,6 +10,9 @@ class CircularList:
             self.__current_index = index
         else:
             raise IndexError("Index out of range. Index must be less than or equal to the length of the list.")
+        
+    def get_current_index(self):
+        return self.__current_index
 
     def get_next_right(self):
         item = self.__lst[self.__current_index]
