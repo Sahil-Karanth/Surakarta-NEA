@@ -1,0 +1,45 @@
+from Piece import Piece
+
+class GridLocation:
+
+    def __init__(self, cords):
+        self.__cords = cords
+        self.__piece = self.set_initial_piece()
+        self.__loop = self.set_loop()
+
+    def set_loop(self):
+        OUTER_NUMBERS = (2, 3)
+        INNER_NUMBERS = (1, 4)
+        if (self.__cords[0] in OUTER_NUMBERS and self.__cords[1] in INNER_NUMBERS) or (self.__cords[0] in INNER_NUMBERS and self.__cords[1] in OUTER_NUMBERS):
+            return "BOTH"
+
+        elif 1 in self.__cords or 4 in self.__cords:
+            return "INNER"
+        
+        elif 3 in self.__cords or 2 in self.__cords:
+            return "OUTER"
+
+    def set_initial_piece(self):
+        if self.__cords[1] == 0 or self.__cords[1] == 1:
+            return Piece("B")
+        
+        elif self.__cords[1] == 4 or self.__cords[1] == 5:
+            return Piece("G")
+        
+        else:
+            return None
+
+    def is_empty(self):
+        return self.piece == None
+    
+    def set_piece(self, piece):
+        self.__piece = piece
+
+    def get_piece(self):
+        return self.__piece
+    
+    def get_cords(self):
+        return self.__cords
+    
+
+

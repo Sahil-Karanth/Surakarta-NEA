@@ -2,11 +2,15 @@ class CircularList:
 
     def __init__(self, lst):
         self.__lst = lst
+        self.__length = len(lst)
         self.__reverse_lst = lst[::-1]
         self.__current_index = 0
 
     def __str__(self):
         return self.__lst
+    
+    def get_length(self):
+        return self.__length
 
     def set_current_index(self, index):
         if (index * -1) <= len(self.__lst):

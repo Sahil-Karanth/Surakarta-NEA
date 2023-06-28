@@ -1,5 +1,6 @@
 from CircularList import CircularList
 from  Piece import Piece
+from GridLocation import GridLocation
 
 class Board:
 
@@ -8,16 +9,8 @@ class Board:
         self.inner_loop = CircularList([])
         self.board = self.build_board_grid()
 
-
     def build_board_grid(self):
-        board = [
-            [Piece("B") for i in range(6)],
-            [Piece("B") for i in range(6)],
-            [None for i in range(6)],
-            [None for i in range(6)],
-            [Piece("G") for i in range(6)],
-            [Piece("G") for i in range(6)],
-        ]
+        board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
 
         return board
     
@@ -85,6 +78,11 @@ class Board:
     def check_capture_legal(self, initial_pos, final_pos):
         if not self.is_valid_cord_pair(initial_pos, final_pos):
             return False
+        
+        # NOTE NOT FINISHED
+
+    def get_piece_loop(self, pos_id):
+        pass
         
         
     
