@@ -4,13 +4,33 @@ from GridLocation import GridLocation
 
 class Board:
 
+    OUTER_LOOP_INDEXES = [
+        (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
+        (2,0), (2,1), (2,2), (2,3), (2,4), (2,5),
+        (3,0), (3,1), (3,2), (3,3), (3,4), (3,5),
+        (3,5), (3,4), (3,3), (3,2), (3,1), (3,0),
+    ]
+
+    INNER_LOOP_INDEXES = [
+        (4,0), (4,1), (4,2), (4,3), (4,4), (4,5),
+        (5,4), (4,4), (3,4), (2,4), (1,4), (0,4),
+        (1,5), (1,4), (1,3), (1,2), (1,1), (1,0),
+        (0,1), (1,1), (2,1), (3,1), (4,1), (5,1),
+    ]
+
     def __init__(self):
-        self.board = self.build_board_grid()
-        self.inner_loop = CircularList()
-        self.outer_loop = CircularList([])
+        self.board = self.build_board_grid() 
+        self.inner_loop = CircularList([])
+        self.outer_loop = CircularList([]) 
 
     def build_board_grid(self):
         board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
+
+        board = []
+        for i in range(6):
+            for j in range(6):
+                board.append(GridLocation((i, j)))
+
 
         return board
     
