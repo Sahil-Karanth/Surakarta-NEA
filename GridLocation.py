@@ -2,10 +2,20 @@ from Piece import Piece
 
 class GridLocation:
 
+    EDGE_CORDS = ((0, 0), (0, 5), (5, 0), (5, 5))
+
     def __init__(self, cords):
         self.__cords = cords
         self.__piece = self.set_initial_piece()
         self.__loop = self.set_loop()
+        self.__loop_index = self.set_loop_index()
+
+    def set_loop_index(self):
+        if (0 in self.__cords or 5 in self.__cords) and self.__cords not in GridLocation.EDGE_CORDS:
+            self.__loop_index = True
+        else:
+            self.__loop_index = False
+
 
     def set_loop(self):
         OUTER_NUMBERS = (2, 3)
