@@ -16,7 +16,6 @@ class GridLocation:
         else:
             self.__loop_index = False
 
-
     def set_loop(self):
         OUTER_NUMBERS = (2, 3)
         INNER_NUMBERS = (1, 4)

@@ -5,9 +5,9 @@ from GridLocation import GridLocation
 class Board:
 
     def __init__(self):
-        self.outer_loop = CircularList([])
-        self.inner_loop = CircularList([])
         self.board = self.build_board_grid()
+        self.inner_loop = CircularList()
+        self.outer_loop = CircularList([])
 
     def build_board_grid(self):
         board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
