@@ -182,6 +182,13 @@ class Board:
             
 
 
+# TODO (generally for MVP)
+    # add constants
+    # add comments
+    # add terminal UI
+    # add main game loop
+    # work on player class / implementing player functionality
+    # allow for an actual move/capture to be made (right now it just checks if it is legal)
 
 
 
