@@ -1,7 +1,5 @@
 from CircularList import CircularList
-from  Piece import Piece
 from GridLocation import GridLocation
-from Player import Player
 
 class Board:
 
@@ -100,6 +98,11 @@ class Board:
             return False
         return True
 
+    def both_locations_same_loop(self, start_location, end_location):
+        if start_location.get_loop() == end_location.get_loop():
+            return True
+        return False
+
     def check_capture_legal(self, initial_pos, final_pos): # try all possible captures
         if not self.is_valid_cord_pair(initial_pos, final_pos):
             return False
@@ -110,51 +113,119 @@ class Board:
         if not self.both_locations_vacant(start_location, end_location):
             return False
         
-        if not start_location.get_loop() == start_location.get_loop():
+        if not self.both_locations_same_loop(start_location, end_location):
             return False
-
-        starting_indexes = []
 
         board_loop = self.get_loop_from_text(start_location.get_loop())
 
         starting_indexes = self.get_piece_indexes_at(board_loop, initial_pos)
 
         for ind in starting_indexes:
-            self.inner_loop.set_current_index(ind)
-            left_loop_count = 0
-            right_loop_count = 0
-
-            while True:
-                loc_right = self.inner_loop.get_next_right()
-                loc_left = self.inner_loop.get_next_left()
-
-                if loc_right.is_loop_index():
-                    right_loop_count += 1
-                
-                if loc_left.is_loop_index():
-                    left_loop_count += 1
-
-                piece_right = loc_right.get_piece()
-                piece_left = loc_left.get_piece()
-
-                if (piece_right.get_colour() == start_location.get_piece().get_colour()) and (piece_right.get_cords() != start_location.get_cords()):
-                    return False
-                
-                if (piece_left.get_colour() == start_location.get_piece().get_colour()) and (piece_left.get_cords() != start_location.get_cords()):
-                    return False
-                
-                if (piece_right.get_colour() != start_location.get_piece().get_colour()) and right_loop_count > 0:
-                    return True
-                
-                if (piece_left.get_colour() != start_location.get_piece().get_colour()) and left_loop_count > 0:
-                    return True
-                
-                if (right_loop_count == 8) and (start_location.get_cords() == loc_right.get_cords()):
-                    return False
-                
-                if (left_loop_count == 8) and (start_location.get_cords() == loc_left.get_cords()):
-                    return False
-
-
-
+            if self.can_capture_either_direction(start_location, ind, board_loop):
+                return True        
+        return False
     
+    def loop_pieces_same_colour(self, loc1, loc2):
+        if (loc1.get_piece().get_colour() == loc2.get_piece().get_colour()) and (loc1.get_cords() != loc2.get_cords()):
+            return False
+        return True
+    
+    def is_valid_capture(self, start_location, end_location, loop_index_count):
+        if (end_location.get_piece().get_colour() != start_location.get_piece().get_colour()) and (loop_index_count > 0):
+            return True
+
+    def is_valid_capture_either_direction(self, start_location, loc_right, loc_left, right_loop_count, left_loop_count):
+        if self.is_valid_capture(start_location, loc_right, right_loop_count) or self.is_valid_capture(start_location, loc_left, left_loop_count):
+            return True
+        return False
+
+    def check_direction_valid(self, start_location, end_location, loop_index_count):
+        if self.loop_pieces_same_colour(start_location, end_location):
+            return False
+        
+        if (loop_index_count == 8) and (start_location.get_cords() == end_location.get_cords()):
+            return False
+        
+        return True
+
+    def can_capture_either_direction(self, start_location, ind, board_loop):
+        board_loop.set_current_index(ind)
+        left_loop_count = 0
+        right_loop_count = 0
+        right_invalid = False 
+        left_invalid = False
+        while True:
+            loc_right = board_loop.get_next_right()
+            loc_left = board_loop.get_next_left()
+
+            if loc_right.is_loop_index():
+                right_loop_count += 1
+            
+            if loc_left.is_loop_index():
+                left_loop_count += 1
+
+            if self.is_valid_capture_either_direction(start_location, loc_right, loc_left, right_loop_count, left_loop_count):
+                return True
+            
+                 # ? call function make the capture?
+
+            if not self.check_direction_valid(start_location, loc_right, right_loop_count):
+                right_invalid = True
+
+            if self.check_direction_invalid(start_location, loc_left, left_loop_count):
+                left_invalid = True
+        
+            if right_invalid and left_invalid:
+                return False
+            
+
+
+
+
+
+
+
+
+
+
+
+
+# OLD VERSION OF CAN_CAPTURE_EITHER_DIRECTION
+
+"""
+    def can_capture_either_direction(self, start_location, ind):
+        self.inner_loop.set_current_index(ind)
+        left_loop_count = 0
+        right_loop_count = 0
+
+        while True:
+            loc_right = self.inner_loop.get_next_right()
+            loc_left = self.inner_loop.get_next_left()
+
+            if loc_right.is_loop_index():
+                right_loop_count += 1
+            
+            if loc_left.is_loop_index():
+                left_loop_count += 1
+
+            piece_right = loc_right.get_piece()
+            piece_left = loc_left.get_piece()
+
+            if self.loop_pieces_same_colour(start_location, piece_right):
+                return False
+
+            if self.loop_pieces_same_colour(start_location, piece_left):
+                return False
+            
+            if (piece_right.get_colour() != start_location.get_piece().get_colour()) and right_loop_count > 0:
+                return True
+            
+            if (piece_left.get_colour() != start_location.get_piece().get_colour()) and left_loop_count > 0:
+                return True
+            
+            if (right_loop_count == 8) and (start_location.get_cords() == loc_right.get_cords()):
+                return False
+            
+            if (left_loop_count == 8) and (start_location.get_cords() == loc_left.get_cords()):
+                return False
+"""
