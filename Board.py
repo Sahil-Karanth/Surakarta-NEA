@@ -17,6 +17,8 @@ class Board:
         (0,1), (1,1), (2,1), (3,1), (4,1), (5,1),
     ]
 
+    EDGE_CORDS = ((0, 0), (0, 5), (5, 0), (5, 5))
+
     def __init__(self):
         self.board = []
         self.inner_loop = CircularList([])
