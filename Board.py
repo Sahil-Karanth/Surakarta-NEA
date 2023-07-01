@@ -1,6 +1,7 @@
 from CircularList import CircularList
 from  Piece import Piece
 from GridLocation import GridLocation
+from Player import Player
 
 class Board:
 
@@ -22,6 +23,14 @@ class Board:
         self.board = []
         self.inner_loop = CircularList([])
         self.outer_loop = CircularList([])
+
+    def get_loop_from_text(self, text):
+        if text == "INNER":
+            return self.inner_loop
+        elif text == "OUTER":
+            return self.outer_loop
+        else:
+            return None
 
     def build_board(self):
         board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
@@ -77,32 +86,75 @@ class Board:
         
         return False
     
+    def get_piece_indexes_at(self, board_loop, cords):
+        starting_indexes = []
+        for i in range(board_loop.get_length()):
+            item = board_loop.get_next_right()
+            if item.get_cords() == cords:
+                starting_indexes.append(i)
+
+        return starting_indexes
+
+    def both_locations_vacant(self, start_location, end_location):
+        if start_location.get_piece() == None or end_location.get_piece() == None:
+            return False
+        return True
+
     def check_capture_legal(self, initial_pos, final_pos): # try all possible captures
         if not self.is_valid_cord_pair(initial_pos, final_pos):
             return False
 
-        location1 = self.board[initial_pos[0]][initial_pos[1]]
-        location2 = self.board[final_pos[0]][final_pos[1]]
+        start_location = self.board[initial_pos[0]][initial_pos[1]]
+        end_location = self.board[final_pos[0]][final_pos[1]]
 
-        if location1.get_piece() == None or location2.get_piece() == None:
+        if not self.both_locations_vacant(start_location, end_location):
             return False
         
-        if not location1.get_loop() == location2.get_loop():
+        if not start_location.get_loop() == start_location.get_loop():
             return False
-        
 
         starting_indexes = []
-        
-        if location1.get_loop() == "INNER":
-            for i in range(self.inner_loop.get_length()):
-                item = self.inner_loop.get_next_right()
-                if item.get_cords() == initial_pos:
-                    starting_indexes.append(i)
-        
 
-        # TODO
-        # include an elif for "OUTER" but change this code so order so it won't be duplicated in the elif
-        # try going left/right from all of the grid locations in starting_indexes
+        board_loop = self.get_loop_from_text(start_location.get_loop())
+
+        starting_indexes = self.get_piece_indexes_at(board_loop, initial_pos)
+
+        for ind in starting_indexes:
+            self.inner_loop.set_current_index(ind)
+            left_loop_count = 0
+            right_loop_count = 0
+
+            while True:
+                loc_right = self.inner_loop.get_next_right()
+                loc_left = self.inner_loop.get_next_left()
+
+                if loc_right.is_loop_index():
+                    right_loop_count += 1
+                
+                if loc_left.is_loop_index():
+                    left_loop_count += 1
+
+                piece_right = loc_right.get_piece()
+                piece_left = loc_left.get_piece()
+
+                if (piece_right.get_colour() == start_location.get_piece().get_colour()) and (piece_right.get_cords() != start_location.get_cords()):
+                    return False
+                
+                if (piece_left.get_colour() == start_location.get_piece().get_colour()) and (piece_left.get_cords() != start_location.get_cords()):
+                    return False
+                
+                if (piece_right.get_colour() != start_location.get_piece().get_colour()) and right_loop_count > 0:
+                    return True
+                
+                if (piece_left.get_colour() != start_location.get_piece().get_colour()) and left_loop_count > 0:
+                    return True
+                
+                if (right_loop_count == 8) and (start_location.get_cords() == loc_right.get_cords()):
+                    return False
+                
+                if (left_loop_count == 8) and (start_location.get_cords() == loc_left.get_cords()):
+                    return False
+
 
 
     

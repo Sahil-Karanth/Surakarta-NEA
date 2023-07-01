@@ -52,5 +52,8 @@ class GridLocation:
     
     def get_loop(self):
         return self.__loop
+    
+    def is_loop_index(self):
+        return self.__loop_index
 
 
