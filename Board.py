@@ -79,9 +79,9 @@ class Board:
         if not self.is_valid_cord_pair(initial_pos, final_pos):
             return False
         
-        moving_to = self.board[final_pos[0]][final_pos[1]]
+        moving_to_location = self.board[final_pos[0]][final_pos[1]]
         
-        if moving_to.get_piece() == None and self.is_adjacent(initial_pos, final_pos):
+        if moving_to_location.get_piece() == None and self.is_adjacent(initial_pos, final_pos):
             return True
         
         return False
@@ -169,8 +169,6 @@ class Board:
             if self.is_valid_capture_either_direction(start_location, loc_right, loc_left, right_loop_count, left_loop_count):
                 return True
             
-                 # ? call function make the capture?
-
             if not self.check_direction_valid(start_location, loc_right, right_loop_count):
                 right_invalid = True
 
@@ -179,6 +177,14 @@ class Board:
         
             if right_invalid and left_invalid:
                 return False
+            
+
+    def move_piece(self, initial_pos, final_pos):
+        if self.check_normal_legal(initial_pos, final_pos):
+            self.board[final_pos[0]][final_pos[1]].set_piece(self.board[initial_pos[0]][initial_pos[1]].get_piece())
+            self.board[initial_pos[0]][initial_pos[1]].set_piece(None)
+            
+
             
 
 
