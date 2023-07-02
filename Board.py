@@ -29,8 +29,8 @@ class Board:
             return self.inner_loop
         elif text == "OUTER":
             return self.outer_loop
-        else:
-            return None
+        elif text == "BOTH":
+            return (self.inner_loop, self.outer_loop)
 
     def build_board(self):
         board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
@@ -178,11 +178,28 @@ class Board:
             if right_invalid and left_invalid:
                 return False
             
+    def switch_piece_board_position(self, initial_pos, final_pos):
+        self.board[final_pos[0]][final_pos[1]].set_piece(self.board[initial_pos[0]][initial_pos[1]].get_piece())
+        self.board[initial_pos[0]][initial_pos[1]].set_piece(None)
+        
 
     def move_piece(self, initial_pos, final_pos):
         if self.check_normal_legal(initial_pos, final_pos):
-            self.board[final_pos[0]][final_pos[1]].set_piece(self.board[initial_pos[0]][initial_pos[1]].get_piece())
-            self.board[initial_pos[0]][initial_pos[1]].set_piece(None)
+            self.switch_piece_board_position(initial_pos, final_pos)
+
+    def capture_piece(self, initial_pos, final_pos):
+        if self.check_capture_legal(initial_pos, final_pos):
+            self.switch_piece_board_position(initial_pos, final_pos)
+
+        start_location = self.board[initial_pos[0]][initial_pos[1]]
+        end_location = self.board[final_pos[0]][final_pos[1]]
+            
+        board_loop = self.get_loop_from_text(start_location.get_loop()) #  TODO: currently doesn't update just changes local variable
+        board_loop.replace_item(end_location, start_location)
+
+
+        
+
             
 
             
@@ -195,52 +212,4 @@ class Board:
     # add main game loop
     # work on player class / implementing player functionality
     # allow for an actual move/capture to be made (right now it just checks if it is legal)
-
-
-
-
-
-
-
-
-
-
-# OLD VERSION OF CAN_CAPTURE_EITHER_DIRECTION
-
-"""
-    def can_capture_either_direction(self, start_location, ind):
-        self.inner_loop.set_current_index(ind)
-        left_loop_count = 0
-        right_loop_count = 0
-
-        while True:
-            loc_right = self.inner_loop.get_next_right()
-            loc_left = self.inner_loop.get_next_left()
-
-            if loc_right.is_loop_index():
-                right_loop_count += 1
-            
-            if loc_left.is_loop_index():
-                left_loop_count += 1
-
-            piece_right = loc_right.get_piece()
-            piece_left = loc_left.get_piece()
-
-            if self.loop_pieces_same_colour(start_location, piece_right):
-                return False
-
-            if self.loop_pieces_same_colour(start_location, piece_left):
-                return False
-            
-            if (piece_right.get_colour() != start_location.get_piece().get_colour()) and right_loop_count > 0:
-                return True
-            
-            if (piece_left.get_colour() != start_location.get_piece().get_colour()) and left_loop_count > 0:
-                return True
-            
-            if (right_loop_count == 8) and (start_location.get_cords() == loc_right.get_cords()):
-                return False
-            
-            if (left_loop_count == 8) and (start_location.get_cords() == loc_left.get_cords()):
-                return False
-"""
+    # implement funcitonality for when the loop is both

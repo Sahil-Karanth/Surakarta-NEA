@@ -7,7 +7,7 @@ class CircularList:
         self.__current_index = 0
 
     def __str__(self):
-        return self.__lst
+        return str(self.__lst)
     
     def get_length(self):
         return self.__length
@@ -30,3 +30,19 @@ class CircularList:
         item = self.__reverse_lst[self.__current_index]
         self.__current_index = (self.__current_index + 1) % len(self.__reverse_lst)
         return item
+    
+    def replace_item(self, to_replace, replace_with): # * find better name for this method
+        
+        try:
+            ind_to_replace = self.__lst.index(to_replace)
+            ind_replace_with = self.__lst.index(replace_with)
+        except ValueError:
+            return False
+        
+        self.__lst[ind_to_replace] = replace_with
+        self.__reverse_lst[self.__length - ind_to_replace - 1] = replace_with
+
+        self.__lst[ind_replace_with] = None
+        self.__reverse_lst[self.__length - ind_replace_with - 1] = None
+
+        return True
