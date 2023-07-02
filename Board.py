@@ -23,14 +23,22 @@ class Board:
         self.board = []
         self.inner_loop = CircularList([])
         self.outer_loop = CircularList([])
+        self.num_player1_pieces = 12
+        self.num_player2_pieces = 12
 
     def get_loop_from_text(self, text):
         if text == "INNER":
             return (self.inner_loop, None)
         elif text == "OUTER":
-            return self.outer_loop
+            return (None, self.outer_loop)
         elif text == "BOTH":
             return (self.inner_loop, self.outer_loop)
+        
+    def get_piece_count(self, colour):
+        if colour == "player1":
+            return self.num_player1_pieces
+        elif colour == "player2":
+            return self.num_player2_pieces
 
     def build_board(self):
         board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
@@ -120,11 +128,12 @@ class Board:
 
         board_loop_tuple = self.get_loop_from_text(start_location.get_loop())
 
-        starting_indexes = self.get_piece_indexes_at(board_loop_tuple[0], initial_pos)
-        for ind in starting_indexes:
-            if self.can_capture_either_direction(start_location, ind, board_loop_tuple[0]):
-                return True
-            
+        if board_loop_tuple[0] != None:  
+            starting_indexes = self.get_piece_indexes_at(board_loop_tuple[0], initial_pos)
+            for ind in starting_indexes:
+                if self.can_capture_either_direction(start_location, ind, board_loop_tuple[0]):
+                    return True
+                
         if board_loop_tuple[1] != None:  
             starting_indexes = self.get_piece_indexes_at(board_loop_tuple[1], initial_pos)
             for ind in starting_indexes:
@@ -189,10 +198,19 @@ class Board:
                 return False
             
     def switch_piece_board_position(self, initial_pos, final_pos):
-        self.board[final_pos[0]][final_pos[1]].set_piece(self.board[initial_pos[0]][initial_pos[1]].get_piece())
-        self.board[initial_pos[0]][initial_pos[1]].set_piece(None)
-        
 
+        initial_loc = self.board[initial_pos[0]][initial_pos[1]]
+        final_loc = self.board[final_pos[0]][final_pos[1]]
+
+        final_loc.set_piece(self.board[initial_pos[0]][initial_pos[1]].get_piece())
+        initial_loc.set_piece(None)
+
+        if initial_loc.get_piece().get_colour() == "player1":
+            self.num_blue_pieces -= 1
+
+        elif initial_loc.get_piece().get_colour() == "player2":
+            self.num_green_pieces -= 1
+        
     def move_piece(self, initial_pos, final_pos):
         if self.check_normal_legal(initial_pos, final_pos):
             self.switch_piece_board_position(initial_pos, final_pos)
@@ -204,21 +222,27 @@ class Board:
         start_location = self.board[initial_pos[0]][initial_pos[1]]
         end_location = self.board[final_pos[0]][final_pos[1]]
             
-        board_loop = self.get_loop_from_text(start_location.get_loop()) #  TODO: currently doesn't update just changes local variable
-        board_loop.replace_item(end_location, start_location)
+        board_loop_tuple = self.get_loop_from_text(start_location.get_loop())
 
+        for i,board_loop in enumerate(board_loop_tuple):
+            if board_loop == None:
+                continue
+            board_loop.replace_item(end_location, start_location)
+            if i == 0:
+                self.outer_loop = board_loop
+            elif i == 1:
+                self.inner_loop = board_loop    
 
+    def check_has_legal_captures(self, location):
+        if location.get_piece() == None:
+            return False
         
-
-            
-
-            
+        # UNFINISHED
 
 
 # TODO (generally for MVP)
-    # add constants
-    # add comments
+    # add constants / constant class (e.g. for cordinates, colours, etc.)
+    # add comments and docstrings
     # add terminal UI
     # add main game loop
     # work on player class / implementing player functionality
-    # allow for an actual move/capture to be made (right now it just checks if it is legal)

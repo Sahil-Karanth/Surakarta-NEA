@@ -34,15 +34,24 @@ class CircularList:
     def replace_item(self, to_replace, replace_with): # * find better name for this method
         
         try:
-            ind_to_replace = self.__lst.index(to_replace)
-            ind_replace_with = self.__lst.index(replace_with)
+            ind_to_replace = self.__get_all_occurence_indexes(self.__lst, to_replace)
+            ind_to_replace = self.__get_all_occurence_indexes(self.__lst, replace_with)
         except ValueError:
             return False
         
-        self.__lst[ind_to_replace] = replace_with
-        self.__reverse_lst[self.__length - ind_to_replace - 1] = replace_with
+        for a,b in zip(ind_to_replace, ind_to_replace):
+            self.__lst[a] = replace_with
+            self.__reverse_lst[self.__length - a - 1] = replace_with
 
-        self.__lst[ind_replace_with] = None
-        self.__reverse_lst[self.__length - ind_replace_with - 1] = None
+            self.__lst[b] = None
+            self.__reverse_lst[self.__length - b - 1] = None
 
         return True
+    
+    def __get_all_occurence_indexes(self, lst, item):
+        ind_lst = []
+        for i,n in enumerate(lst):
+            if n == item:
+                ind_lst.append(i)
+
+        return ind_lst

@@ -30,10 +30,10 @@ class GridLocation:
 
     def __set_initial_piece(self):
         if self.__cords[1] == 0 or self.__cords[1] == 1:
-            return Piece("B")
+            return Piece("player1")
         
         elif self.__cords[1] == 4 or self.__cords[1] == 5:
-            return Piece("G")
+            return Piece("player2")
         
         else:
             return None
