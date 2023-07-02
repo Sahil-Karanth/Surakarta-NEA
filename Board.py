@@ -26,7 +26,7 @@ class Board:
 
     def get_loop_from_text(self, text):
         if text == "INNER":
-            return self.inner_loop
+            return (self.inner_loop, None)
         elif text == "OUTER":
             return self.outer_loop
         elif text == "BOTH":
@@ -118,13 +118,19 @@ class Board:
         if not self.both_locations_same_loop(start_location, end_location):
             return False
 
-        board_loop = self.get_loop_from_text(start_location.get_loop())
+        board_loop_tuple = self.get_loop_from_text(start_location.get_loop())
 
-        starting_indexes = self.get_piece_indexes_at(board_loop, initial_pos)
-
+        starting_indexes = self.get_piece_indexes_at(board_loop_tuple[0], initial_pos)
         for ind in starting_indexes:
-            if self.can_capture_either_direction(start_location, ind, board_loop):
-                return True        
+            if self.can_capture_either_direction(start_location, ind, board_loop_tuple[0]):
+                return True
+            
+        if board_loop_tuple[1] != None:  
+            starting_indexes = self.get_piece_indexes_at(board_loop_tuple[1], initial_pos)
+            for ind in starting_indexes:
+                if self.can_capture_either_direction(start_location, ind, board_loop_tuple[1]):
+                    return True
+
         return False
     
     def loop_pieces_same_colour(self, loc1, loc2):
@@ -151,6 +157,10 @@ class Board:
         return True
 
     def can_capture_either_direction(self, start_location, ind, board_loop):
+
+        if board_loop == None:
+            return False
+
         board_loop.set_current_index(ind)
         left_loop_count = 0
         right_loop_count = 0
@@ -212,4 +222,3 @@ class Board:
     # add main game loop
     # work on player class / implementing player functionality
     # allow for an actual move/capture to be made (right now it just checks if it is legal)
-    # implement funcitonality for when the loop is both
