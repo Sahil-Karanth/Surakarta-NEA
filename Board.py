@@ -1,6 +1,7 @@
 from CircularList import CircularList
 from GridLocation import GridLocation
 from itertools import combinations
+from utility_functions import oneD_to_twoD_array
 
 class Board:
 
@@ -46,14 +47,14 @@ class Board:
             return self.num_player2_pieces
 
     def __build_board(self):
-        board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
+        # board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
 
         board = []
         outer_loop_lst = []
         inner_loop_lst = []
 
-        for i in range(6):
-            for j in range(6):
+        for j in range(6):
+            for i in range(6):
                 location = GridLocation((i, j))
                 board.append(location)
 
@@ -63,10 +64,11 @@ class Board:
                 elif location.get_cords() in Board.INNER_LOOP_CORDS:
                     inner_loop_lst.append(location)
 
-        self.board = board
+        self.board = [board[i:i+6] for i in range(0, len(board), 6)]
+        self.board = oneD_to_twoD_array(board, 6)
         self.inner_loop = CircularList(inner_loop_lst)
         self.outer_loop = CircularList(outer_loop_lst)
-    
+
     def __is_valid_coordinate(self, coordinate):
         if coordinate[0] < 0 or coordinate[0] > 5:
             return False
@@ -277,6 +279,7 @@ class Board:
                 return True
 
         return False
+
 
 
 
