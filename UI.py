@@ -28,7 +28,9 @@ class Terminal_UI:
         for row in board:
             for loc in row:
                 if loc.get_piece() == None:
-                    disp_board.append(None)
+                    player1_name = self.__game.get_player1_name()
+                    player2_name = self.__game.get_player2_name()
+                    disp_board.append(f"{'None':^{len(player1_name)}}")
                 else:
                     disp_board.append(loc.get_piece().get_colour())
         

@@ -1,12 +1,12 @@
-from Player import Player
+from Player import HumanPlayer
 from Board import Board
 
 
 class Game:
 
     def __init__(self):
-        self.__player1 = Player("TEST1")
-        self.__player2 = Player("TEST2")
+        self.__player1 = HumanPlayer("TEST1", "player1")
+        self.__player2 = HumanPlayer("TEST2", "player2asdf")
         self.game_over = False
         self.__board = Board()
 
@@ -39,3 +39,10 @@ class Game:
 
     def play_game(self):
         pass
+
+    def get_player1_name(self):
+        return self.__player1.get_name()
+    
+    
+    def get_player2_name(self):
+        return self.__player2.get_name()

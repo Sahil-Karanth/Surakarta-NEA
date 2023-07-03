@@ -13,8 +13,8 @@ class Player:
 
 class HumanPlayer(Player):
 
-    def __init__(self, name):
-        super().__init__()
+    def __init__(self, name, piece_colour):
+        super().__init__(piece_colour)
         self.__name = name
 
     def get_name(self):
