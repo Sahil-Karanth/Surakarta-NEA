@@ -208,6 +208,8 @@ class Board:
         
             if right_invalid and left_invalid:
                 return False
+        
+        return False
             
     def __switch_piece_board_position(self, initial_pos, final_pos):
 
@@ -217,10 +219,10 @@ class Board:
         final_loc.set_piece(self.board[initial_pos[0]][initial_pos[1]].get_piece())
         initial_loc.set_piece(None)
 
-        if initial_loc.get_piece().get_colour() == "player1":
+        if initial_loc.get_piece().get_colour() == "B":
             self.num_blue_pieces -= 1
 
-        elif initial_loc.get_piece().get_colour() == "player2":
+        elif initial_loc.get_piece().get_colour() == "G":
             self.num_green_pieces -= 1
         
     def move_piece(self, initial_pos, final_pos):
@@ -243,7 +245,7 @@ class Board:
             if i == 0:
                 self.outer_loop = board_loop
             elif i == 1:
-                self.inner_loop = board_loop    
+                self.inner_loop = board_loop
 
     def __get_adjacent(cords):
 

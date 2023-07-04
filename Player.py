@@ -9,6 +9,9 @@ class Player:
     
     def update_score(self, value):
         self.__score += value
+
+    def get_colour(self):
+        return self.__piece_colour
     
 
 class HumanPlayer(Player):

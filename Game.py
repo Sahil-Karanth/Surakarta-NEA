@@ -1,12 +1,11 @@
 from Player import HumanPlayer
 from Board import Board
 
-
 class Game:
 
     def __init__(self):
-        self.__player1 = HumanPlayer("TEST1", "player1")
-        self.__player2 = HumanPlayer("TEST2", "player2asdf")
+        self.__player1 = HumanPlayer("TEST1", "B") # ! FIX THIS: make sure colours are in some class or centralised
+        self.__player2 = HumanPlayer("TEST2", "G")
         self.game_over = False
         self.__board = Board()
 
@@ -46,3 +45,9 @@ class Game:
     
     def get_player2_name(self):
         return self.__player2.get_name()
+    
+    def get_player1_colour(self):
+        return self.__player1.get_colour()
+    
+    def get_player2_colour(self):
+        return self.__player2.get_colour()

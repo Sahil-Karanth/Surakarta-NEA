@@ -18,8 +18,8 @@ class Terminal_UI:
         choice = input("Enter a row and column pair in the format r,c for where you want to move to: ")
         return choice
     
-    def display_piece(self, piece):
-        print(piece.get_colour())
+    def get_piece_colour(self, piece):
+        return piece.get_colour()
     
     def display_board(self):
         board = self.__game.get_board()
@@ -28,16 +28,22 @@ class Terminal_UI:
         for row in board:
             for loc in row:
                 if loc.get_piece() == None:
-                    player1_name = self.__game.get_player1_name()
-                    player2_name = self.__game.get_player2_name()
-                    disp_board.append(f"{'None':^{len(player1_name)}}")
+                    disp_board.append(f"{'.'}")
                 else:
                     disp_board.append(loc.get_piece().get_colour())
         
         disp_board = oneD_to_twoD_array(disp_board, 6)
 
+        self.display_row_indexes()
+
         for row in disp_board:
             print(row)
+
+    def display_row_indexes(self):
+        for i in range(6):
+            print(i, end=" ")
+
+        print()
 
 ui = Terminal_UI()
     
