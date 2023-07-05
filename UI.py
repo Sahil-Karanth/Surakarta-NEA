@@ -34,16 +34,21 @@ class Terminal_UI:
         
         disp_board = oneD_to_twoD_array(disp_board, 6)
 
-        self.display_row_indexes()
+        self.__display_row_indexes()
 
-        for row in disp_board:
-            print(row)
+        for i,row in enumerate(disp_board):
+            print(f"{i} | ", end=" ")
+            print("  ".join(row))
 
-    def display_row_indexes(self):
-        for i in range(6):
-            print(i, end=" ")
+    def __display_row_indexes(self):
+        print("     ", end="")
+        print("  ".join([str(i) for i in range(6)]))
+        print("    ", end="")
+        print("—"*17)
+    
 
-        print()
+
+
 
 ui = Terminal_UI()
     
