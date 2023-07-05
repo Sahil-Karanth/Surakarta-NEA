@@ -52,6 +52,18 @@ class Terminal_UI:
             print("The game has ended in a draw.")
         else:
             print(f"{winner.get_name()} won!")
+
+    def start_game(self):
+      #  self.__game.play_game()
+
+      """
+    WHILE NOT game over:
+        input {game.getcurrplayername} move
+        make player move
+
+        change current player
+      
+      """
     
 
 

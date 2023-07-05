@@ -90,10 +90,14 @@ class Board:
         if total_diff == 1 or total_diff == 2:
             return True
     
-    def __check_normal_legal(self, initial_pos, final_pos):
+    def __check_normal_legal(self, initial_pos, final_pos, player):
         if not self.is_valid_cord_pair(initial_pos, final_pos):
             return False
         
+        starting_location = self.board[initial_pos[0]][initial_pos[1]]
+
+        if starting_location.get_piece().get_colour() 
+
         moving_to_location = self.board[final_pos[0]][final_pos[1]]
         
         if moving_to_location.get_piece() == None and self.is_adjacent(initial_pos, final_pos):
@@ -225,8 +229,8 @@ class Board:
         elif initial_loc.get_piece().get_colour() == "G":
             self.num_green_pieces -= 1
         
-    def move_piece(self, initial_pos, final_pos):
-        if self.check_normal_legal(initial_pos, final_pos):
+    def move_piece(self, initial_pos, final_pos, player):
+        if self.check_normal_legal(initial_pos, final_pos, player):
             self.switch_piece_board_position(initial_pos, final_pos)
 
     def capture_piece(self, initial_pos, final_pos):

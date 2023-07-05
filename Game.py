@@ -8,6 +8,7 @@ class Game:
         self.__player2 = HumanPlayer("TEST2", "G")
         self.game_over = False
         self.__board = Board()
+        self.__current_player = self.__player1
 
     def set_game_over(self):
         game_status = True
@@ -37,11 +38,15 @@ class Game:
         return False
 
     def play_game(self):
+        # while self.check_game_over() == False:
         pass
+
+    def move_piece(self, start_location, end_location):
+        self.__board.move_piece(start_location, end_location, self.__current_player)
+
 
     def get_player1_name(self):
         return self.__player1.get_name()
-    
     
     def get_player2_name(self):
         return self.__player2.get_name()
