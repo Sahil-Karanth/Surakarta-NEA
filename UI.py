@@ -44,7 +44,14 @@ class Terminal_UI:
         print("     ", end="")
         print("  ".join([str(i) for i in range(6)]))
         print("    ", end="")
-        print("—"*17)
+        print("—" * 17)
+
+    def display_winner(self):
+        winner = self.__game.get_winner()
+        if winner == "DRAW":
+            print("The game has ended in a draw.")
+        else:
+            print(f"{winner.get_name()} won!")
     
 
 
