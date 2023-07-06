@@ -34,7 +34,7 @@ class GridLocation:
         
         elif self.__cords[1] == 4 or self.__cords[1] == 5:
             return Piece("G")
-        
+
         else:
             return None
 

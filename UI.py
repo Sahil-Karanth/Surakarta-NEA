@@ -1,23 +1,30 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
+import re
 
 class Terminal_UI:
     
     def __init__(self):
         self.__UI_type = "TERMINAL"
-        self.__game = Game()
+        self.__game = self.__setup_game()
+
+    def __setup_game(self):
+        player1name = input("Enter player 1's name: ")
+        player2name = input("Enter player 2's name: ")
+        return Game(player1name, player2name)
 
     def get_UI_type(self):
         return self.__UI_type
     
-    def get_user_piece_to_move(self):
-        choice = input("Enter a row and column pair in the format r,c for the piece you want to move: ")
+    def get_cords_from_user(self, prompt):
+        valid = False
+        pattern = r'^[0-5],[0-5]$'
+        while not valid:
+            choice = input(prompt)
+            if bool(re.match(pattern, choice)):
+                valid = True
         return choice
-    
-    def get_user_piece_moving_to(self):
-        choice = input("Enter a row and column pair in the format r,c for where you want to move to: ")
-        return choice
-    
+
     def get_piece_colour(self, piece):
         return piece.get_colour()
     
@@ -53,17 +60,46 @@ class Terminal_UI:
         else:
             print(f"{winner.get_name()} won!")
 
-    def start_game(self):
-      #  self.__game.play_game()
+    def get_move_type(self):
+        valid = False
+        while not valid:
+            move_type = input("Enter 'move' for an ordinary move to an adjacent position or 'capture' for a capturing move:")
+            if move_type == "move" or move_type == "capture":
+                valid = True
+            else:
+                print("Invalid move type. Please try again.")
+        return move_type
 
-      """
-    WHILE NOT game over:
-        input {game.getcurrplayername} move
-        make player move
+    def play_game(self):
+        while not self.__game.get_game_over():
+            self.display_board()
+            print(f"{self.__game.get_current_player().get_name()}'s turn.")
+            piece_to_move = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
+            piece_moving_to = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
+            move_type = self.get_move_type()
 
-        change current player
+            if move_type == "move":
+                self.__game.move_piece(piece_to_move, piece_moving_to)
+
+            elif move_type == "capture":
+                self.__game.capture_piece(piece_to_move, piece_moving_to)
+
+            self.__game.switch_current_player()
+            self.__game.set_game_over()
       
-      """
+
+
+
+
+
+"""
+WHILE NOT game over:
+input {game.getcurrplayername} move
+make player move
+
+change current player
+
+"""
     
 
 
@@ -71,6 +107,5 @@ class Terminal_UI:
 
 ui = Terminal_UI()
     
-ui.display_board()
-    
+ui.play_game()    
 
