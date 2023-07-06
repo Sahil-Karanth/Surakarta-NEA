@@ -96,7 +96,8 @@ class Board:
         
         starting_location = self.board[initial_pos[0]][initial_pos[1]]
 
-        if starting_location.get_piece().get_colour() 
+        if starting_location.get_piece().get_colour() != player.get_colour():
+            return False
 
         moving_to_location = self.board[final_pos[0]][final_pos[1]]
         
@@ -124,8 +125,14 @@ class Board:
             return True
         return False
 
-    def __check_capture_legal(self, initial_pos, final_pos): # try all possible captures
+    def __check_capture_legal(self, initial_pos, final_pos, player): # try all possible captures
         if not self.is_valid_cord_pair(initial_pos, final_pos):
+            return False
+        
+        if initial_pos.get_piece().get_colour() != player.get_colour():
+            return False
+        
+        if initial_pos.get_piece().get_colour() == final_pos.get_piece().get_colour():
             return False
 
         start_location = self.board[initial_pos[0]][initial_pos[1]]
@@ -142,7 +149,7 @@ class Board:
         if board_loop_tuple[0] != None:  
             starting_indexes = self.get_piece_indexes_at(board_loop_tuple[0], initial_pos)
             for ind in starting_indexes:
-                if self.can_capture_either_direction(start_location, ind, board_loop_tuple[0]):
+                if self.__can_capture_either_direction(start_location, ind, board_loop_tuple[0]):
                     return True
                 
         if board_loop_tuple[1] != None:  
@@ -153,8 +160,8 @@ class Board:
 
         return False
     
-    def check_move_legal(self, initial_pos, final_pos):
-        if self.__check_normal_legal(initial_pos, final_pos) or self.__check_capture_legal(initial_pos, final_pos):
+    def check_move_legal(self, initial_pos, final_pos, player):
+        if self.__check_normal_legal(initial_pos, final_pos, player) or self.__check_capture_legal(initial_pos, final_pos, player):
             return True
         return False
 
@@ -212,8 +219,6 @@ class Board:
         
             if right_invalid and left_invalid:
                 return False
-        
-        return False
             
     def __switch_piece_board_position(self, initial_pos, final_pos):
 
@@ -233,8 +238,8 @@ class Board:
         if self.check_normal_legal(initial_pos, final_pos, player):
             self.switch_piece_board_position(initial_pos, final_pos)
 
-    def capture_piece(self, initial_pos, final_pos):
-        if self.check_capture_legal(initial_pos, final_pos):
+    def capture_piece(self, initial_pos, final_pos, player):
+        if self.__check_capture_legal(initial_pos, final_pos, player):
             self.switch_piece_board_position(initial_pos, final_pos)
 
         start_location = self.board[initial_pos[0]][initial_pos[1]]
