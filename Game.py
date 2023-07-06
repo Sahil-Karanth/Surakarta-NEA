@@ -1,5 +1,6 @@
 from Player import HumanPlayer
 from Board import Board
+from GridLocation import GridLocation
 
 class Game:
 
@@ -9,6 +10,10 @@ class Game:
         self.__game_over = False
         self.__board = Board()
         self.__current_player = self.__player1
+
+    def is_legal_move(self, start_loc, end_loc, move_type):
+        if move_type == "move":
+            # TODO call board method for each move type (legal/non-legal)
 
     def set_game_over(self):
         game_status = True
@@ -21,8 +26,11 @@ class Game:
 
         self.__game_over = game_status    
 
-    def get_board(self):
+    def get_board_state(self):
         return self.__board.get_board()
+    
+    def get_board(self):
+        return self.__board
     
     def get_game_over(self):
         return self.__game_over

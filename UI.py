@@ -1,6 +1,7 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
+from GridLocation import GridLocation
 
 class Terminal_UI:
     
@@ -23,6 +24,8 @@ class Terminal_UI:
             choice = input(prompt)
             if bool(re.match(pattern, choice)):
                 valid = True
+            else:
+                print("Invalid Coordinate. Must be of the form 'r,c' where r and c are integers between 0 and 5 inclusive.")
         return choice
 
     def get_piece_colour(self, piece):
@@ -74,9 +77,15 @@ class Terminal_UI:
         while not self.__game.get_game_over():
             self.display_board()
             print(f"{self.__game.get_current_player().get_name()}'s turn.")
-            piece_to_move = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
-            piece_moving_to = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
             move_type = self.get_move_type()
+
+            valid = False
+            while not valid:
+                start_loc = GridLocation(self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: "))
+                end_loc = GridLocation(self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: "))
+
+                if self.__game.is_legal_move(start_loc, end_loc, move_type):
+                    pass
 
             if move_type == "move":
                 self.__game.move_piece(piece_to_move, piece_moving_to)

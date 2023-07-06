@@ -235,13 +235,9 @@ class Board:
             self.num_green_pieces -= 1
         
     def move_piece(self, initial_pos, final_pos, player):
-        valid = False
-        while not valid:
-            if self.__check_normal_legal(initial_pos, final_pos, player):
-                self.__switch_piece_board_position(initial_pos, final_pos)
-                valid = True
-            
-
+        if self.__check_normal_legal(initial_pos, final_pos, player):
+            self.__switch_piece_board_position(initial_pos, final_pos)
+  
     def capture_piece(self, initial_pos, final_pos, player):
         if self.__check_capture_legal(initial_pos, final_pos, player):
             self.switch_piece_board_position(initial_pos, final_pos)
