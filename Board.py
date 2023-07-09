@@ -77,7 +77,7 @@ class Board:
         return True
     
     def __is_valid_cord_pair(self, cord1, cord2):
-        if not (self.is_valid_coordinate(cord1) and self.is_valid_coordinate(cord2)):
+        if not (self.__is_valid_coordinate(cord1) and self.__is_valid_coordinate(cord2)):
             return False
         return True
     
@@ -90,8 +90,8 @@ class Board:
         if total_diff == 1 or total_diff == 2:
             return True
     
-    def __check_normal_legal(self, initial_pos, final_pos, player):
-        if not self.is_valid_cord_pair(initial_pos, final_pos):
+    def check_normal_legal(self, initial_pos, final_pos, player):
+        if not self.__is_valid_cord_pair(initial_pos, final_pos):
             return False
         
         starting_location = self.board[initial_pos[0]][initial_pos[1]]
@@ -125,7 +125,7 @@ class Board:
             return True
         return False
 
-    def __check_capture_legal(self, initial_pos, final_pos, player): # try all possible captures
+    def check_capture_legal(self, initial_pos, final_pos, player): # try all possible captures
         if not self.is_valid_cord_pair(initial_pos, final_pos):
             return False
         

@@ -85,16 +85,18 @@ class Terminal_UI:
                 end_loc = GridLocation(self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: "))
 
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
-                    pass
+                    valid = True
 
             if move_type == "move":
-                self.__game.move_piece(piece_to_move, piece_moving_to)
+                self.__game.move_piece(start_loc, end_loc)
 
             elif move_type == "capture":
-                self.__game.capture_piece(piece_to_move, piece_moving_to)
+                self.__game.capture_piece(start_loc, end_loc)
 
             self.__game.switch_current_player()
-            self.__game.set_game_over()
+            self.__game.set_game_status()
+
+        self.display_winner()
       
 
 

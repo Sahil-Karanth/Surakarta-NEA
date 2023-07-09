@@ -13,9 +13,12 @@ class Game:
 
     def is_legal_move(self, start_loc, end_loc, move_type):
         if move_type == "move":
-            # TODO call board method for each move type (legal/non-legal)
+            return self.__board.check_normal_legal(start_loc, end_loc, self.__current_player)
+        
+        elif move_type == "capture":
+            return self.__board.check_capture_legal(start_loc, end_loc, self.__current_player)
 
-    def set_game_over(self):
+    def set_game_status(self):
         game_status = True
         if not(self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0):
             game_status = False
