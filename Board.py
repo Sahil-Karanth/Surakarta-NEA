@@ -81,33 +81,41 @@ class Board:
             return False
         return True
     
-    def __is_adjacent(self, initial_pos, final_pos):
-        x_diff = abs(initial_pos[0] - final_pos[0])
-        y_diff = abs(initial_pos[1] - final_pos[1])
+    def __is_adjacent(self, start_loc, end_loc):
+
+        start_cord = start_loc.get_cords()
+        end_cord = end_loc.get_cords()
+
+        x_diff = abs(start_cord[0] - end_cord[0])
+        y_diff = abs(start_cord[1] - end_cord[1])
 
         total_diff = x_diff + y_diff
 
         if total_diff == 1 or total_diff == 2:
             return True
     
-    def check_normal_legal(self, initial_pos, final_pos, player):
-        if not self.__is_valid_cord_pair(initial_pos, final_pos):
+    def check_normal_legal(self, start_loc, end_loc, player):
+        start_cord = start_loc.get_cords()
+        end_cord = end_loc.get_cords()
+
+        if not self.__is_valid_cord_pair(start_cord, end_cord):
             return False
         
-        starting_location = self.__board[initial_pos[0]][initial_pos[1]]
+        starting_location = self.__board[start_cord[0]][start_cord[1]]
 
         if starting_location.get_piece().get_colour() != player.get_colour():
             return False
 
-        moving_to_location = self.__board[final_pos[0]][final_pos[1]]
+        moving_to_location = self.__board[end_cord[0]][end_cord[1]]
         
-        if moving_to_location.get_piece() == None and self.__is_adjacent(initial_pos, final_pos):
+        if moving_to_location.get_piece() == None and self.__is_adjacent(start_loc, end_loc):
             return True
         
         return False
     
-    def __get_piece_indexes_at(self, board_loop, cords):
+    def __get_piece_indexes_at(self, board_loop, loc):
         starting_indexes = []
+        cords = loc.get_cords()
         for i in range(board_loop.get_length()):
             item = board_loop.get_next_right()
             if item.get_cords() == cords:
@@ -125,43 +133,43 @@ class Board:
             return True
         return False
 
-    def check_capture_legal(self, initial_pos, final_pos, player): # try all possible captures
-        if not self.is_valid_cord_pair(initial_pos, final_pos):
+    def check_capture_legal(self, start_loc, end_loc, player): # try all possible captures
+
+        start_cords = start_loc.get_cords()
+        end_cords = end_loc.get_cords()
+
+        if not self.__is_valid_cord_pair(start_cords, end_cords):
             return False
         
-        if initial_pos.get_piece().get_colour() != player.get_colour():
+        if start_loc.get_piece().get_colour() != player.get_colour():
             return False
         
-        if initial_pos.get_piece().get_colour() == final_pos.get_piece().get_colour():
+        if start_loc.get_piece().get_colour() == end_loc.get_piece().get_colour():
             return False
 
-        start_location = self.__board[initial_pos[0]][initial_pos[1]]
-        end_location = self.__board[final_pos[0]][final_pos[1]]
-
-        if not self.__both_locations_vacant(start_location, end_location):
+        if not self.__both_locations_vacant(start_loc, end_loc):
             return False
         
-        if not self.__both_locations_same_loop(start_location, end_location):
+        if not self.__both_locations_same_loop(start_loc, end_loc):
             return False
 
-        board_loop_tuple = self.__get_loop_from_text(start_location.get_loop())
+        board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
 
         if board_loop_tuple[0] != None:  
-            starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[0], initial_pos)
+            starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[0], start_loc)
             for ind in starting_indexes:
-                if self.__can_capture_either_direction(start_location, ind, board_loop_tuple[0]):
+                if self.__can_capture_either_direction(start_loc, ind, board_loop_tuple[0]):
                     return True
                 
         if board_loop_tuple[1] != None:  
-            starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[1], initial_pos)
+            starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[1], start_loc)
             for ind in starting_indexes:
-                if self.__can_capture_either_direction(start_location, ind, board_loop_tuple[1]):
+                if self.__can_capture_either_direction(start_loc, ind, board_loop_tuple[1]):
                     return True
-
         return False
     
-    def check_move_legal(self, initial_pos, final_pos, player):
-        if self.check_normal_legal(initial_pos, final_pos, player) or self.check_capture_legal(initial_pos, final_pos, player):
+    def check_move_legal(self, start_loc, end_loc, player):
+        if self.check_normal_legal(start_loc, end_loc, player) or self.check_capture_legal(start_loc, end_loc, player):
             return True
         return False
 
@@ -220,37 +228,33 @@ class Board:
             if right_invalid and left_invalid:
                 return False
             
-    def __switch_piece_board_position(self, initial_pos, final_pos):
+    def __switch_piece_board_position(self, start_loc, end_loc):
 
-        initial_loc = self.__board[initial_pos[0]][initial_pos[1]]
-        final_loc = self.__board[final_pos[0]][final_pos[1]]
+        start_cords = start_loc.get_cords()
 
-        final_loc.set_piece(self.__board[initial_pos[0]][initial_pos[1]].get_piece())
-        initial_loc.set_piece(None)
+        end_loc.set_piece(self.__board[start_cords[0]][start_cords[1]].get_piece())
+        start_loc.set_piece(None)
 
-        if initial_loc.get_piece().get_colour() == "B":
+        if start_loc.get_piece().get_colour() == "B":
             self.num_blue_pieces -= 1
 
-        elif initial_loc.get_piece().get_colour() == "G":
+        elif start_loc.get_piece().get_colour() == "G":
             self.num_green_pieces -= 1
         
-    def move_piece(self, initial_pos, final_pos, player):
-        if self.check_normal_legal(initial_pos, final_pos, player):
-            self.__switch_piece_board_position(initial_pos, final_pos)
+    def move_piece(self, start_loc, end_loc, player):
+        if self.check_normal_legal(start_loc, end_loc, player):
+            self.__switch_piece_board_position(start_loc, end_loc)
   
-    def capture_piece(self, initial_pos, final_pos, player):
-        if self.check_capture_legal(initial_pos, final_pos, player):
-            self.__switch_piece_board_position(initial_pos, final_pos)
-
-        start_location = self.__board[initial_pos[0]][initial_pos[1]]
-        end_location = self.__board[final_pos[0]][final_pos[1]]
+    def capture_piece(self, start_loc, end_loc, player):
+        if self.check_capture_legal(start_loc, end_loc, player):
+            self.__switch_piece_board_position(start_loc, end_loc)
             
-        board_loop_tuple = self.__get_loop_from_text(start_location.get_loop())
+        board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
 
         for i,board_loop in enumerate(board_loop_tuple):
             if board_loop == None:
                 continue
-            board_loop.replace_item(end_location, start_location)
+            board_loop.replace_item(end_loc, start_loc)
             if i == 0:
                 self.__outer_loop = board_loop
             elif i == 1:
@@ -286,7 +290,7 @@ class Board:
                 board_pieces.append(self.__board[row][col])
 
         for piece_pair in combinations(board_pieces, 2):
-            if self.check_move_legal(piece_pair[0].get_cords(), piece_pair[1].get_cords()):
+            if self.check_move_legal(piece_pair[0], piece_pair[1]):
                 return True
 
         return False

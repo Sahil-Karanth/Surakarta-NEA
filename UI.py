@@ -26,13 +26,14 @@ class Terminal_UI:
                 valid = True
             else:
                 print("Invalid Coordinate. Must be of the form 'r,c' where r and c are integers between 0 and 5 inclusive.")
-        return choice
+
+        return tuple([int(i) for i in choice.split(",")])
 
     def get_piece_colour(self, piece):
         return piece.get_colour()
     
     def display_board(self):
-        board = self.__game.get_board()
+        board = self.__game.get_board_state()
         
         disp_board = []
         for row in board:

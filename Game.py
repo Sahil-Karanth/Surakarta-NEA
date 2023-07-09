@@ -30,7 +30,7 @@ class Game:
         self.__game_over = game_status    
 
     def get_board_state(self):
-        return self.__board.get_board()
+        return self.__board.get_board_state()
     
     def get_board(self):
         return self.__board
