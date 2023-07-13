@@ -67,7 +67,7 @@ class Terminal_UI:
     def get_move_type(self):
         valid = False
         while not valid:
-            move_type = input("Enter 'move' for an ordinary move to an adjacent position or 'capture' for a capturing move:")
+            move_type = input("Enter 'move' for an ordinary move to an adjacent position or 'capture' for a capturing move: ")
             if move_type == "move" or move_type == "capture":
                 valid = True
             else:

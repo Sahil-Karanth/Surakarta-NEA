@@ -13,21 +13,26 @@ class Game:
 
     def is_legal_move(self, start_loc, end_loc, move_type):
         if move_type == "move":
+            print("TESTING")
+            print("start_loc cords: ", start_loc.get_cords())
+            print("end_loc cords: ", end_loc.get_cords())
+            print("start_loc colour: ", start_loc.get_piece().get_colour())
+
             return self.__board.check_normal_legal(start_loc, end_loc, self.__current_player)
         
         elif move_type == "capture":
             return self.__board.check_capture_legal(start_loc, end_loc, self.__current_player)
 
     def set_game_status(self):
-        game_status = True
-        if not(self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0):
-            game_status = False
-        
-        for loc in self.__board.get_board():
-            if self.__board.check_has_legal_moves(loc):
-                game_status = False
+        if self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0:
+            self.__game_over = True
+            return
 
-        self.__game_over = game_status    
+        for row in self.__board.get_board_state():
+            for loc in row:
+                if self.__board.check_has_legal_moves(loc, self.__current_player):
+                    self.__game_over = False
+                    return
 
     def get_board_state(self):
         return self.__board.get_board_state()

@@ -98,12 +98,13 @@ class Board:
         start_cord = start_loc.get_cords()
         end_cord = end_loc.get_cords()
 
+        if start_loc.get_piece() == None:
+            return False
+
         if not self.__is_valid_cord_pair(start_cord, end_cord):
             return False
         
-        starting_location = self.__board[start_cord[0]][start_cord[1]]
-
-        if starting_location.get_piece().get_colour() != player.get_colour():
+        if start_loc.get_piece().get_colour() != player.get_colour():
             return False
 
         moving_to_location = self.__board[end_cord[0]][end_cord[1]]
@@ -231,18 +232,35 @@ class Board:
     def __switch_piece_board_position(self, start_loc, end_loc):
 
         start_cords = start_loc.get_cords()
-
-        end_loc.set_piece(self.__board[start_cords[0]][start_cords[1]].get_piece())
-        start_loc.set_piece(None)
-
+        end_cords = end_loc.get_cords()
+        
         if start_loc.get_piece().get_colour() == "B":
-            self.num_blue_pieces -= 1
+            self.__num_player1_pieces -= 1
 
         elif start_loc.get_piece().get_colour() == "G":
-            self.num_green_pieces -= 1
+            self.__num_player2_pieces -= 1
+
+
+        self.__board[end_cords[0]][end_cords[1]].set_piece(start_loc.get_piece())
+        self.__board[start_cords[0]][start_cords[1]].set_piece(None)
+
+        # print("TEST BOARD PRINT")
+
+        # # START OF TEST CODE
+        # disp_board = []
+        # for row in self.__board:
+        #     for loc in row:
+        #         if loc.get_piece() == None:
+        #             disp_board.append(f"{'.'}")
+        #         else:
+        #             disp_board.append(loc.get_piece().get_colour())
+        
+        # disp_board = oneD_to_twoD_array(disp_board, 6)
+        # # END OF TEST CODE
+
         
     def move_piece(self, start_loc, end_loc, player):
-        if self.check_normal_legal(start_loc, end_loc, player):
+        if self.check_normal_legal(start_loc, end_loc, player): # ! GET RID OF SECOND CHECK THIS IS POINTLESS
             self.__switch_piece_board_position(start_loc, end_loc)
   
     def capture_piece(self, start_loc, end_loc, player):
@@ -277,20 +295,20 @@ class Board:
 
         return adjacent_lst
     
-    def check_has_legal_moves(self, location):
+    def check_has_legal_moves(self, location, player):
         if location.get_piece() == None:
             return False
 
         board_pieces = []
 
         for row in self.__board:
-            for col in row:
-                if self.__board[row][col].get_piece() == None:
+            for loc in row:
+                if loc.get_piece() == None:
                     continue
-                board_pieces.append(self.__board[row][col])
+                board_pieces.append(loc)
 
         for piece_pair in combinations(board_pieces, 2):
-            if self.check_move_legal(piece_pair[0], piece_pair[1]):
+            if self.check_move_legal(piece_pair[0], piece_pair[1], player):
                 return True
 
         return False
