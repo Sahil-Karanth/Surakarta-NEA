@@ -13,17 +13,15 @@ class Game:
 
     def is_legal_move(self, start_loc, end_loc, move_type):
         if move_type == "move":
-            print("TESTING")
-            print("start_loc cords: ", start_loc.get_cords())
-            print("end_loc cords: ", end_loc.get_cords())
-            print("start_loc colour: ", start_loc.get_piece().get_colour())
-
             return self.__board.check_normal_legal(start_loc, end_loc, self.__current_player)
         
         elif move_type == "capture":
             return self.__board.check_capture_legal(start_loc, end_loc, self.__current_player)
 
     def set_game_status(self):
+
+        # ! BUG only checks for one player
+
         if self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0:
             self.__game_over = True
             return

@@ -53,10 +53,11 @@ class Board:
         outer_loop_lst = []
         inner_loop_lst = []
 
-        for j in range(6):
-            for i in range(6):
+        for i in range(6):
+            for j in range(6):
                 location = GridLocation((i, j))
                 board.append(location)
+                # board.insert(0, location)
 
                 if location.get_cords() in Board.OUTER_LOOP_CORDS:
                     outer_loop_lst.append(location)
@@ -64,8 +65,11 @@ class Board:
                 elif location.get_cords() in Board.INNER_LOOP_CORDS:
                     inner_loop_lst.append(location)
 
+
+
         self.__board = [board[i:i+6] for i in range(0, len(board), 6)]
         self.__board = oneD_to_twoD_array(board, 6)
+        
         self.__inner_loop = CircularList(inner_loop_lst)
         self.__outer_loop = CircularList(outer_loop_lst)
 
@@ -103,7 +107,7 @@ class Board:
 
         if not self.__is_valid_cord_pair(start_cord, end_cord):
             return False
-        
+
         if start_loc.get_piece().get_colour() != player.get_colour():
             return False
 
