@@ -2,6 +2,7 @@ from CircularList import CircularList
 from GridLocation import GridLocation
 from itertools import combinations
 from utility_functions import oneD_to_twoD_array
+from Piece import Piece
 
 class Board:
 
@@ -25,12 +26,24 @@ class Board:
         self.__outer_loop = CircularList([])
 
         self.__build_board()
+        self.__edit_board_for_testing()
 
         self.__num_player1_pieces = 12
         self.__num_player2_pieces = 12
 
     def get_board_state(self):
         return self.__board
+
+    def __edit_board_for_testing(self):
+        for row in self.__board:
+            for loc in row:
+                loc.set_piece(None)
+
+        self.__board[0][0].set_piece(Piece("B"))
+        self.__board[0][1].set_piece(Piece("B"))
+        self.__board[3][2].set_piece(Piece("B"))
+        self.__board[1][3].set_piece(Piece("G"))
+        self.__board[5][5].set_piece(Piece("G"))
 
     def __get_loop_from_text(self, text):
         if text == "INNER":

@@ -76,25 +76,11 @@ class Terminal_UI:
 
     def play_game(self):
 
-        # print("TESTING")
-        # for i in self.__game.get_board_state():
-        #     print([j.get_cords() for j in i])
-
-        # # print(self.__game.get_board_state()[4][0].get_piece().get_colour())
-
-        # start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
-        # end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
-
-        # start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
-        # end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
-
-        # print(start_loc.get_piece().get_colour())
-        
-        # return
-
         while not self.__game.get_game_over():
             self.display_board()
+            print()
             print(f"{self.__game.get_current_player().get_name()}'s turn.")
+            print()
             move_type = self.get_move_type()
 
             valid = False
