@@ -1,18 +1,21 @@
-def get_adjacent(cords):
-    adjacent_lst = []
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            if (i == 0) and (j == 0):
-                continue
-
-            adjacent_cord = (abs(cords[0] + i), abs(cords[1] + j))
-
-            if (cords[0] + i) < 0 or (cords[1] + j) > 5 or adjacent_cord in adjacent_lst:
-                continue
-
-            adjacent_lst.append(adjacent_cord)
-
-    return adjacent_lst
+from Board import Board
 
 
-print(get_adjacent((3, 4)))
+b = Board()
+
+loop = b.get_inner_loop_testing()
+loop_cords = [i.get_cords() for i in loop]
+print(loop_cords)
+
+# already_done = []
+# for i in loop:
+#     print(i.get_cords(), i.get_colour())
+
+
+# print(len(already_done))
+# print(len(loop_cords))
+
+for row in b.get_board_state():
+    for i in row:
+        print(i.get_cords(), i.get_colour())
+

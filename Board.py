@@ -22,8 +22,8 @@ class Board:
 
     def __init__(self):
         self.__board = []
-        self.__inner_loop = CircularList([])
-        self.__outer_loop = CircularList([])
+        self.__inner_loop = CircularList([GridLocation(i) for i in Board.INNER_LOOP_CORDS])
+        self.__outer_loop = CircularList([GridLocation(i) for i in Board.OUTER_LOOP_CORDS])
 
         self.__build_board()
         self.__edit_board_for_testing()
@@ -33,11 +33,29 @@ class Board:
 
     def get_board_state(self):
         return self.__board
+    
+    def get_inner_loop_testing(self):
+        return self.__inner_loop.get_lst_TEST()
 
     def __edit_board_for_testing(self):
         for row in self.__board:
             for loc in row:
                 loc.set_piece(None)
+
+        lst = [GridLocation(i) for i in Board.INNER_LOOP_CORDS]
+
+        BLUE_TEST_LOOP = [(0,0), (0,1), (3,2)]
+        GREEN_TEST_LOOP = [(1,3), (5,5)]
+        
+        for a,b in zip(lst, Board.OUTER_LOOP_CORDS):
+            if b in BLUE_TEST_LOOP:
+                lst[Board.OUTER_LOOP_CORDS.index(b)].set_piece(Piece("B"))
+            elif b in GREEN_TEST_LOOP:
+                lst[Board.OUTER_LOOP_CORDS.index(b)].set_piece(Piece("G"))
+            else:
+                lst[Board.OUTER_LOOP_CORDS.index(b)].set_piece(None)
+
+        self.__outer_loop = CircularList(lst)
 
         self.__board[0][0].set_piece(Piece("B"))
         self.__board[0][1].set_piece(Piece("B"))
@@ -60,31 +78,28 @@ class Board:
             return self.__num_player2_pieces
 
     def __build_board(self):
-        # board = [[GridLocation((x, y)) for x in range(6)] for y in range(6)]
-
         board = []
-        outer_loop_lst = []
-        inner_loop_lst = []
+        # outer_loop_lst = []
+        # inner_loop_lst = []
 
         for i in range(6):
             for j in range(6):
                 location = GridLocation((i, j))
                 board.append(location)
-                # board.insert(0, location)
 
-                if location.get_cords() in Board.OUTER_LOOP_CORDS:
-                    outer_loop_lst.append(location)
+                # if location.get_cords() in Board.OUTER_LOOP_CORDS:
+                #     outer_loop_lst.append(location)
                 
-                elif location.get_cords() in Board.INNER_LOOP_CORDS:
-                    inner_loop_lst.append(location)
+                # elif location.get_cords() in Board.INNER_LOOP_CORDS:
+                #     inner_loop_lst.append(location)
 
 
 
         self.__board = [board[i:i+6] for i in range(0, len(board), 6)]
         self.__board = oneD_to_twoD_array(board, 6)
         
-        self.__inner_loop = CircularList(inner_loop_lst)
-        self.__outer_loop = CircularList(outer_loop_lst)
+        # self.__inner_loop = CircularList(inner_loop_lst)
+        # self.__outer_loop = CircularList(outer_loop_lst)
 
     def __is_valid_coordinate(self, coordinate):
         if coordinate[0] < 0 or coordinate[0] > 5:
@@ -134,6 +149,8 @@ class Board:
     def __get_piece_indexes_at(self, board_loop, loc):
         starting_indexes = []
         cords = loc.get_cords()
+        board_loop.set_pointer(0, "right")
+        board_loop.set_pointer(0, "left")
         for i in range(board_loop.get_length()):
             item = board_loop.get_next_right()
             if item.get_cords() == cords:
@@ -141,12 +158,14 @@ class Board:
 
         return starting_indexes
 
-    def __both_locations_vacant(self, start_location, end_location):
+    def __either_locations_vacant(self, start_location, end_location):
         if start_location.get_piece() == None or end_location.get_piece() == None:
-            return False
-        return True
+            return True
+        return False
 
     def __both_locations_same_loop(self, start_location, end_location):
+        if start_location.get_loop() == "BOTH" or end_location.get_loop() == "BOTH":
+            return True
         if start_location.get_loop() == end_location.get_loop():
             return True
         return False
@@ -158,21 +177,20 @@ class Board:
 
         if not self.__is_valid_cord_pair(start_cords, end_cords):
             return False
-        
+
         if start_loc.get_piece().get_colour() != player.get_colour():
             return False
         
         if start_loc.get_piece().get_colour() == end_loc.get_piece().get_colour():
             return False
 
-        if not self.__both_locations_vacant(start_loc, end_loc):
+        if self.__either_locations_vacant(start_loc, end_loc):
             return False
         
         if not self.__both_locations_same_loop(start_loc, end_loc):
             return False
 
         board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
-
         if board_loop_tuple[0] != None:  
             starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[0], start_loc)
             for ind in starting_indexes:
@@ -192,11 +210,16 @@ class Board:
         return False
 
     def __loop_pieces_same_colour(self, loc1, loc2):
-        if (loc1.get_piece().get_colour() == loc2.get_piece().get_colour()) and (loc1.get_cords() != loc2.get_cords()):
-            return False
-        return True
+        print("TESTING")
+        print(loc1.get_colour())
+        print(loc2.get_colour())
+        if (loc1.get_colour() == loc2.get_colour()) and (loc1.get_cords() != loc2.get_cords()):
+            return True
+        return False
     
     def __is_valid_capture(self, start_location, end_location, loop_index_count):
+        if end_location.is_empty():
+            return False
         if (end_location.get_piece().get_colour() != start_location.get_piece().get_colour()) and (loop_index_count > 0):
             return True
 
@@ -219,16 +242,26 @@ class Board:
         if board_loop == None:
             return False
 
-        board_loop.set_current_index(ind)
+        board_loop.set_pointer(ind, "right")
+        board_loop.set_pointer(ind, "left")
+
         left_loop_count = 0
         right_loop_count = 0
         right_invalid = False 
         left_invalid = False
+
+        # the first two will be the same (the value at ind) so we can skip them
+        board_loop.get_next_right()
+        board_loop.get_next_left()
+
         while True:
             loc_right = board_loop.get_next_right()
             loc_left = board_loop.get_next_left()
 
-            if loc_right.is_loop_index():
+            print("PIECE AT LEFT")
+            print(loc_left.get_colour())
+
+            if loc_right.is_loop_index(): # ! TEST ME
                 right_loop_count += 1
             
             if loc_left.is_loop_index():
@@ -240,7 +273,7 @@ class Board:
             if not self.__check_direction_valid(start_location, loc_right, right_loop_count):
                 right_invalid = True
 
-            if self.check_direction_invalid(start_location, loc_left, left_loop_count):
+            if not self.__check_direction_valid(start_location, loc_left, left_loop_count):
                 left_invalid = True
         
             if right_invalid and left_invalid:

@@ -39,13 +39,19 @@ class GridLocation:
             return None
 
     def is_empty(self):
-        return self.piece == None
+        return self.__piece == None
     
     def set_piece(self, piece):
         self.__piece = piece
 
     def get_piece(self):
         return self.__piece
+    
+    def get_colour(self):
+        if self.__piece == None:
+            return None
+        else:
+            return self.__piece.get_colour()
     
     def get_cords(self):
         return self.__cords

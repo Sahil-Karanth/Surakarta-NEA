@@ -10,10 +10,14 @@ class Terminal_UI:
         self.__game = self.__setup_game()
 
     def __setup_game(self):
-        player1name = input("Enter player 1's name: ")
-        player2name = input("Enter player 2's name: ")
+        # player1name = input("Enter player 1's name: ")
+        # player2name = input("Enter player 2's name: ")
+        # TEST CODE
+        player1name = "Player 1 (B)"
+        player2name = "Player 2 (G)"
+        # END TEST CODE
         return Game(player1name, player2name)
-
+    
     def get_UI_type(self):
         return self.__UI_type
     
@@ -81,29 +85,28 @@ class Terminal_UI:
             print()
             print(f"{self.__game.get_current_player().get_name()}'s turn.")
             print()
-            move_type = self.get_move_type()
+
+            # move_type = self.get_move_type()
+            # TEST CODE
+            move_type = "capture"
+            # END TEST CODE
 
             valid = False
             while not valid:
 
-                # ! FOUND THE BUG
-                # since I'm creating a new GridLocation object each time for user input, it always treats the board as if it were in its initial state
-                # I think as a fix, is_legal_move should take cords instead and then inside this function it should fetch the relevant GridLocation objects
-                # and pass these to the next method it calls
-
-                # start_loc = GridLocation(self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: "))
-                # end_loc = GridLocation(self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: "))
-
-                start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
-                end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
+                # start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
+                # end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
+                
+                # TEST CODE
+                start_cords = (3,2)
+                end_cords = (1,3)
+                # END TEST CODE
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
                 end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
 
-                print(start_loc.get_cords())
-
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
-                    valid = True
+                        valid = True
 
             if move_type == "move":
                 self.__game.move_piece(start_loc, end_loc)
@@ -112,28 +115,16 @@ class Terminal_UI:
                 self.__game.capture_piece(start_loc, end_loc)
 
             self.__game.switch_current_player()
-            # self.__game.set_game_status()
+            # ! ADD THIS BACK: self.__game.set_game_status()
 
         self.display_winner()
       
 
 
-
-
-
-"""
-WHILE NOT game over:
-input {game.getcurrplayername} move
-make player move
-
-change current player
-
-"""
-    
-
-
-
-
 ui = Terminal_UI()
     
 ui.play_game()
+
+
+# TODO
+# combine GridLocation and Piece classes
