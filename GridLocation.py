@@ -12,9 +12,9 @@ class GridLocation:
 
     def __set_loop_index(self):
         if (0 in self.__cords or 5 in self.__cords) and self.__cords not in GridLocation.EDGE_CORDS:
-            self.__loop_index = True
+            return True
         else:
-            self.__loop_index = False
+            return False
 
     def __set_loop(self):
         OUTER_NUMBERS = (2, 3)
@@ -29,10 +29,10 @@ class GridLocation:
             return "OUTER"
 
     def __set_initial_piece(self):
-        if self.__cords[1] == 0 or self.__cords[1] == 1:
+        if self.__cords[0] == 0 or self.__cords[0] == 1:
             return Piece("B")
         
-        elif self.__cords[1] == 4 or self.__cords[1] == 5:
+        elif self.__cords[0] == 4 or self.__cords[0] == 5:
             return Piece("G")
 
         else:
@@ -61,5 +61,4 @@ class GridLocation:
     
     def is_loop_index(self):
         return self.__loop_index
-
 

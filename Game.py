@@ -58,7 +58,7 @@ class Game:
         self.__board.move_piece(start_location, end_location, self.__current_player)
 
     def capture_piece(self, start_location, end_location):
-        self.__board.capture_piece(start_location, end_location, self.__current_player)
+        self.__board.capture_piece(start_location, end_location)
 
     def get_current_player(self):
         return self.__current_player

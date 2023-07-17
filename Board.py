@@ -9,7 +9,7 @@ class Board:
     OUTER_LOOP_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
         (2,0), (2,1), (2,2), (2,3), (2,4), (2,5),
-        (3,0), (3,1), (3,2), (3,3), (3,4), (3,5),
+        (0,3), (1,3), (2,3), (3,3), (4,3), (5,3),
         (3,5), (3,4), (3,3), (3,2), (3,1), (3,0),
     ]
 
@@ -42,7 +42,7 @@ class Board:
             for loc in row:
                 loc.set_piece(None)
 
-        lst = [GridLocation(i) for i in Board.INNER_LOOP_CORDS]
+        lst = [GridLocation(i) for i in Board.OUTER_LOOP_CORDS]
 
         BLUE_TEST_LOOP = [(0,0), (0,1), (3,2)]
         GREEN_TEST_LOOP = [(1,3), (5,5)]
@@ -313,10 +313,9 @@ class Board:
         if self.check_normal_legal(start_loc, end_loc, player): # ! GET RID OF SECOND CHECK THIS IS POINTLESS
             self.__switch_piece_board_position(start_loc, end_loc)
   
-    def capture_piece(self, start_loc, end_loc, player):
-        if self.check_capture_legal(start_loc, end_loc, player):
-            self.__switch_piece_board_position(start_loc, end_loc)
-            
+    def capture_piece(self, start_loc, end_loc):
+        self.__switch_piece_board_position(start_loc, end_loc)
+
         board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
 
         for i,board_loop in enumerate(board_loop_tuple):
