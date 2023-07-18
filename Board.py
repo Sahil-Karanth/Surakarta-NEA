@@ -28,8 +28,12 @@ class Board:
         self.__build_board()
         self.__edit_board_for_testing()
 
-        self.__num_player1_pieces = 12
-        self.__num_player2_pieces = 12
+        # self.__num_player1_pieces = 12
+        # self.__num_player2_pieces = 12
+
+        # TEST CODE
+        self.__num_player1_pieces = 2
+        self.__num_player2_pieces = 1
 
     def get_board_state(self):
         return self.__board
@@ -42,26 +46,40 @@ class Board:
             for loc in row:
                 loc.set_piece(None)
 
-        lst = [GridLocation(i) for i in Board.OUTER_LOOP_CORDS]
+        outer_lst = [GridLocation(i) for i in Board.OUTER_LOOP_CORDS]
+        inner_lst = [GridLocation(i) for i in Board.INNER_LOOP_CORDS]
 
-        BLUE_TEST_LOOP = [(0,0), (0,1), (3,2)]
-        GREEN_TEST_LOOP = [(1,3), (5,5)]
+        # BLUE_TEST_LOOP = [(0,0), (0,1), (3,2)]
+        # GREEN_TEST_LOOP = [(1,3), (5,5)]
+
+        BLUE_TEST_OUTER_LOOP = [(2,3)]
+        GREEN_TEST_OUTER_LOOP = [(4,3)]
+
+        BLUE_TEST_INNER_LOOP = [(0,1)]
+        GREEN_TEST_INNER_LOOP = [(4,3)]
         
-        for a,b in zip(lst, Board.OUTER_LOOP_CORDS):
-            if b in BLUE_TEST_LOOP:
-                lst[Board.OUTER_LOOP_CORDS.index(b)].set_piece(Piece("B"))
-            elif b in GREEN_TEST_LOOP:
-                lst[Board.OUTER_LOOP_CORDS.index(b)].set_piece(Piece("G"))
+        for i in Board.OUTER_LOOP_CORDS:
+            if i in BLUE_TEST_OUTER_LOOP:
+                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("B"))
+            elif i in GREEN_TEST_OUTER_LOOP:
+                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
             else:
-                lst[Board.OUTER_LOOP_CORDS.index(b)].set_piece(None)
+                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(None)
 
-        self.__outer_loop = CircularList(lst)
+        for i in Board.INNER_LOOP_CORDS:
+            if i in BLUE_TEST_INNER_LOOP:
+                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("B"))
+            elif i in GREEN_TEST_INNER_LOOP:
+                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
+            else:
+                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(None)
 
-        self.__board[0][0].set_piece(Piece("B"))
+        self.__outer_loop = CircularList(outer_lst)
+        self.__inner_loop = CircularList(inner_lst)
+
         self.__board[0][1].set_piece(Piece("B"))
-        self.__board[3][2].set_piece(Piece("B"))
-        self.__board[1][3].set_piece(Piece("G"))
-        self.__board[5][5].set_piece(Piece("G"))
+        self.__board[2][3].set_piece(Piece("B"))
+        self.__board[4][3].set_piece(Piece("G"))
 
     def __get_loop_from_text(self, text):
         if text == "INNER":
@@ -136,7 +154,7 @@ class Board:
         if not self.__is_valid_cord_pair(start_cord, end_cord):
             return False
 
-        if start_loc.get_piece().get_colour() != player.get_colour():
+        if start_loc.get_colour() != player.get_colour():
             return False
 
         moving_to_location = self.__board[end_cord[0]][end_cord[1]]
@@ -178,10 +196,10 @@ class Board:
         if not self.__is_valid_cord_pair(start_cords, end_cords):
             return False
 
-        if start_loc.get_piece().get_colour() != player.get_colour():
+        if start_loc.get_colour() != player.get_colour():
             return False
         
-        if start_loc.get_piece().get_colour() == end_loc.get_piece().get_colour():
+        if start_loc.get_colour() == end_loc.get_piece().get_colour():
             return False
 
         if self.__either_locations_vacant(start_loc, end_loc):
@@ -191,6 +209,10 @@ class Board:
             return False
 
         board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
+
+        if board_loop_tuple == None:
+            return False
+        
         if board_loop_tuple[0] != None:  
             starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[0], start_loc)
             for ind in starting_indexes:
@@ -210,9 +232,6 @@ class Board:
         return False
 
     def __loop_pieces_same_colour(self, loc1, loc2):
-        print("TESTING")
-        print(loc1.get_colour())
-        print(loc2.get_colour())
         if (loc1.get_colour() == loc2.get_colour()) and (loc1.get_cords() != loc2.get_cords()):
             return True
         return False
@@ -258,9 +277,6 @@ class Board:
             loc_right = board_loop.get_next_right()
             loc_left = board_loop.get_next_left()
 
-            print("PIECE AT LEFT")
-            print(loc_left.get_colour())
-
             if loc_right.is_loop_index(): # ! TEST ME
                 right_loop_count += 1
             
@@ -283,13 +299,6 @@ class Board:
 
         start_cords = start_loc.get_cords()
         end_cords = end_loc.get_cords()
-        
-        if start_loc.get_piece().get_colour() == "B":
-            self.__num_player1_pieces -= 1
-
-        elif start_loc.get_piece().get_colour() == "G":
-            self.__num_player2_pieces -= 1
-
 
         self.__board[end_cords[0]][end_cords[1]].set_piece(start_loc.get_piece())
         self.__board[start_cords[0]][start_cords[1]].set_piece(None)
@@ -314,6 +323,12 @@ class Board:
             self.__switch_piece_board_position(start_loc, end_loc)
   
     def capture_piece(self, start_loc, end_loc):
+        if end_loc.get_colour() == "B":
+            self.__num_player1_pieces -= 1
+
+        elif end_loc.get_colour() == "G":
+            self.__num_player2_pieces -= 1
+
         self.__switch_piece_board_position(start_loc, end_loc)
 
         board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())

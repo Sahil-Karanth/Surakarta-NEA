@@ -1,7 +1,6 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
-from GridLocation import GridLocation
 
 class Terminal_UI:
     
@@ -98,8 +97,8 @@ class Terminal_UI:
                 # end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
                 
                 # TEST CODE
-                start_cords = (3,2)
-                end_cords = (1,3)
+                start_cords = (2,3)
+                end_cords = (4,3)
                 # END TEST CODE
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
@@ -115,8 +114,9 @@ class Terminal_UI:
                 self.__game.capture_piece(start_loc, end_loc)
 
             self.__game.switch_current_player()
-            # ! ADD THIS BACK: self.__game.set_game_status()
+            self.__game.set_game_status()
 
+        self.display_board()
         self.display_winner()
       
 
