@@ -97,8 +97,8 @@ class Terminal_UI:
                 # end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
                 
                 # TEST CODE
-                start_cords = (2,3)
-                end_cords = (4,3)
+                start_cords = (2,4)
+                end_cords = (4,4)
                 # END TEST CODE
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]

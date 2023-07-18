@@ -32,8 +32,9 @@ class Board:
         # self.__num_player2_pieces = 12
 
         # TEST CODE
-        self.__num_player1_pieces = 2
+        self.__num_player1_pieces = 1
         self.__num_player2_pieces = 1
+        # END TEST CODE
 
     def get_board_state(self):
         return self.__board
@@ -49,14 +50,11 @@ class Board:
         outer_lst = [GridLocation(i) for i in Board.OUTER_LOOP_CORDS]
         inner_lst = [GridLocation(i) for i in Board.INNER_LOOP_CORDS]
 
-        # BLUE_TEST_LOOP = [(0,0), (0,1), (3,2)]
-        # GREEN_TEST_LOOP = [(1,3), (5,5)]
+        BLUE_TEST_OUTER_LOOP = [(2,4)]
+        GREEN_TEST_OUTER_LOOP = []
 
-        BLUE_TEST_OUTER_LOOP = [(2,3)]
-        GREEN_TEST_OUTER_LOOP = [(4,3)]
-
-        BLUE_TEST_INNER_LOOP = [(0,1)]
-        GREEN_TEST_INNER_LOOP = [(4,3)]
+        BLUE_TEST_INNER_LOOP = [(2,4)]
+        GREEN_TEST_INNER_LOOP = [(4,4)]
         
         for i in Board.OUTER_LOOP_CORDS:
             if i in BLUE_TEST_OUTER_LOOP:
@@ -77,9 +75,8 @@ class Board:
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[0][1].set_piece(Piece("B"))
-        self.__board[2][3].set_piece(Piece("B"))
-        self.__board[4][3].set_piece(Piece("G"))
+        self.__board[2][4].set_piece(Piece("B"))
+        self.__board[4][4].set_piece(Piece("G"))
 
     def __get_loop_from_text(self, text):
         if text == "INNER":
