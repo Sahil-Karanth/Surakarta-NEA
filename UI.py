@@ -85,13 +85,13 @@ class Terminal_UI:
             print(f"{self.__game.get_current_player().get_name()}'s turn.")
             print()
 
-            # move_type = self.get_move_type()
-            # TEST CODE
-            move_type = "capture"
-            # END TEST CODE
-
             valid = False
             while not valid:
+
+                # move_type = self.get_move_type()
+                # TEST CODE
+                move_type = "capture"
+                # END TEST CODE
 
                 # start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
                 # end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
@@ -126,5 +126,3 @@ ui = Terminal_UI()
 ui.play_game()
 
 
-# TODO
-# combine GridLocation and Piece classes

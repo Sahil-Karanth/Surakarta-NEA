@@ -360,16 +360,16 @@ class Board:
         if location.get_piece() == None:
             return False
 
-        board_pieces = []
+        opponent_locs = []
 
         for row in self.__board:
             for loc in row:
-                if loc.get_piece() == None:
+                if loc.get_piece() == None or loc.get_colour() == player.get_colour():
                     continue
-                board_pieces.append(loc)
+                opponent_locs.append(loc)
 
-        for piece_pair in combinations(board_pieces, 2):
-            if self.check_move_legal(piece_pair[0], piece_pair[1], player):
+        for end_loc in opponent_locs:
+            if self.check_move_legal(location, end_loc, player):
                 return True
 
         return False

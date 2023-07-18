@@ -21,12 +21,10 @@ class Game:
 
     def set_game_status(self):
 
-        # ! BUG only checks for one player
-
         if self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0:
             self.__game_over = True
             return
-
+        
         for row in self.__board.get_board_state():
             for loc in row:
                 if loc.get_piece() == None:
@@ -38,7 +36,6 @@ class Game:
                     move_is_legal = self.__board.check_has_legal_moves(loc, self.__non_current_player)
 
                 if move_is_legal:
-                    self.__game_over = False
                     return
 
     def get_board_state(self):
