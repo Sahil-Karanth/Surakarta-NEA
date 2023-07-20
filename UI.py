@@ -114,7 +114,10 @@ class Terminal_UI:
                 end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
 
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
-                        valid = True
+                    valid = True
+
+                else:
+                    print("Invalid move. Please try again.")
 
             if move_type == "move":
                 self.__game.move_piece(start_loc, end_loc)

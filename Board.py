@@ -284,7 +284,7 @@ class Board:
         board_loop.get_next_right()
         board_loop.get_next_left()
 
-        while True:
+        while True: # ! Ask Mr Gray about how to make this more efficient
             loc_right = board_loop.get_next_right()
             loc_left = board_loop.get_next_left()
 

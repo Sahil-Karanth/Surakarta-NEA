@@ -1,14 +1,14 @@
 class Player:
 
     def __init__(self, piece_colour):
-        self.__score = 0
+        self.__num_captured = 0
         self.__piece_colour = piece_colour
 
-    def get_score(self):
-        return self.__score
+    def get_num_captured(self):
+        return self.__num_captured
     
-    def update_score(self, value):
-        self.__score += value
+    def update_num_captured(self, value):
+        self.__num_captured += value
 
     def get_colour(self):
         return self.__piece_colour
