@@ -1,6 +1,7 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
+from BoardConstants import BoardConstants
 
 class Terminal_UI:
     
@@ -21,6 +22,9 @@ class Terminal_UI:
         return self.__UI_type
     
     def get_cords_from_user(self, prompt):
+
+        """Gets a valid coordinate from the user in the form 'r,c' where r and c are integers between 0 and 5 inclusive."""
+
         valid = False
         pattern = r'^[0-5],[0-5]$'
         while not valid:
@@ -44,9 +48,9 @@ class Terminal_UI:
                 if loc.get_piece() == None:
                     disp_board.append(f"{'.'}")
                 else:
-                    disp_board.append(loc.get_piece().get_colour())
+                    disp_board.append(loc.get_colour())
         
-        disp_board = oneD_to_twoD_array(disp_board, 6)
+        disp_board = oneD_to_twoD_array(disp_board, BoardConstants.MAX_ROW_INDEX + 1)
 
         self.__display_row_indexes()
 
@@ -54,7 +58,7 @@ class Terminal_UI:
             print(f"{i} | ", end=" ")
             print("  ".join(row))
 
-    def __display_row_indexes(self):
+    def __display_row_indexes(self): # ! MAKE THIS MORE READABLE
         print("     ", end="")
         print("  ".join([str(i) for i in range(6)]))
         print("    ", end="")
@@ -68,6 +72,9 @@ class Terminal_UI:
             print(f"{winner.get_name()} won!")
 
     def get_move_type(self):
+
+        """Gets a valid move type from the user. Valid move types are 'move' and 'capture'."""
+
         valid = False
         while not valid:
             move_type = input("Enter 'move' for an ordinary move to an adjacent position or 'capture' for a capturing move: ")
@@ -79,6 +86,8 @@ class Terminal_UI:
 
     def play_game(self):
 
+        """The main game loop. Runs until the game is over."""
+
         while not self.__game.get_game_over():
             self.display_board()
             print()
@@ -88,18 +97,18 @@ class Terminal_UI:
             valid = False
             while not valid:
 
-                # move_type = self.get_move_type()
-                # TEST CODE
-                move_type = "capture"
-                # END TEST CODE
+                move_type = self.get_move_type()
+                # # TEST CODE
+                # move_type = "capture"
+                # # END TEST CODE
 
-                # start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
-                # end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
+                start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
+                end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
                 
-                # TEST CODE
-                start_cords = (2,4)
-                end_cords = (4,4)
-                # END TEST CODE
+                # # TEST CODE
+                # start_cords = (2,4)
+                # end_cords = (4,4)
+                # # END TEST CODE
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
                 end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
