@@ -2,13 +2,20 @@ from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
 from BoardConstants import BoardConstants
+import PySimpleGUI as sg
 
-class Terminal_UI:
-    
+# ! todo: change uses of class attributes to use self instead of class name
+
+
+class UI:
+
     def __init__(self):
-        self.__UI_type = "TERMINAL"
+        self.__UI_type = None
         self.__game = self.__setup_game()
 
+    def get_UI_type(self):
+        return self.__UI_type
+    
     def __setup_game(self):
         # player1name = input("Enter player 1's name: ")
         # player2name = input("Enter player 2's name: ")
@@ -17,6 +24,15 @@ class Terminal_UI:
         player2name = "Player 2 (G)"
         # END TEST CODE
         return Game(player1name, player2name)
+    
+    def play_game(self):
+        raise NotImplementedError
+
+
+class Terminal_UI(UI):
+    def __init__(self):
+        super().__init__()
+        self.__UI_type = "TERMINAL"
     
     def get_UI_type(self):
         return self.__UI_type
@@ -132,6 +148,82 @@ class Terminal_UI:
         self.display_winner()
       
 
-class Graphical_UI:
+
+
+
+class Graphical_UI(UI):
+
+    BUTTON_SIZE = 15
+    FONT = "Helvetica"
+    TITLE_FONT_SIZE = 25
+    BUTTON_DIMENSIONS = (10, 1)
+    COLUMN_PAD = 20
+
     def __init__(self):
+        super().__init__()
         self.__UI_type = "GRAPHICAL"
+
+        sg.theme('DarkTanBlue') 
+
+        self.__home_layout = self.__setup_home_menu()
+        self.__new_game_layout = self.__setup_new_game()
+
+        # self.__layout_stack = [self.__home_layout]
+        self.__master_layout = [
+            [sg.Column(self.__home_layout, key="col1", visible=True)],
+            [sg.Column(self.__new_game_layout, key="col2", visible=False)]
+        ]
+
+        self.__window = self.__setup_window()
+
+    def get_UI_type(self):
+        return self.__UI_type
+    
+    def __setup_home_menu(self):
+
+        buttons_layout = [
+            [sg.Button("New Game", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="new_game")],
+            [sg.Button("Help", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS)],
+            [sg.Button("Exit", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS)],
+        ]
+
+        buttons_frame = sg.Frame(title="", layout=buttons_layout, border_width=3, pad=(0, self.COLUMN_PAD))
+
+        layout = [
+            [sg.Titlebar('Surakarta')],
+            [sg.Text("Surakarta", pad=(0, self.COLUMN_PAD), font=(self.FONT, self.TITLE_FONT_SIZE))],
+            [buttons_frame]
+        ]
+
+        return layout
+    
+    def __setup_new_game(self):
+        layout = [sg.Text("new page")]
+        return layout
+
+    def __setup_window(self):
+        return sg.Window(
+            title="Surakarta",
+            layout=self.__master_layout,
+            size=(700, 700),
+            element_justification="center",
+        )
+    
+    def play_game(self):
+        while True:
+            event, values = self.__window.read()
+            if event == sg.WIN_CLOSED or event == 'Cancel':
+                break
+            
+            if event == "new_game":
+                print("attempting to change")
+                # self.__layout_stack.append(self.__new_game_layout)
+                self.__window["col1"].update(visible=False)
+                self.__window["col2"].update(visible=True)
+
+        self.__window.close()
+
+
+ui = Graphical_UI()
+
+ui.play_game()
