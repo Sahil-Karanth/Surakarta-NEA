@@ -1,0 +1,2 @@
+
+window2.close()

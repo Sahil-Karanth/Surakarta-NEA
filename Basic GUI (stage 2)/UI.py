@@ -168,7 +168,7 @@ class Graphical_UI(UI):
         with open("dummy_text", "r") as f:
             self.__dummy_text = textwrap.fill(f.read(), 140)
 
-        sg.theme('DarkTanBlue') 
+        sg.theme('DarkTanBlue')
 
         self.__current_page = "home_page"
 
@@ -291,14 +291,37 @@ class Graphical_UI(UI):
             self.__window["submit_AI_play_button"].update(visible=False)
             self.__window["submit_local_play_button"].update(visible=True)
 
+    def __make_piece_button(self, piece_type):
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", button_color=sg.theme_background_color(), border_width=0, image_size=(100,100))
+
     def __setup_match_page(self, display_board):
 
-        board_layout = [[sg.Button("", image_filename="green_counter_paint3d.png") for i in row] for row in display_board]
+        # board_layout = [[sg.Button("", image_filename="green_counter_paint3d.png", button_color=sg.theme_background_color(), border_width=0) for _ in row] for row in display_board]
+        
+        board_layout = []
+
+        blank_board_img = sg.Image(filename='blank_board.png')
+
+        for row in display_board:
+            for counter in row:
+                if counter == None:
+                    button = self.__make_piece_button("blank")
+                else:
+                    button = self.__make_piece_button(counter)
+                board_layout.append(button)
+
+        board_layout = oneD_to_twoD_array(board_layout, len(display_board))
+
 
         board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
 
+        # col = sg.Column([[blank_board_img], [board_frame]], element_justification="center", justification="center", background_color=sg.theme_background_color())
+
+        
+
         layout = [
             [self.__create_menu()],
+            [blank_board_img],
             [board_frame]
         ]
 
