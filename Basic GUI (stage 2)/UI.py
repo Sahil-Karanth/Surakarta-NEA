@@ -3,6 +3,7 @@ from utility_functions import oneD_to_twoD_array
 import re
 from BoardConstants import BoardConstants
 import PySimpleGUI as sg
+import textwrap
 
 # ! todo: change uses of class attributes to use self instead of class name
 
@@ -150,31 +151,43 @@ class Terminal_UI(UI):
 
 
 
-
 class Graphical_UI(UI):
 
     BUTTON_SIZE = 15
     FONT = "Helvetica"
     TITLE_FONT_SIZE = 25
-    BUTTON_DIMENSIONS = (10, 1)
+    BUTTON_DIMENSIONS = (20, 3)
     COLUMN_PAD = 20
+    PARAGRAPH_FONT_SIZE = 15
+
+    SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold", "underline")
+    PARAGRAPH_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE)
+    sg.Window.TK_SILENCE_DEPRECATION=1
 
     def __init__(self):
         super().__init__()
         self.__UI_type = "GRAPHICAL"
 
+        with open("dummy_text", "r") as f:
+            self.__dummy_text = textwrap.fill(f.read(), 150)
+
         sg.theme('DarkTanBlue') 
 
-        self.__home_layout = self.__setup_home_menu()
-        self.__new_game_layout = self.__setup_new_game()
 
-        # self.__layout_stack = [self.__home_layout]
-        self.__master_layout = [
-            [sg.Column(self.__home_layout, key="col1", visible=True)],
-            [sg.Column(self.__new_game_layout, key="col2", visible=False)]
-        ]
+        # self.__master_layout = [
+        #     [sg.Titlebar('Surakarta')],
+        #     [sg.Column(self.__setup_home_menu(), key="home_page", visible=True, justification="center"),
+        #      sg.Column(self.__setup_help(), key="help_page", visible=False, justification="right"),
+        #      sg.Column(self.__setup_new_game(), key="new_game_page", visible=False)]
+        # ]
 
-        self.__window = self.__setup_window()
+        self.__current_page = "home_page"
+
+        self.__window = self.__setup_window().finalize()
+        # self.__window.maximize()
+
+        self.__window.TKroot.geometry("{0}x{1}+0+0".format(self.__window.TKroot.winfo_screenwidth(), self.__window.TKroot.winfo_screenheight()))
+
 
     def get_UI_type(self):
         return self.__UI_type
@@ -182,15 +195,14 @@ class Graphical_UI(UI):
     def __setup_home_menu(self):
 
         buttons_layout = [
-            [sg.Button("New Game", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="new_game")],
-            [sg.Button("Help", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS)],
-            [sg.Button("Exit", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS)],
+            [sg.Button("New Game", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="new_game_button")],
+            [sg.Button("Help", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="help_button",)],
+            [sg.Button("Exit", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="exit_button")],
         ]
 
         buttons_frame = sg.Frame(title="", layout=buttons_layout, border_width=3, pad=(0, self.COLUMN_PAD))
 
         layout = [
-            [sg.Titlebar('Surakarta')],
             [sg.Text("Surakarta", pad=(0, self.COLUMN_PAD), font=(self.FONT, self.TITLE_FONT_SIZE))],
             [buttons_frame]
         ]
@@ -198,28 +210,71 @@ class Graphical_UI(UI):
         return layout
     
     def __setup_new_game(self):
-        layout = [sg.Text("new page")]
+        layout = [[sg.Text("new page")]]
+        return layout
+    
+    def __setup_help(self):
+        layout = [
+            [sg.Text("Help Page", pad=((500, self.COLUMN_PAD)), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.Text("What is Surakarta?", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.Text(self.__dummy_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Text("Rules", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.Text(self.__dummy_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Text("TESTING")]
+        ]
+
+        self.__window.close()
+
+        self.__window = sg.Window(
+            title="Surakarta",
+            layout=layout,
+            size=(700, 700),
+            resizable=False,
+            keep_on_top=True,
+            margins=(20,20),
+        ).finalize()
+
+        self.__window.TKroot.geometry("{0}x{1}+0+0".format(self.__window.TKroot.winfo_screenwidth(), self.__window.TKroot.winfo_screenheight()))
+
+
         return layout
 
     def __setup_window(self):
-        return sg.Window(
+
+        window = sg.Window(
             title="Surakarta",
-            layout=self.__master_layout,
+            layout=self.__setup_home_menu(),
             size=(700, 700),
             element_justification="center",
+            resizable=False,
+            keep_on_top=True,
+            margins=(20,20)
         )
+
+        return window
+    
+    def __change_page(self, new_page):
+        self.__window[f"{self.__current_page}"].update(visible=False)
+        print( self.__window[f"{new_page}"])
+        self.__window[f"{new_page}"].update(visible=True)
+        self.__current_page = new_page
+        self.__window.refresh()
     
     def play_game(self):
         while True:
             event, values = self.__window.read()
             if event == sg.WIN_CLOSED or event == 'Cancel':
                 break
+
+            print(event)
             
-            if event == "new_game":
-                print("attempting to change")
-                # self.__layout_stack.append(self.__new_game_layout)
-                self.__window["col1"].update(visible=False)
-                self.__window["col2"].update(visible=True)
+            if event == "new_game_button":
+                self.__change_page("new_game_page")                
+
+            elif event == "help_button":
+                self.__setup_help()
+                # self.__change_page("help_page")
+
 
         self.__window.close()
 
