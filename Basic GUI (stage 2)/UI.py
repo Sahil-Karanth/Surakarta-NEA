@@ -175,8 +175,13 @@ class Graphical_UI(UI):
         self.__window = self.__setup_home_page()
 
 
-    def __create_window(self, title, layout, justification):
+    def __create_window(self, title, layout, justification, transparent=False):
         
+        if transparent:
+            transparent_colour = sg.theme_background_color()
+        else:
+            transparent_colour = None
+
         window = sg.Window(
             title=title,
             layout=layout,
@@ -185,8 +190,13 @@ class Graphical_UI(UI):
             keep_on_top=True,
             margins=(20,20),
             element_justification=justification,
+            # transparent_color=transparent_colour,
+            # alpha_channel=0.1,
             text_justification=justification # ! might break things check this
         ).finalize()
+
+        # window.TKroot.attributes("-transparentcolor", "black")
+
 
         # full screen without the maximise animtation
         window.TKroot.geometry("{0}x{1}+0+0".format(window.TKroot.winfo_screenwidth(), window.TKroot.winfo_screenheight()))
@@ -315,18 +325,16 @@ class Graphical_UI(UI):
 
         board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
 
-        # col = sg.Column([[blank_board_img], [board_frame]], element_justification="center", justification="center", background_color=sg.theme_background_color())
-
-        
-
         layout = [
             [self.__create_menu()],
-            [blank_board_img],
             [board_frame]
         ]
 
+        bg_layout = [[blank_board_img]]
+
         # self.__window.close()
-        self.__create_window("Match", layout, "center")
+        self.__create_window("Background", bg_layout, "center")
+        self.__create_window("Match", layout, "center", transparent=True)
 
     def run_gui(self):
         while True:

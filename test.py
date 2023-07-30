@@ -1,20 +1,22 @@
 import PySimpleGUI as sg
 
-# The window with the image
-layout1 = [[sg.Image(filename='blank_board.png')]]
-window1 = sg.Window('Window with image', layout1, no_titlebar=True, location=(100, 100))
+# Define button layout
+button_layout = [[sg.Button(f'({i+1},{j+1})', key=(i, j)) for j in range(6)] for i in range(6)]
 
-# The transparent window with the buttons
-layout2 = [[sg.Button('Button 1')], [sg.Button('Button 2')]]
-window2 = sg.Window('Window with buttons', layout2, alpha_channel=0.5, no_titlebar=True, location=(200, 200))
+# Define main layout
+layout = [
+    [sg.Column([[sg.Frame('', button_layout)], [sg.Canvas(key='-CANVAS-', size=(400, 400))]])]
+]
 
-while True:  # Event loop
-    window, event, values = sg.read_all_windows()
-    if window == window2 and event in (sg.WINDOW_CLOSED, 'Exit'):
+# Create the window
+window = sg.Window('6x6 Frame of Buttons with Canvas', layout)
+
+# Event loop
+while True:
+    event, values = window.read()
+    if event == sg.WINDOW_CLOSED:
         break
-
-
-
-
-window1.close()
-window2.close()
+    elif type(event) is tuple:  # Button click event
+        print(f'Button {event} clicked')
+        canvas = window['-CANVAS-'].TKCanvas
+        canvas.create_oval(10, 10, 50, 50)  # Example of drawing on canvas
