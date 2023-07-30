@@ -1,2 +1,1 @@
- layout2)
-        # window.extend_layout(window, layout3)
+(0, self.COLUMN_PAD), visible=False)

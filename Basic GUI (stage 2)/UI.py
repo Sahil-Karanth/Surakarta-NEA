@@ -12,19 +12,10 @@ class UI:
 
     def __init__(self):
         self.__UI_type = None
-        self.__game = self.__setup_game()
-
+        self.__game = None
     def get_UI_type(self):
+
         return self.__UI_type
-    
-    def __setup_game(self):
-        # player1name = input("Enter player 1's name: ")
-        # player2name = input("Enter player 2's name: ")
-        # TEST CODE
-        player1name = "Player 1 (B)"
-        player2name = "Player 2 (G)"
-        # END TEST CODE
-        return Game(player1name, player2name)
     
     def play_game(self):
         raise NotImplementedError
@@ -37,6 +28,13 @@ class Terminal_UI(UI):
     
     def get_UI_type(self):
         return self.__UI_type
+    
+    def __setup_game(self):
+        game = Game(
+            player1_name=input("Enter the name of player 1: "),
+            player2_name=input("Enter the name of player 2: ")
+        )
+        return game
     
     def get_cords_from_user(self, prompt):
 
@@ -153,46 +151,52 @@ class Terminal_UI(UI):
 
 class Graphical_UI(UI):
 
-    BUTTON_SIZE = 15
+    BUTTON_SIZE = 30
     FONT = "Helvetica"
     TITLE_FONT_SIZE = 25
-    BUTTON_DIMENSIONS = (20, 3)
+    BUTTON_DIMENSIONS = (10, 1)
     COLUMN_PAD = 20
     PARAGRAPH_FONT_SIZE = 15
 
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold", "underline")
     PARAGRAPH_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE)
-    sg.Window.TK_SILENCE_DEPRECATION=1
 
     def __init__(self):
         super().__init__()
         self.__UI_type = "GRAPHICAL"
 
         with open("dummy_text", "r") as f:
-            self.__dummy_text = textwrap.fill(f.read(), 150)
+            self.__dummy_text = textwrap.fill(f.read(), 140)
 
         sg.theme('DarkTanBlue') 
 
-
-        # self.__master_layout = [
-        #     [sg.Titlebar('Surakarta')],
-        #     [sg.Column(self.__setup_home_menu(), key="home_page", visible=True, justification="center"),
-        #      sg.Column(self.__setup_help(), key="help_page", visible=False, justification="right"),
-        #      sg.Column(self.__setup_new_game(), key="new_game_page", visible=False)]
-        # ]
-
         self.__current_page = "home_page"
 
-        self.__window = self.__setup_window().finalize()
-        # self.__window.maximize()
+        self.__window = self.__setup_home_page()
 
-        self.__window.TKroot.geometry("{0}x{1}+0+0".format(self.__window.TKroot.winfo_screenwidth(), self.__window.TKroot.winfo_screenheight()))
 
+    def __create_window(self, title, layout, justification):
+        
+        window = sg.Window(
+            title=title,
+            layout=layout,
+            size=(700, 700),
+            resizable=False,
+            keep_on_top=True,
+            margins=(20,20),
+            element_justification=justification,
+            text_justification=justification # ! might break things check this
+        ).finalize()
+
+        # full screen without the maximise animtation
+        window.TKroot.geometry("{0}x{1}+0+0".format(window.TKroot.winfo_screenwidth(), window.TKroot.winfo_screenheight()))
+
+        return window
 
     def get_UI_type(self):
         return self.__UI_type
     
-    def __setup_home_menu(self):
+    def __setup_home_page(self):
 
         buttons_layout = [
             [sg.Button("New Game", pad=(15, 10), font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="new_game_button")],
@@ -203,64 +207,105 @@ class Graphical_UI(UI):
         buttons_frame = sg.Frame(title="", layout=buttons_layout, border_width=3, pad=(0, self.COLUMN_PAD))
 
         layout = [
+            [self.__create_menu()],
             [sg.Text("Surakarta", pad=(0, self.COLUMN_PAD), font=(self.FONT, self.TITLE_FONT_SIZE))],
             [buttons_frame]
         ]
 
-        return layout
+
+        return self.__create_window("Surakarta", layout, "center")
     
-    def __setup_new_game(self):
-        layout = [[sg.Text("new page")]]
-        return layout
-    
-    def __setup_help(self):
+    def __create_menu(self):
+
+        menu_layout = [
+            ["Utilities", ["Home"]],
+        ]
+
+        return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
+        
+
+    def __setup_new_game_page(self):
+        
+        
+        AI_input_layout = [
+            [sg.Text("Difficulty", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.Slider(range=(1, 3), default_value=1, orientation="h", size=(40, 15), pad=(0, self.COLUMN_PAD), key="difficulty_slider")],
+            [sg.Text("Player Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.InputText("Enter your name", pad=(0, self.COLUMN_PAD), key="player_name_input")],
+        ]
+
+        AI_input_frame = sg.Frame(title="", key="AI_play_inputs", layout=AI_input_layout, border_width=0, pad=(0, self.COLUMN_PAD), visible=False)
+
+        Local_input_layout = [
+            [sg.Text("Player 1 Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.InputText("Enter your name", pad=(0, self.COLUMN_PAD), key="player_1_name_input")],
+            [sg.Text("Player 2 Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.InputText("Enter your name", pad=(0, self.COLUMN_PAD), key="player_2_name_input")],
+        ]
+
+        Local_input_frame = sg.Frame(title="", key="local_play_inputs", layout=Local_input_layout, border_width=0, pad=(0, self.COLUMN_PAD), visible=False)
+        
         layout = [
-            [sg.Text("Help Page", pad=((500, self.COLUMN_PAD)), font=self.SUBHEADING_FONT_PARAMS)],
+            [self.__create_menu()],
+            [sg.Button("Local Play", font=(self.FONT, self.BUTTON_SIZE), pad=(100,100),size=self.BUTTON_DIMENSIONS, key="local_play_button"), sg.Button("AI Play", font=(self.FONT, self.BUTTON_SIZE), pad=(100,100), size=self.BUTTON_DIMENSIONS, key="AI_play_button")],
+            [AI_input_frame, Local_input_frame],
+            [sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_local_play_button", visible=False), sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_AI_play_button", visible=False)],
+        ]
+
+        self.__window.close()
+        self.__window = self.__create_window("New Game", layout, "center")
+
+    def __setup_help_page(self):
+
+
+        text_layout = [
             [sg.Text("What is Surakarta?", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Text(self.__dummy_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
             [sg.Text("Rules", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Text(self.__dummy_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-            [sg.Text("TESTING")]
+        ]
+
+        text_frame = sg.Frame(title="", layout=text_layout, border_width=0, pad=(120, self.COLUMN_PAD))
+
+
+        layout = [
+            [self.__create_menu()],
+            [text_frame],
+            [sg.Image("board_img.png", expand_x=True, expand_y=True)],
         ]
 
         self.__window.close()
 
-        self.__window = sg.Window(
-            title="Surakarta",
-            layout=layout,
-            size=(700, 700),
-            resizable=False,
-            keep_on_top=True,
-            margins=(20,20),
-        ).finalize()
+        self.__window = self.__create_window("Help Page", layout, "center")
 
-        self.__window.TKroot.geometry("{0}x{1}+0+0".format(self.__window.TKroot.winfo_screenwidth(), self.__window.TKroot.winfo_screenheight()))
+    def __toggle_play_inputs(self, key_to_make_visible):
+        if key_to_make_visible == "AI_play_inputs":
+            self.__window["local_play_inputs"].update(visible=False)
+            self.__window["AI_play_inputs"].update(visible=True)
+            self.__window["submit_AI_play_button"].update(visible=True)
+            self.__window["submit_local_play_button"].update(visible=False)
+        
+        elif key_to_make_visible == "local_play_inputs":
+            self.__window["local_play_inputs"].update(visible=True)
+            self.__window["AI_play_inputs"].update(visible=False)
+            self.__window["submit_AI_play_button"].update(visible=False)
+            self.__window["submit_local_play_button"].update(visible=True)
 
+    def __setup_match_page(self, display_board):
 
-        return layout
+        board_layout = [[sg.Button("", image_filename="green_counter_paint3d.png") for i in row] for row in display_board]
 
-    def __setup_window(self):
+        board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
 
-        window = sg.Window(
-            title="Surakarta",
-            layout=self.__setup_home_menu(),
-            size=(700, 700),
-            element_justification="center",
-            resizable=False,
-            keep_on_top=True,
-            margins=(20,20)
-        )
+        layout = [
+            [self.__create_menu()],
+            [board_frame]
+        ]
 
-        return window
-    
-    def __change_page(self, new_page):
-        self.__window[f"{self.__current_page}"].update(visible=False)
-        print( self.__window[f"{new_page}"])
-        self.__window[f"{new_page}"].update(visible=True)
-        self.__current_page = new_page
-        self.__window.refresh()
-    
-    def play_game(self):
+        # self.__window.close()
+        self.__create_window("Match", layout, "center")
+
+    def run_gui(self):
         while True:
             event, values = self.__window.read()
             if event == sg.WIN_CLOSED or event == 'Cancel':
@@ -269,16 +314,45 @@ class Graphical_UI(UI):
             print(event)
             
             if event == "new_game_button":
-                self.__change_page("new_game_page")                
+                self.__setup_new_game_page()                
 
             elif event == "help_button":
-                self.__setup_help()
-                # self.__change_page("help_page")
+                self.__setup_help_page()
 
+            elif event == "AI_play_button":
+                self.__toggle_play_inputs("AI_play_inputs")
+
+            elif event == "local_play_button":
+                self.__toggle_play_inputs("local_play_inputs")
+
+            elif event == "submit_local_play_button":
+                self.__setup_game(values["player_1_name_input"], values["player_2_name_input"])
+                self.play_game()
+
+            elif event == "submit_AI_play_button":
+                print("AI SUBMIT")
+
+            elif event == "Home":
+                self.__setup_home_page() # ! FIXME doesn't fully work (doesn't close the window)
 
         self.__window.close()
+
+    def __setup_game(self, name1, name2):
+        self.__game = Game(name1, name2)
+
+    def play_game(self):
+
+        # ! CODE THIS
+
+        print(self.__game.get_board_state())
+        print("CURRENT PLAYER: ", self.__game.get_current_player())
+
+        display_board = [[i.get_piece() for i in row] for row in self.__game.get_board_state()]
+
+
+        self.__setup_match_page(display_board)
 
 
 ui = Graphical_UI()
 
-ui.play_game()
+ui.run_gui()
