@@ -272,7 +272,6 @@ class Graphical_UI(UI):
 
     def __setup_help_page(self):
 
-
         text_layout = [
             [sg.Text("What is Surakarta?", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Text(self.__dummy_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
@@ -316,7 +315,7 @@ class Graphical_UI(UI):
         for i, row in enumerate(display_board):
             for j, counter in enumerate(row):
 
-                key = f"board_pos_{i}_{j}"
+                key = f"({i},{j})"
 
                 if counter == None:
                     button = self.__make_piece_button("blank", key)
@@ -382,7 +381,20 @@ class Graphical_UI(UI):
                 self.__setup_home_page() # ! FIXME doesn't fully work (doesn't close the window)
 
             elif event == "submit_move_button":
+                start_cords = self.__highlighted_board_positions[0]
+                end_cords = self.__highlighted_board_positions[1]
+
+                start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
+                end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
+
+                if values["move_type_radio_move"]:
+                    move_type = "move"
                 
+                elif values["move_type_radio_capture"]:
+                    move_type = "capture"
+
+                print(self.__game.is_legal_move(start_loc, end_loc, move_type))
+            
         
         self.__window.close()
 
