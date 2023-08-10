@@ -171,6 +171,7 @@ class Graphical_UI(UI):
         sg.theme('DarkTanBlue')
 
         self.__current_page = "home_page"
+        self.__highlighted_board_positions = []
 
         self.__window = self.__setup_home_page()
 
@@ -197,10 +198,14 @@ class Graphical_UI(UI):
 
         # window.TKroot.attributes("-transparentcolor", "black")
 
+        # sg.LOOK_AND_FEEL_TABLE['Transparent'] = {'BACKGROUND': '#FFFFFF00'}
+        # sg.ChangeLookAndFeel('Transparent')
+
 
         # full screen without the maximise animtation
         window.TKroot.geometry("{0}x{1}+0+0".format(window.TKroot.winfo_screenwidth(), window.TKroot.winfo_screenheight()))
 
+        self.__window = window
         return window
 
     def get_UI_type(self):
@@ -301,40 +306,47 @@ class Graphical_UI(UI):
             self.__window["submit_AI_play_button"].update(visible=False)
             self.__window["submit_local_play_button"].update(visible=True)
 
-    def __make_piece_button(self, piece_type):
-        return sg.Button("", image_filename=f"{piece_type}_counter.png", button_color=sg.theme_background_color(), border_width=0, image_size=(100,100))
+    def __make_piece_button(self, piece_type, key):
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0, image_size=(100,100))
 
     def __setup_match_page(self, display_board):
 
-        # board_layout = [[sg.Button("", image_filename="green_counter_paint3d.png", button_color=sg.theme_background_color(), border_width=0) for _ in row] for row in display_board]
-        
         board_layout = []
 
-        blank_board_img = sg.Image(filename='blank_board.png')
+        for i, row in enumerate(display_board):
+            for j, counter in enumerate(row):
 
-        for row in display_board:
-            for counter in row:
+                key = f"board_pos_{i}_{j}"
+
                 if counter == None:
-                    button = self.__make_piece_button("blank")
+                    button = self.__make_piece_button("blank", key)
                 else:
-                    button = self.__make_piece_button(counter)
+                    button = self.__make_piece_button(counter, key)
                 board_layout.append(button)
 
         board_layout = oneD_to_twoD_array(board_layout, len(display_board))
 
-
         board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
+
+        player_turn_layout = [
+            [sg.Text("Player 1 Turn", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
+            [sg.Text("Player 2 Turn", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
+        ]
+
+        player_turn_frame = sg.Frame("", layout=player_turn_layout, border_width=0)
+
+        move_option = sg.Radio("Move", key="move_type_radio_move", group_id="move_type_radio", font=self.SUBHEADING_FONT_PARAMS)
+        capture_option = sg.Radio("Capture", key="move_type_radio_capture", group_id="move_type_radio", font=self.SUBHEADING_FONT_PARAMS)
+        submit_move_button = sg.Button("Submit Move", font=(self.FONT, 15), key="submit_move_button")
 
         layout = [
             [self.__create_menu()],
-            [board_frame]
+            [player_turn_frame],
+            [move_option, capture_option, submit_move_button],
+            [board_frame],
         ]
 
-        bg_layout = [[blank_board_img]]
-
-        # self.__window.close()
-        self.__create_window("Background", bg_layout, "center")
-        self.__create_window("Match", layout, "center", transparent=True)
+        self.__create_window("Match", layout, "center")
 
     def run_gui(self):
         while True:
@@ -342,8 +354,6 @@ class Graphical_UI(UI):
             if event == sg.WIN_CLOSED or event == 'Cancel':
                 break
 
-            print(event)
-            
             if event == "new_game_button":
                 self.__setup_new_game_page()                
 
@@ -361,12 +371,44 @@ class Graphical_UI(UI):
                 self.play_game()
 
             elif event == "submit_AI_play_button":
-                print("AI SUBMIT")
+                # print("AI SUBMIT")
+                pass
+
+            elif self.__is_board_position(event):
+                self.__highlight_board_position(event)
+
 
             elif event == "Home":
                 self.__setup_home_page() # ! FIXME doesn't fully work (doesn't close the window)
 
+            elif event == "submit_move_button":
+                
+        
         self.__window.close()
+
+    def __is_board_position(self, key):
+        # if it's a tuple containing two elements where each element is a digit from 0 to 5 inclusive
+        # use regex
+        pattern = r'^\([0-5],[0-5]\)$'
+        if bool(re.match(pattern, key)):
+            return True
+
+
+    def __highlight_board_position(self, key):
+            
+        button = self.__window[key]
+        current_colour = button.ButtonColor[0]
+
+        if current_colour == "#FF0000":
+            button.update(button_color=("#242834", "#FF0000"))
+            self.__highlighted_board_positions.remove(key)
+
+        elif current_colour == "#242834":
+            button.update(button_color=("#FF0000", "#242834"))
+            self.__highlighted_board_positions.append(key)
+
+        
+
 
     def __setup_game(self, name1, name2):
         self.__game = Game(name1, name2)
@@ -374,12 +416,7 @@ class Graphical_UI(UI):
     def play_game(self):
 
         # ! CODE THIS
-
-        print(self.__game.get_board_state())
-        print("CURRENT PLAYER: ", self.__game.get_current_player())
-
         display_board = [[i.get_piece() for i in row] for row in self.__game.get_board_state()]
-
 
         self.__setup_match_page(display_board)
 
