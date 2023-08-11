@@ -328,8 +328,8 @@ class Graphical_UI(UI):
         board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
 
         player_turn_layout = [
-            [sg.Text("Player 1 Turn", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
-            [sg.Text("Player 2 Turn", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
+            [sg.Text(f"{self.__game.get_player1_name()}'s Turn", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
+            [sg.Text(f"{self.__game.get_player2_name()}'s Turn", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
         ]
 
         player_turn_frame = sg.Frame("", layout=player_turn_layout, border_width=0)
@@ -381,8 +381,9 @@ class Graphical_UI(UI):
                 self.__setup_home_page() # ! FIXME doesn't fully work (doesn't close the window)
 
             elif event == "submit_move_button":
-                start_cords = self.__highlighted_board_positions[0]
-                end_cords = self.__highlighted_board_positions[1]
+
+                start_cords = self.__str_cords_to_tuple(self.__highlighted_board_positions[0])
+                end_cords = self.__str_cords_to_tuple(self.__highlighted_board_positions[1])
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
                 end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
@@ -393,6 +394,10 @@ class Graphical_UI(UI):
                 elif values["move_type_radio_capture"]:
                     move_type = "capture"
 
+                # TEMPORARY
+                move_type = "move"
+
+                print("CHECKING MOVE LEGALLITY")
                 print(self.__game.is_legal_move(start_loc, end_loc, move_type))
             
         
@@ -404,6 +409,9 @@ class Graphical_UI(UI):
         pattern = r'^\([0-5],[0-5]\)$'
         if bool(re.match(pattern, key)):
             return True
+        
+    def __str_cords_to_tuple(self, string_cords):
+        return tuple(int(i) for i in string_cords.strip("()").split(","))
 
 
     def __highlight_board_position(self, key):
