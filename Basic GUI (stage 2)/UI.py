@@ -305,8 +305,8 @@ class Graphical_UI(UI):
             self.__window["submit_AI_play_button"].update(visible=False)
             self.__window["submit_local_play_button"].update(visible=True)
 
-    def __make_piece_button(self, piece_type, key):
-        return sg.Button("", image_filename=f"{piece_type}_counter.png", key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0, image_size=(100,100))
+    def __make_piece_button(self, piece_type, key, visible=False):
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0, image_size=(100,100))
 
     def __setup_match_page(self, display_board):
 
@@ -314,16 +314,114 @@ class Graphical_UI(UI):
 
         for i, row in enumerate(display_board):
             for j, counter in enumerate(row):
+                
+                loc = []
+                loc_layout = []
 
-                key = f"({i},{j})"
+                blank_key = f"blank_{i},{j}"
+                y_key = f"y_{i},{j}"
+                g_key = f"g_{i},{j}"
 
                 if counter == None:
-                    button = self.__make_piece_button("blank", key)
-                else:
-                    button = self.__make_piece_button(counter, key)
-                board_layout.append(button)
+
+                    # loc_layout = [
+                    #     [self.__make_piece_button("blank", blank_key, visible=True)],
+                    #     [self.__make_piece_button("y", y_key)],
+                    #     [self.__make_piece_button("g", g_key)]
+                    # ]
+
+                    # loc_layout = [
+                    #     [
+                    #         [self.__make_piece_button("blank", blank_key, visible=True)],
+                    #         [self.__make_piece_button("g", blank_key)],
+                    #         [self.__make_piece_button("y", blank_key)],
+                            
+                    #     ]
+                    # ]
+
+                    loc_button_layout = [
+                        [self.__make_piece_button("blank", blank_key, visible=True)],
+                        [self.__make_piece_button("g", g_key)]
+                        [self.__make_piece_button("y", y_key)],
+                    ]
+
+                    loc_layout = [
+                        [sg.Column(loc_button_layout)]
+                    ]
+
+                elif counter == "Y":
+
+                    # loc_layout = [
+                    #     [self.__make_piece_button("blank", blank_key)],
+                    #     [self.__make_piece_button("y", y_key, visible=True)],
+                    #     [self.__make_piece_button("g", g_key)]
+                    # ]
+
+                    # loc_layout = [
+                    #     [
+                    #         [self.__make_piece_button("blank", blank_key)],
+                    #         [self.__make_piece_button("g", blank_key, visible=True)],
+                    #         [self.__make_piece_button("y", blank_key)],
+                            
+                    #     ]
+                    # ]
+
+                    loc_button_layout = [
+                        [self.__make_piece_button("blank", blank_key)],
+                        [self.__make_piece_button("y", y_key, visible=True)],
+                        [self.__make_piece_button("g", g_key)]
+                    ]
+
+                    loc_layout = [
+                        [sg.Column(loc_button_layout)]
+                    ]
+
+                elif counter == "G":
+                    # loc_layout = [
+                    #     [self.__make_piece_button("blank", blank_key)],
+                    #     [self.__make_piece_button("y", y_key)],
+                    #     [self.__make_piece_button("g", g_key, visible=True)]
+                    # ]
+
+                
+                    # loc_layout = [
+                    #     [
+                    #         [self.__make_piece_button("blank", blank_key)],
+                    #         [self.__make_piece_button("g", blank_key)],
+                    #         [self.__make_piece_button("y", blank_key, visible=True)],
+                            
+                    #     ]
+                    # ]
+
+                    loc_button_layout = [
+                        [self.__make_piece_button("blank", blank_key)],
+                        [self.__make_piece_button("y", y_key)],
+                        [self.__make_piece_button("g", g_key, visible=True)]
+                    ]
+
+                    loc_layout = [
+                        [sg.Column(loc_button_layout)]
+                    ]
+
+
+                # board_layout.append(button)
+
+                # loc = sg.Column(loc_layout, visible=False, key=f"loc_{i},{j}")
+                board_layout.append(loc_layout)
 
         board_layout = oneD_to_twoD_array(board_layout, len(display_board))
+
+        # test_layout1 = [
+        #     [self.__make_piece_button("blank", "blank_0,0", visible=True)],
+        # ]
+
+        # test_layout2= [
+        #     [self.__make_piece_button("g", "blank_0,1", visible=True)],
+        # ]
+
+        # board_layout = [
+        #     [sg.Column(test_layout1, key="test_column"), sg.Column(test_layout2, key="test_column")],
+        # ]
 
         board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
 
@@ -339,9 +437,9 @@ class Graphical_UI(UI):
         submit_move_button = sg.Button("Submit Move", font=(self.FONT, 15), key="submit_move_button")
 
         layout = [
-            [self.__create_menu()],
-            [player_turn_frame],
-            [move_option, capture_option, submit_move_button],
+            # [self.__create_menu()],
+            # [player_turn_frame],
+            # [move_option, capture_option, submit_move_button],
             [board_frame],
         ]
 
@@ -382,8 +480,8 @@ class Graphical_UI(UI):
 
             elif event == "submit_move_button":
 
-                start_cords = self.__str_cords_to_tuple(self.__highlighted_board_positions[0])
-                end_cords = self.__str_cords_to_tuple(self.__highlighted_board_positions[1])
+                start_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[0])
+                end_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[1])
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
                 end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
@@ -398,7 +496,12 @@ class Graphical_UI(UI):
                 move_type = "move"
 
                 print("CHECKING MOVE LEGALLITY")
-                print(self.__game.is_legal_move(start_loc, end_loc, move_type))
+
+                if self.__game.is_legal_move(start_loc, end_loc, move_type):
+                    self.__game.move_piece(start_loc, end_loc)
+
+                self.__game.switch_current_player()
+
             
         
         self.__window.close()
@@ -410,8 +513,9 @@ class Graphical_UI(UI):
         if bool(re.match(pattern, key)):
             return True
         
-    def __str_cords_to_tuple(self, string_cords):
-        return tuple(int(i) for i in string_cords.strip("()").split(","))
+    def __str_key_to_cords_tuple(self, string_key):
+        cords_string = string_key.split("_")[1]
+        return tuple(int(i) for i in cords_string.split(","))
 
 
     def __highlight_board_position(self, key):
@@ -436,7 +540,10 @@ class Graphical_UI(UI):
     def play_game(self):
 
         # ! CODE THIS
-        display_board = [[i.get_piece() for i in row] for row in self.__game.get_board_state()]
+        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
+
+        for i in display_board:
+            print(i)
 
         self.__setup_match_page(display_board)
 
