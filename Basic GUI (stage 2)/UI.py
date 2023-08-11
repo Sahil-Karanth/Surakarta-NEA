@@ -341,13 +341,11 @@ class Graphical_UI(UI):
 
                     loc_button_layout = [
                         [self.__make_piece_button("blank", blank_key, visible=True)],
-                        [self.__make_piece_button("g", g_key)]
+                        [self.__make_piece_button("g", g_key)],
                         [self.__make_piece_button("y", y_key)],
                     ]
 
-                    loc_layout = [
-                        [sg.Column(loc_button_layout)]
-                    ]
+                    loc_layout = sg.Column(loc_button_layout)
 
                 elif counter == "Y":
 
@@ -372,9 +370,7 @@ class Graphical_UI(UI):
                         [self.__make_piece_button("g", g_key)]
                     ]
 
-                    loc_layout = [
-                        [sg.Column(loc_button_layout)]
-                    ]
+                    loc_layout = sg.Column(loc_button_layout)
 
                 elif counter == "G":
                     # loc_layout = [
@@ -399,9 +395,7 @@ class Graphical_UI(UI):
                         [self.__make_piece_button("g", g_key, visible=True)]
                     ]
 
-                    loc_layout = [
-                        [sg.Column(loc_button_layout)]
-                    ]
+                    loc_layout = sg.Column(loc_button_layout)
 
 
                 # board_layout.append(button)
@@ -423,7 +417,7 @@ class Graphical_UI(UI):
         #     [sg.Column(test_layout1, key="test_column"), sg.Column(test_layout2, key="test_column")],
         # ]
 
-        board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
+        # board_frame = sg.Frame(title="", layout=board_layout, border_width=0, pad=(0, self.COLUMN_PAD))
 
         player_turn_layout = [
             [sg.Text(f"{self.__game.get_player1_name()}'s Turn", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
@@ -440,7 +434,7 @@ class Graphical_UI(UI):
             # [self.__create_menu()],
             # [player_turn_frame],
             # [move_option, capture_option, submit_move_button],
-            [board_frame],
+            [board_layout],
         ]
 
         self.__create_window("Match", layout, "center")
