@@ -315,41 +315,18 @@ class Graphical_UI(UI):
         for i, row in enumerate(display_board):
             for j, counter in enumerate(row):
                 
-                blank_key = f"blank_{i},{j}"
-                y_key = f"y_{i},{j}"
-                g_key = f"g_{i},{j}"
+                key = f"{i},{j}"
 
                 if counter == None:
-
-                    loc_button_layout = [
-                        [self.__make_piece_button("blank", blank_key, visible=True)],
-                        [self.__make_piece_button("g", g_key)],
-                        [self.__make_piece_button("y", y_key)],
-                    ]
-
-                    loc_col = sg.Column(loc_button_layout)
+                    button = self.__make_piece_button("blank", key)
 
                 elif counter == "y":
-
-                    loc_button_layout = [
-                        [self.__make_piece_button("blank", blank_key)],
-                        [self.__make_piece_button("y", y_key, visible=True)],
-                        [self.__make_piece_button("g", g_key)]
-                    ]
-
-                    loc_col = sg.Column(loc_button_layout)
+                    button = self.__make_piece_button("y", key)
 
                 elif counter == "g":
+                    button = self.__make_piece_button("g", key)
 
-                    loc_button_layout = [
-                        [self.__make_piece_button("blank", blank_key)],
-                        [self.__make_piece_button("y", y_key)],
-                        [self.__make_piece_button("g", g_key, visible=True)]
-                    ]
-
-                    loc_col = sg.Column(loc_button_layout)
-
-                board_layout.append(loc_col)
+                board_layout.append(button)
 
         board_layout = oneD_to_twoD_array(board_layout, len(display_board))
 
@@ -428,12 +405,12 @@ class Graphical_UI(UI):
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
                     print("MOVE IS LEGAL")
 
-                    self.__window["blank_1,1"].update(visible=True)
-                    self.__window["g_1,1"].update(visible=False)
+                    # TESTING
+                    # self.__window["blank_1,1"].update(visible=True)
+                    # self.__window["g_1,1"].update(visible=False)
 
-                    # TEMPORARY COMMENT OUT
-                    # self.__update_board(start_loc, end_loc)
-                    # self.__game.move_piece(start_loc, end_loc)
+                    self.__update_board(start_loc, end_loc)
+                    self.__game.move_piece(start_loc, end_loc)
 
                 else:
                     print("ILLEGAL MOVE")
@@ -454,42 +431,20 @@ class Graphical_UI(UI):
         start_cords = f"{start_loc.get_cords()[0]},{start_loc.get_cords()[1]}"
         end_cords = f"{end_loc.get_cords()[0]},{end_loc.get_cords()[1]}"
 
-        print("start loc colour: ", start_loc.get_colour())
-        print("start loc cords: ", start_cords)
-
-        print("game board: ", self.__game.get_board_state())
-
-        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
-        print("display board:")
-        for i in display_board:
-            print(i)
-
-        
-
-        self.__window[f"{start_loc.get_colour()}_{start_cords}"].update(visible=False)    
-        self.__window[f"blank_{start_cords}"].update(visible=True)
-
-        if end_loc.get_colour() == None:
-            self.__window[f"blank_{end_cords}"].update(visible=False)
-        else:
-            self.__window[f"{end_loc.get_colour()}_{end_cords}"].update(visible=False)
-
-        self.__window[f"{start_loc.get_colour()}_{end_cords}"].update(visible=True)
-
-
+        self.__window[f"{start_cords}"].update(image_filename=f"blank_counter.png")   
+        self.__window[f"{end_cords}"].update(image_filename=f"{start_loc.get_colour()}_counter.png") 
 
         
 
     def __is_board_position(self, key):
         # if it's a tuple containing two elements where each element is a digit from 0 to 5 inclusive
         # use regex
-        pattern = r'^(blank|g|y)_[0-5],[0-5]$'
+        pattern = r'^[0-5],[0-5]$'
         if bool(re.match(pattern, key)):
             return True
         
     def __str_key_to_cords_tuple(self, string_key):
-        cords_string = string_key.split("_")[1]
-        return tuple(int(i) for i in cords_string.split(","))
+        return tuple(int(i) for i in string_key.split(","))
     
 
 
