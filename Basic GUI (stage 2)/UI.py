@@ -306,7 +306,7 @@ class Graphical_UI(UI):
             self.__window["submit_local_play_button"].update(visible=True)
 
     def __make_piece_button(self, piece_type, key, visible=False):
-        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, pad=(40,40), key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
     def __setup_match_page(self, display_board):
 
@@ -404,10 +404,6 @@ class Graphical_UI(UI):
 
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
                     print("MOVE IS LEGAL")
-
-                    # TESTING
-                    # self.__window["blank_1,1"].update(visible=True)
-                    # self.__window["g_1,1"].update(visible=False)
 
                     self.__update_board(start_loc, end_loc)
                     self.__game.move_piece(start_loc, end_loc)
