@@ -460,10 +460,16 @@ class Graphical_UI(UI):
         for i in display_board:
             print(i)
 
-        self.__window[f"{start_loc.get_colour()}_{start_cords}"].update(visible=False)
+        
+
+        self.__window[f"{start_loc.get_colour()}_{start_cords}"].update(visible=False)    
         self.__window[f"blank_{start_cords}"].update(visible=True)
 
-        self.__window[f"{end_loc.get_colour()}_{end_cords}"].update(visible=False)
+        if end_loc.get_colour() == None:
+            self.__window[f"blank_{end_cords}"].update(visible=False)
+        else:
+            self.__window[f"{end_loc.get_colour()}_{end_cords}"].update(visible=False)
+            
         self.__window[f"{start_loc.get_colour()}_{end_cords}"].update(visible=True)
 
 
