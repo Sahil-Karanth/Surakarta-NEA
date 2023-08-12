@@ -1,35 +1,29 @@
 import PySimpleGUI as sg
 
 
-def make_piece_button(key, visible=False):
-    
-    button = sg.Button(
-        button_text="test",
-        key=key,
-        pad=(0, 0),
-        border_width=0,
-        button_color=("white", "blue"),  # Changed button_color
-        visible=visible)
-
-    return button
+def make_piece_button(piece_type, key, visible=False):
+    return sg.Button("", mouseover_colors="red", image_filename=f"{piece_type}_counter.png", visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
 
-loc_button_layout = [
-    [make_piece_button("blank", visible=False)],
-    [make_piece_button("y", visible=False)],
-    [make_piece_button("g", visible=True)]
-]
 
-loc_layout = [
-    [sg.Column(loc_button_layout)]
+layout = [
+    [make_piece_button("blank", "g1", visible=True), make_piece_button("g", "g2", visible=True)],
+    [make_piece_button("g", "g3", visible=True), make_piece_button("g", "g4", visible=True)]
+
 ]
 
 
-window = sg.Window('Grid of Columns', loc_layout)
+window = sg.Window('Grid of Columns', layout)
 
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
+
+    elif event == "g1":
+        window["g1"].update(image_filename="y_counter.png")
+
+    elif event == "g2":
+        window["g2"].update(image_filename="y_counter.png")
 
 window.close()

@@ -306,7 +306,7 @@ class Graphical_UI(UI):
             self.__window["submit_local_play_button"].update(visible=True)
 
     def __make_piece_button(self, piece_type, key, visible=False):
-        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0, image_size=(100,100))
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
     def __setup_match_page(self, display_board):
 
@@ -318,13 +318,13 @@ class Graphical_UI(UI):
                 key = f"{i},{j}"
 
                 if counter == None:
-                    button = self.__make_piece_button("blank", key)
+                    button = self.__make_piece_button("blank", key, visible=True)
 
                 elif counter == "y":
-                    button = self.__make_piece_button("y", key)
+                    button = self.__make_piece_button("y", key, visible=True)
 
                 elif counter == "g":
-                    button = self.__make_piece_button("g", key)
+                    button = self.__make_piece_button("g", key, visible=True)
 
                 board_layout.append(button)
 
