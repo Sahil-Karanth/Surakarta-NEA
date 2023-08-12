@@ -397,10 +397,9 @@ class Graphical_UI(UI):
                 elif values["move_type_radio_capture"]:
                     move_type = "capture"
 
-                # TEMPORARY
-                move_type = "move"
-
                 print("CHECKING MOVE LEGALLITY")
+
+                print("move type: ", move_type)
 
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
                     print("MOVE IS LEGAL")
@@ -413,8 +412,10 @@ class Graphical_UI(UI):
 
                 self.__game.switch_current_player()
 
-                for key in self.__highlighted_board_positions:
-                    self.__toggle_highlight_board_position(key)
+                # (for loop doesn't work because the list you iterate over gets changed)
+                self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
+                self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
+
 
                 self.__highlighted_board_positions = []
 
@@ -449,19 +450,15 @@ class Graphical_UI(UI):
     def __toggle_highlight_board_position(self, key):
             
         button = self.__window[key]
-        current_colour = button.ButtonColor[0]
 
-        if current_colour == "#FF0000":
-            button.update(button_color=("#242834", "#FF0000"))
-            self.__highlighted_board_positions.remove(key)
-
-        elif current_colour == "#242834":
-            button.update(button_color=("#FF0000", "#242834"))
+        if key not in self.__highlighted_board_positions:
+            button.update(button_color=('white', 'pink'))
             self.__highlighted_board_positions.append(key)
 
-            
-
-        
+        else:
+            print("IN THE ELSE")
+            button.update(button_color=('white', sg.theme_background_color()))
+            self.__highlighted_board_positions.remove(key)        
 
 
     def __setup_game(self, name1, name2):
