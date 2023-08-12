@@ -428,8 +428,12 @@ class Graphical_UI(UI):
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
                     print("MOVE IS LEGAL")
 
-                    self.__update_board(start_loc, end_loc)
-                    self.__game.move_piece(start_loc, end_loc)
+                    self.__window["blank_1,1"].update(visible=True)
+                    self.__window["g_1,1"].update(visible=False)
+
+                    # TEMPORARY COMMENT OUT
+                    # self.__update_board(start_loc, end_loc)
+                    # self.__game.move_piece(start_loc, end_loc)
 
                 else:
                     print("ILLEGAL MOVE")
@@ -469,7 +473,7 @@ class Graphical_UI(UI):
             self.__window[f"blank_{end_cords}"].update(visible=False)
         else:
             self.__window[f"{end_loc.get_colour()}_{end_cords}"].update(visible=False)
-            
+
         self.__window[f"{start_loc.get_colour()}_{end_cords}"].update(visible=True)
 
 
