@@ -48,7 +48,7 @@ class GridLocation:
         """determines which piece should be placed on a location at the start"""
 
         if self.__cords[0] in BoardConstants.PLAYER_1_ROWS:
-            return Piece("Y")
+            return Piece("y")
         
         elif self.__cords[0] in BoardConstants.PLAYER_2_ROWS:
             return Piece("G")
@@ -79,4 +79,5 @@ class GridLocation:
     
     def is_loop_index(self):
         return self.__loop_index
+
 

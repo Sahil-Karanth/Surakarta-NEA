@@ -4,7 +4,7 @@ from Board import Board
 class Game:
 
     def __init__(self, player1name, player2name):
-        self.__player1 = HumanPlayer(player1name, "Y") # ! FIX THIS: make sure colours are in some class or centralised
+        self.__player1 = HumanPlayer(player1name, "y") # ! FIX THIS: make sure colours are in some class or centralised
         self.__player2 = HumanPlayer(player2name, "G")
         self.__game_over = False
         self.__board = Board()

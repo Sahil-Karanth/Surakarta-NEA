@@ -45,7 +45,7 @@ class Board:
         
         for i in BoardConstants.OUTER_LOOP_CORDS:
             if i in BLUE_TEST_OUTER_LOOP:
-                outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("Y"))
+                outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_OUTER_LOOP:
                 outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
             else:
@@ -53,7 +53,7 @@ class Board:
 
         for i in BoardConstants.INNER_LOOP_CORDS:
             if i in BLUE_TEST_INNER_LOOP:
-                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("Y"))
+                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_INNER_LOOP:
                 inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
             else:
@@ -62,10 +62,10 @@ class Board:
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[2][4].set_piece(Piece("Y"))
-        self.__board[1][3].set_piece(Piece("Y"))
-        self.__board[1][1].set_piece(Piece("Y"))
-        self.__board[4][1].set_piece(Piece("Y"))
+        self.__board[2][4].set_piece(Piece("y"))
+        self.__board[1][3].set_piece(Piece("y"))
+        self.__board[1][1].set_piece(Piece("y"))
+        self.__board[4][1].set_piece(Piece("y"))
 
 
 
@@ -320,7 +320,7 @@ class Board:
         self.__displace_piece(start_loc, end_loc)
   
     def capture_piece(self, start_loc, end_loc):
-        if end_loc.get_colour() == "Y":
+        if end_loc.get_colour() == "y":
             self.__num_player1_pieces -= 1
 
         elif end_loc.get_colour() == "G":
