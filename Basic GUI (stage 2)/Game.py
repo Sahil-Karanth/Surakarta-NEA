@@ -61,8 +61,8 @@ class Game:
     def capture_piece(self, start_location, end_location):
         self.__board.capture_piece(start_location, end_location)
 
-    def get_current_player(self):
-        return self.__current_player
+    def get_current_player_name(self):
+        return self.__current_player.get_name()
     
     def switch_current_player(self):
         self.__current_player, self.__non_current_player = self.__non_current_player, self.__current_player

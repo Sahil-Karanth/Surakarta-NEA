@@ -106,7 +106,7 @@ class Terminal_UI(UI):
         while not self.__game.get_game_over():
             self.display_board()
             print()
-            print(f"{self.__game.get_current_player().get_name()}'s turn.")
+            print(f"{self.__game.get_current_player_name()}'s turn.")
             print()
 
             valid = False
@@ -331,8 +331,8 @@ class Graphical_UI(UI):
         board_layout = oneD_to_twoD_array(board_layout, len(display_board))
 
         player_turn_layout = [
-            [sg.Text(f"{self.__game.get_player1_name()}'s Turn", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
-            [sg.Text(f"{self.__game.get_player2_name()}'s Turn", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
+            [sg.Text(f"{self.__game.get_player1_name()}'s Turn", key="player1_turn_text", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
+            [sg.Text(f"{self.__game.get_player2_name()}'s Turn", key="player2_turn_text", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
         ]
 
         player_turn_frame = sg.Frame("", layout=player_turn_layout, border_width=0)
@@ -410,6 +410,7 @@ class Graphical_UI(UI):
                 else:
                     print("ILLEGAL MOVE")
 
+                self.__update_current_player_display()
                 self.__game.switch_current_player()
 
                 # (for loop doesn't work because the list you iterate over gets changed)
@@ -431,7 +432,22 @@ class Graphical_UI(UI):
         self.__window[f"{start_cords}"].update(image_filename=f"blank_counter.png")   
         self.__window[f"{end_cords}"].update(image_filename=f"{start_loc.get_colour()}_counter.png") 
 
+
+    def __update_current_player_display(self):
+
+        # self.__window["player1_turn_text"].update(visible=not self.__window["player1_turn_text"].visible)
+        # self.__window["player2_turn_text"].update(visible=not self.__window["player2_turn_text"].visible)
+
+        current_text = self.__window["player1_turn_text"]
+
+        if self.__game.get_current_player_name() == self.__game.get_player1_name():
+            current_text.update(f"{self.__game.get_player2_name()}'s Turn")
         
+        elif self.__game.get_current_player_name() == self.__game.get_player2_name():
+            current_text.update(f"{self.__game.get_player1_name()}'s Turn")
+
+
+
 
     def __is_board_position(self, key):
         # if it's a tuple containing two elements where each element is a digit from 0 to 5 inclusive
