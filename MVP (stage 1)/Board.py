@@ -47,7 +47,7 @@ class Board:
             if i in BLUE_TEST_OUTER_LOOP:
                 outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_OUTER_LOOP:
-                outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
+                outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
             else:
                 outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(None)
 
@@ -55,7 +55,7 @@ class Board:
             if i in BLUE_TEST_INNER_LOOP:
                 inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_INNER_LOOP:
-                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
+                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
             else:
                 inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(None)
 
@@ -323,7 +323,7 @@ class Board:
         if end_loc.get_colour() == "y":
             self.__num_player1_pieces -= 1
 
-        elif end_loc.get_colour() == "G":
+        elif end_loc.get_colour() == "g":
             self.__num_player2_pieces -= 1
 
         self.__displace_piece(start_loc, end_loc)

@@ -339,7 +339,7 @@ class Graphical_UI(UI):
 
                     loc_col = sg.Column(loc_button_layout)
 
-                elif counter == "G":
+                elif counter == "g":
 
                     loc_button_layout = [
                         [self.__make_piece_button("blank", blank_key)],

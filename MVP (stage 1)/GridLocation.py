@@ -51,7 +51,7 @@ class GridLocation:
             return Piece("y")
         
         elif self.__cords[0] in BoardConstants.PLAYER_2_ROWS:
-            return Piece("G")
+            return Piece("g")
 
         else:
             return None
