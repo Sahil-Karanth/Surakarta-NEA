@@ -12,21 +12,22 @@ class Board:
         self.__build_board()
         self.__edit_board_for_testing()
 
-        self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
-        self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
+        # ONLY COMMENTED OUT FOR TESTING
+        # self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
+        # self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
 
         # self.__num_player1_pieces = 12
         # self.__num_player2_pieces = 12
 
         # TEST CODE
         self.__num_player1_pieces = 1
-        self.__num_player2_pieces = 1
+        self.__num_player2_pieces = 2
         # END TEST CODE
 
     def get_board_state(self):
         return self.__board
     
-    def get_inner_loop_testing(self): # ! DELETE ME
+    def get_inner_loop_TEST(self): # ! DELETE ME
         return self.__inner_loop.get_lst_TEST()
 
     def __edit_board_for_testing(self): # ! DELETE ME
@@ -34,13 +35,16 @@ class Board:
             for loc in row:
                 loc.set_piece(None)
 
+        for row in self.__board:
+            print([i.get_colour() for i in row])
+
         outer_lst = [GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS]
         inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
 
-        BLUE_TEST_OUTER_LOOP = [(2,4), (1,3)]
+        BLUE_TEST_OUTER_LOOP = [(1,3)]
         GREEN_TEST_OUTER_LOOP = []
 
-        BLUE_TEST_INNER_LOOP = [(2,4), (1,3)]
+        BLUE_TEST_INNER_LOOP = [(1,3)]
         GREEN_TEST_INNER_LOOP = [(1,1), (4,1)]
         
         for i in BoardConstants.OUTER_LOOP_CORDS:
@@ -52,21 +56,38 @@ class Board:
                 outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(None)
 
         for i in BoardConstants.INNER_LOOP_CORDS:
+
+            ind_lst = []
+            for j in BoardConstants.INNER_LOOP_CORDS:
+                if j == i:
+                    ind_lst.append(BoardConstants.INNER_LOOP_CORDS.index(j))
+
             if i in BLUE_TEST_INNER_LOOP:
-                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
+                for j in ind_lst:
+                    inner_lst[j].set_piece(Piece("y"))
+                # inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_INNER_LOOP:
-                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
+                for j in ind_lst:
+                    inner_lst[j].set_piece(Piece("g"))
+                # inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
             else:
-                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(None)
+                for j in ind_lst:
+                    inner_lst[j].set_piece(None)
+                # inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(None)
 
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[2][4].set_piece(Piece("y"))
-        self.__board[1][3].set_piece(Piece("y"))
-        self.__board[1][1].set_piece(Piece("y"))
-        self.__board[4][1].set_piece(Piece("y"))
 
+        self.__board[1][3].set_piece(Piece("y"))
+        self.__board[1][1].set_piece(Piece("g"))
+        self.__board[4][1].set_piece(Piece("g"))
+
+        # TESTING
+        out = self.__outer_loop.get_lst_TEST()
+        inn = self.__inner_loop.get_lst_TEST()
+
+        print()
 
 
     def __get_loop_from_text(self, text):
@@ -268,6 +289,8 @@ class Board:
     def __can_capture_either_direction(self, start_location, end_loc, ind, board_loop):
 
         """"checks if a capture can be made by moving left or right from a given index in a loop's circular list"""
+
+        inner_test = self.__inner_loop
 
         if board_loop == None:
             return False

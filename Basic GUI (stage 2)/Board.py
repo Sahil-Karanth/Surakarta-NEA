@@ -15,13 +15,13 @@ class Board:
         self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
         self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
 
-        # self.__num_player1_pieces = 12
-        # self.__num_player2_pieces = 12
+        self.__num_player1_pieces = 12
+        self.__num_player2_pieces = 12
 
-        # TEST CODE
-        self.__num_player1_pieces = 1
-        self.__num_player2_pieces = 1
-        # END TEST CODE
+        # # TEST CODE
+        # self.__num_player1_pieces = 1
+        # self.__num_player2_pieces = 1
+        # # END TEST CODE
 
     def get_board_state(self):
         return self.__board
@@ -37,10 +37,10 @@ class Board:
         outer_lst = [GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS]
         inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
 
-        BLUE_TEST_OUTER_LOOP = [(2,4), (1,3)]
+        BLUE_TEST_OUTER_LOOP = [(1,3)]
         GREEN_TEST_OUTER_LOOP = []
 
-        BLUE_TEST_INNER_LOOP = [(2,4), (1,3)]
+        BLUE_TEST_INNER_LOOP = [(1,3)]
         GREEN_TEST_INNER_LOOP = [(1,1), (4,1)]
         
         for i in BoardConstants.OUTER_LOOP_CORDS:
@@ -62,7 +62,6 @@ class Board:
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[2][4].set_piece(Piece("y"))
         self.__board[1][3].set_piece(Piece("y"))
         self.__board[1][1].set_piece(Piece("g"))
         self.__board[4][1].set_piece(Piece("g"))
@@ -126,13 +125,13 @@ class Board:
         x_diff = abs(start_cord[0] - end_cord[0])
         y_diff = abs(start_cord[1] - end_cord[1])
 
-        total_diff = x_diff + y_diff
-
-        if total_diff == 1 or total_diff == 2:
+        if x_diff <= 1 and y_diff <= 1:
             return True
         
         return False
-    
+        
+
+
     def check_normal_legal(self, start_loc, end_loc, player):
 
         """checks if a normal move is legal (i.e. not a capture but rather a move to an adjacent square)."""

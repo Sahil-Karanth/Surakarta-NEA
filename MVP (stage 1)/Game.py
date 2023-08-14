@@ -13,6 +13,9 @@ class Game:
 
     def is_legal_move(self, start_loc, end_loc, move_type):
         return self.__board.is_legal_move(start_loc, end_loc, self.__current_player, move_type)
+    
+    def get_inner_loop_TEST(self):
+        return self.__board.get_inner_loop_TEST()
 
     def set_game_status(self):
 

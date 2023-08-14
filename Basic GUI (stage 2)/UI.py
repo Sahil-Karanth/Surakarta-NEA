@@ -1,6 +1,7 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
+import sys
 from BoardConstants import BoardConstants
 import PySimpleGUI as sg
 import textwrap
@@ -253,9 +254,9 @@ class Graphical_UI(UI):
 
         Local_input_layout = [
             [sg.Text("Player 1 Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.InputText("Enter your name", pad=(0, self.COLUMN_PAD), key="player_1_name_input")],
+            [sg.InputText("Player 1", pad=(0, self.COLUMN_PAD), key="player_1_name_input")],
             [sg.Text("Player 2 Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.InputText("Enter your name", pad=(0, self.COLUMN_PAD), key="player_2_name_input")],
+            [sg.InputText("Player 2", pad=(0, self.COLUMN_PAD), key="player_2_name_input")],
         ]
 
         Local_input_frame = sg.Frame(title="", key="local_play_inputs", layout=Local_input_layout, border_width=0, pad=(0, self.COLUMN_PAD), visible=False)
@@ -306,7 +307,7 @@ class Graphical_UI(UI):
             self.__window["submit_local_play_button"].update(visible=True)
 
     def __make_piece_button(self, piece_type, key, visible=False):
-        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, pad=(40,40), key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, pad=(30,30), key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
     def __setup_match_page(self, display_board):
 
@@ -384,44 +385,54 @@ class Graphical_UI(UI):
                 self.__setup_home_page() # ! FIXME doesn't fully work (doesn't close the window)
 
             elif event == "submit_move_button":
+                self.__make_move_on_display(values)
 
-                start_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[0])
-                end_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[1])
-
-                start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
-                end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
-
-                if values["move_type_radio_move"]:
-                    move_type = "move"
-                
-                elif values["move_type_radio_capture"]:
-                    move_type = "capture"
-
-                print("CHECKING MOVE LEGALLITY")
-
-                print("move type: ", move_type)
-
-                if self.__game.is_legal_move(start_loc, end_loc, move_type):
-                    print("MOVE IS LEGAL")
-
-                    self.__update_board(start_loc, end_loc)
-                    self.__game.move_piece(start_loc, end_loc)
-
-                else:
-                    print("ILLEGAL MOVE")
-
-                self.__update_current_player_display()
-                self.__game.switch_current_player()
-
-                # (for loop doesn't work because the list you iterate over gets changed)
-                self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
-                self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
-
-
-                self.__highlighted_board_positions = []
-
-            
         self.__window.close()
+
+
+    def __make_move_on_display(self, values):
+        start_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[0])
+        end_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[1])
+
+        print(start_cords)
+        print(end_cords)
+
+        # sys.exit()
+
+        start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
+        end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
+
+        if values["move_type_radio_move"]:
+            move_type = "move"
+        
+        elif values["move_type_radio_capture"]:
+            move_type = "capture"
+
+        else:
+            sg.popup("Please select a move type", keep_on_top=True)
+            self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
+            self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
+            return
+
+        if self.__game.is_legal_move(start_loc, end_loc, move_type):
+            print("MOVE IS LEGAL")
+
+            self.__update_board(start_loc, end_loc)
+            self.__game.move_piece(start_loc, end_loc)
+
+            self.__update_current_player_display()
+            self.__game.switch_current_player()
+
+        else:
+            sg.popup("ILLEGAL MOVE", keep_on_top=True)
+
+        # (for loop doesn't work because the list you iterate over gets changed)
+        self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
+        self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
+
+
+        self.__highlighted_board_positions = []
+
 
 
     def __update_board(self, start_loc, end_loc):
@@ -467,14 +478,19 @@ class Graphical_UI(UI):
             
         button = self.__window[key]
 
-        if key not in self.__highlighted_board_positions:
+        if key in self.__highlighted_board_positions:
+            print("unhighlighting")
+            button.update(button_color=('white', sg.theme_background_color()))
+            self.__highlighted_board_positions.remove(key)
+
+        elif len(self.__highlighted_board_positions) == 2:
+            print("max highlighted positions reached")
+            return
+
+        elif key not in self.__highlighted_board_positions:
+            print("making pink")
             button.update(button_color=('white', 'pink'))
             self.__highlighted_board_positions.append(key)
-
-        else:
-            print("IN THE ELSE")
-            button.update(button_color=('white', sg.theme_background_color()))
-            self.__highlighted_board_positions.remove(key)        
 
 
     def __setup_game(self, name1, name2):

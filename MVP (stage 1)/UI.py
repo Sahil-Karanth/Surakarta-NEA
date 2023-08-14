@@ -9,6 +9,9 @@ class Terminal_UI:
         self.__UI_type = "TERMINAL"
         self.__game = self.__setup_game()
 
+    def get_inner_loop_TEST(self):
+        return self.__game.get_inner_loop_TEST()
+
     def __setup_game(self):
         # player1name = input("Enter player 1's name: ")
         # player2name = input("Enter player 2's name: ")
@@ -106,8 +109,8 @@ class Terminal_UI:
                 end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
                 
                 # # TEST CODE
-                # start_cords = (2,4)
-                # end_cords = (4,4)
+                # start_cords = (1,3)
+                # end_cords = (4,1)
                 # # END TEST CODE
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
