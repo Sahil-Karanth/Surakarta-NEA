@@ -1,21 +1,23 @@
 from Player import HumanPlayer
 from Board import Board
+from GridLocation import GridLocation
 
 class Game:
 
     def __init__(self, player1name, player2name):
-        self.__player1 = HumanPlayer(player1name, "y") # ! FIX THIS: make sure colours are in some class or centralised
-        self.__player2 = HumanPlayer(player2name, "y")
+        self.__player1 = HumanPlayer(player1name, "B") # ! FIX THIS: make sure colours are in some class or centralised
+        self.__player2 = HumanPlayer(player2name, "G")
         self.__game_over = False
         self.__board = Board()
         self.__current_player = self.__player1
         self.__non_current_player = self.__player2
 
     def is_legal_move(self, start_loc, end_loc, move_type):
-        return self.__board.is_legal_move(start_loc, end_loc, self.__current_player, move_type)
-    
-    def get_inner_loop_TEST(self):
-        return self.__board.get_inner_loop_TEST()
+        if move_type == "move":
+            return self.__board.check_normal_legal(start_loc, end_loc, self.__current_player)
+        
+        elif move_type == "capture":
+            return self.__board.check_capture_legal(start_loc, end_loc, self.__current_player)
 
     def set_game_status(self):
 
@@ -28,10 +30,10 @@ class Game:
                 if loc.get_piece() == None:
                     continue
                 elif loc.get_colour() == self.__current_player.get_colour():
-                    move_is_legal = self.__board.check_loc_legal_moves(loc, self.__current_player)
+                    move_is_legal = self.__board.check_has_legal_moves(loc, self.__current_player)
 
                 elif loc.get_colour() == self.__non_current_player.get_colour():
-                    move_is_legal = self.__board.check_loc_legal_moves(loc, self.__non_current_player)
+                    move_is_legal = self.__board.check_has_legal_moves(loc, self.__non_current_player)
 
                 if move_is_legal:
                     return
@@ -59,7 +61,7 @@ class Game:
         return False
 
     def move_piece(self, start_location, end_location):
-        self.__board.move_piece(start_location, end_location)
+        self.__board.move_piece(start_location, end_location, self.__current_player)
 
     def capture_piece(self, start_location, end_location):
         self.__board.capture_piece(start_location, end_location)
