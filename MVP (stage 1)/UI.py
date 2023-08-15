@@ -88,24 +88,24 @@ class Terminal_UI:
             valid = False
             while not valid:
 
-                # move_type = self.get_move_type()
-                # TEST CODE
-                move_type = "capture"
-                # END TEST CODE
+                move_type = self.get_move_type()
+                # # TEST CODE
+                # move_type = "capture"
+                # # END TEST CODE
 
-                # start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
-                # end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
+                start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
+                end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
                 
-                # TEST CODE
-                start_cords = (2,4)
-                end_cords = (4,4)
-                # END TEST CODE
+                # # TEST CODE
+                # start_cords = (2,4)
+                # end_cords = (4,4)
+                # # END TEST CODE
 
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
                 end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
 
                 if self.__game.is_legal_move(start_loc, end_loc, move_type):
-                        valid = True
+                    valid = True
 
             if move_type == "move":
                 self.__game.move_piece(start_loc, end_loc)

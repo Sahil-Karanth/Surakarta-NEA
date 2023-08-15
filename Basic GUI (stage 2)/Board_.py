@@ -1,88 +1,79 @@
 from CircularList import CircularList
 from GridLocation import GridLocation
-from itertools import combinations
 from utility_functions import oneD_to_twoD_array
 from Piece import Piece
+from BoardConstants import BoardConstants
 
 class Board:
 
-    OUTER_LOOP_CORDS = [
-        (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
-        (2,0), (2,1), (2,2), (2,3), (2,4), (2,5),
-        (0,3), (1,3), (2,3), (3,3), (4,3), (5,3),
-        (3,5), (3,4), (3,3), (3,2), (3,1), (3,0),
-    ]
-
-    INNER_LOOP_CORDS = [
-        (4,0), (4,1), (4,2), (4,3), (4,4), (4,5),
-        (5,4), (4,4), (3,4), (2,4), (1,4), (0,4),
-        (1,5), (1,4), (1,3), (1,2), (1,1), (1,0),
-        (0,1), (1,1), (2,1), (3,1), (4,1), (5,1),
-    ]
-
     def __init__(self):
         self.__board = []
-        self.__inner_loop = CircularList([GridLocation(i) for i in Board.INNER_LOOP_CORDS])
-        self.__outer_loop = CircularList([GridLocation(i) for i in Board.OUTER_LOOP_CORDS])
 
         self.__build_board()
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
-        # self.__num_player1_pieces = 12
-        # self.__num_player2_pieces = 12
+        self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
+        self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
 
-        # TEST CODE
-        self.__num_player1_pieces = 1
-        self.__num_player2_pieces = 1
-        # END TEST CODE
+        self.__num_player1_pieces = 12
+        self.__num_player2_pieces = 12
+
+        # # TEST CODE
+        # self.__num_player1_pieces = 1
+        # self.__num_player2_pieces = 1
+        # # END TEST CODE
 
     def get_board_state(self):
         return self.__board
     
-    def get_inner_loop_testing(self):
+    def get_inner_loop_testing(self): # ! DELETE ME
         return self.__inner_loop.get_lst_TEST()
 
-    def __edit_board_for_testing(self):
+    def __edit_board_for_testing(self): # ! DELETE ME
         for row in self.__board:
             for loc in row:
                 loc.set_piece(None)
 
-        outer_lst = [GridLocation(i) for i in Board.OUTER_LOOP_CORDS]
-        inner_lst = [GridLocation(i) for i in Board.INNER_LOOP_CORDS]
+        outer_lst = [GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS]
+        inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
 
-        BLUE_TEST_OUTER_LOOP = [(2,4)]
+        BLUE_TEST_OUTER_LOOP = [(1,3)]
         GREEN_TEST_OUTER_LOOP = []
 
-        BLUE_TEST_INNER_LOOP = [(2,4)]
-        GREEN_TEST_INNER_LOOP = [(4,4)]
+        BLUE_TEST_INNER_LOOP = [(1,3)]
+        GREEN_TEST_INNER_LOOP = [(1,1), (4,1)]
         
-        for i in Board.OUTER_LOOP_CORDS:
+        for i in BoardConstants.OUTER_LOOP_CORDS:
             if i in BLUE_TEST_OUTER_LOOP:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("B"))
+                outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_OUTER_LOOP:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
+                outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
             else:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(None)
+                outer_lst[BoardConstants.OUTER_LOOP_CORDS.index(i)].set_piece(None)
 
-        for i in Board.INNER_LOOP_CORDS:
+        for i in BoardConstants.INNER_LOOP_CORDS:
             if i in BLUE_TEST_INNER_LOOP:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("B"))
+                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_INNER_LOOP:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
+                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
             else:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(None)
+                inner_lst[BoardConstants.INNER_LOOP_CORDS.index(i)].set_piece(None)
 
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[2][4].set_piece(Piece("B"))
-        self.__board[4][4].set_piece(Piece("G"))
+        self.__board[1][3].set_piece(Piece("y"))
+        self.__board[1][1].set_piece(Piece("g"))
+        self.__board[4][1].set_piece(Piece("g"))
 
-        for i in self.__inner_loop.get_lst_TEST():
-            print(i.get_cords(), i.get_piece())
 
 
     def __get_loop_from_text(self, text):
+
+        """Returns the inner loop, outer loop, or both loops depending on the text passed in.
+        A tuple is returned in the form (inner_loop, outer_loop). The loop that is not requested is
+        set to None."""
+
         if text == "INNER":
             return (self.__inner_loop, None)
         elif text == "OUTER":
@@ -97,36 +88,28 @@ class Board:
             return self.__num_player2_pieces
 
     def __build_board(self):
-        board = []
-        # outer_loop_lst = []
-        # inner_loop_lst = []
 
-        for i in range(6):
-            for j in range(6):
+        """Builds the 2D array board in its inital state at the start of the game."""
+
+        board = []
+        for i in range(BoardConstants.MAX_ROW_INDEX + 1):
+            for j in range(BoardConstants.MAX_ROW_INDEX + 1):
                 location = GridLocation((i, j))
                 board.append(location)
 
-                # if location.get_cords() in Board.OUTER_LOOP_CORDS:
-                #     outer_loop_lst.append(location)
-                
-                # elif location.get_cords() in Board.INNER_LOOP_CORDS:
-                #     inner_loop_lst.append(location)
-
-
-
         self.__board = [board[i:i+6] for i in range(0, len(board), 6)]
-        self.__board = oneD_to_twoD_array(board, 6)
-        
-        # self.__inner_loop = CircularList(inner_loop_lst)
-        # self.__outer_loop = CircularList(outer_loop_lst)
+        self.__board = oneD_to_twoD_array(board, BoardConstants.MAX_ROW_INDEX + 1)
+
 
     def __is_valid_coordinate(self, coordinate):
-        if coordinate[0] < 0 or coordinate[0] > 5:
-            return False
-        if coordinate[1] < 0 or coordinate[1] > 5:
-            return False
+
+        """Checks if a coordinate is valid (i.e. between 0 and 5 inclusive)."""
+
+        for i in coordinate:
+            if i < BoardConstants.MIN_ROW_INDEX or i > BoardConstants.MAX_ROW_INDEX:
+                return False
         return True
-    
+
     def __is_valid_cord_pair(self, cord1, cord2):
         if not (self.__is_valid_coordinate(cord1) and self.__is_valid_coordinate(cord2)):
             return False
@@ -134,18 +117,25 @@ class Board:
     
     def __is_adjacent(self, start_loc, end_loc):
 
+        """Checks if two locations are adjacent to each other including diagonally."""
+
         start_cord = start_loc.get_cords()
         end_cord = end_loc.get_cords()
 
         x_diff = abs(start_cord[0] - end_cord[0])
         y_diff = abs(start_cord[1] - end_cord[1])
 
-        total_diff = x_diff + y_diff
-
-        if total_diff == 1 or total_diff == 2:
+        if x_diff <= 1 and y_diff <= 1:
             return True
-    
+        
+        return False
+        
+
+
     def check_normal_legal(self, start_loc, end_loc, player):
+
+        """checks if a normal move is legal (i.e. not a capture but rather a move to an adjacent square)."""
+
         start_cord = start_loc.get_cords()
         end_cord = end_loc.get_cords()
 
@@ -157,23 +147,21 @@ class Board:
 
         if start_loc.get_colour() != player.get_colour():
             return False
-
-        moving_to_location = self.__board[end_cord[0]][end_cord[1]]
         
-        if self.__is_adjacent(start_loc, end_loc) and moving_to_location.get_piece() == None:
+        if end_loc.get_piece() == None and self.__is_adjacent(start_loc, end_loc):
             return True
         
         return False
     
     def __get_piece_indexes_at(self, board_loop, loc):
+
+        """Returns a list of indexes of a location a given board loop."""
+
         starting_indexes = []
         cords = loc.get_cords()
+
         board_loop.set_pointer(0, "right")
         board_loop.set_pointer(0, "left")
-
-        # print("TEST INNER LOOP PRINT")
-        # for i in self.__inner_loop.get_lst_TEST():
-        #     print(i)
 
         for i in range(board_loop.get_length()):
             item = board_loop.get_next_right()
@@ -194,7 +182,10 @@ class Board:
             return True
         return False
 
-    def check_capture_legal(self, start_loc, end_loc, player): # try all possible captures
+    def check_capture_legal(self, start_loc, end_loc, player):
+
+        """Checks if a capture move is legal. All possible directions through the loop from
+        start_loc to end_loc are checked"""
 
         start_cords = start_loc.get_cords()
         end_cords = end_loc.get_cords()
@@ -219,22 +210,29 @@ class Board:
         if board_loop_tuple == None:
             return False
         
-        if board_loop_tuple[0] != None:  
-            starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[0], start_loc)
-            for ind in starting_indexes:
-                if self.__can_capture_either_direction(start_loc, ind, board_loop_tuple[0]):
-                    return True
-                
-        if board_loop_tuple[1] != None:  
-            starting_indexes = self.__get_piece_indexes_at(board_loop_tuple[1], start_loc)
-            for ind in starting_indexes:
-                if self.__can_capture_either_direction(start_loc, ind, board_loop_tuple[1]):
-                    return True
+        for loop in board_loop_tuple:
+            if loop != None and self.__valid_loop_capture(loop, start_loc, end_loc):
+                return True
+        
         return False
     
-    def check_move_legal(self, start_loc, end_loc, player):
-        if self.check_normal_legal(start_loc, end_loc, player) or self.check_capture_legal(start_loc, end_loc, player):
-            return True
+    def __valid_loop_capture(self, loop, start_loc, end_loc):
+
+        """Checks if a capture move is legal in a given loop."""
+
+        starting_indexes = self.__get_piece_indexes_at(loop, start_loc)
+        for ind in starting_indexes:
+            if self.__can_capture_either_direction(start_loc, end_loc, ind, loop):
+                return True
+        return False
+
+    def is_legal_move(self, start_loc, end_loc, player, move_type):
+        if move_type == "move":
+            return self.check_normal_legal(start_loc, end_loc, player)
+        
+        elif move_type == "capture":
+            return self.check_capture_legal(start_loc, end_loc, player)
+
         return False
 
     def __loop_pieces_same_colour(self, loc1, loc2):
@@ -242,18 +240,22 @@ class Board:
             return True
         return False
     
-    def __is_valid_capture(self, start_location, end_location, loop_index_count):
-        if end_location.is_empty():
+    def __is_valid_capture(self, start_location, end_location, next_location, loop_index_count):
+        if next_location.is_empty() or next_location.get_cords() != end_location.get_cords():
             return False
-        if (end_location.get_piece().get_colour() != start_location.get_piece().get_colour()) and (loop_index_count > 0):
+        if (next_location.get_piece().get_colour() != start_location.get_piece().get_colour()) and (loop_index_count > 0):
             return True
 
-    def __is_valid_capture_either_direction(self, start_location, loc_right, loc_left, right_loop_count, left_loop_count):
-        if self.__is_valid_capture(start_location, loc_right, right_loop_count) or self.__is_valid_capture(start_location, loc_left, left_loop_count):
+    def __is_valid_capture_left_or_right(self, start_location, end_location, loc_right, loc_left, right_loop_count, left_loop_count):
+
+        """Checks if a capture can be made by moving left or right from a given index in a loop's circular list"""
+
+        if self.__is_valid_capture(start_location, end_location, loc_right, right_loop_count) or self.__is_valid_capture(start_location, end_location, loc_left, left_loop_count):
             return True
         return False
 
     def __check_direction_valid(self, start_location, end_location, loop_index_count):
+
         if self.__loop_pieces_same_colour(start_location, end_location):
             return False
         
@@ -262,7 +264,9 @@ class Board:
         
         return True
 
-    def __can_capture_either_direction(self, start_location, ind, board_loop):
+    def __can_capture_either_direction(self, start_location, end_loc, ind, board_loop):
+
+        """"checks if a capture can be made by moving left or right from a given index in a loop's circular list"""
 
         if board_loop == None:
             return False
@@ -279,17 +283,17 @@ class Board:
         board_loop.get_next_right()
         board_loop.get_next_left()
 
-        while True:
+        while True: # ! Ask Mr Gray about how to make this more efficient
             loc_right = board_loop.get_next_right()
             loc_left = board_loop.get_next_left()
 
-            if loc_right.is_loop_index(): # ! TEST ME
+            if loc_right.is_loop_index():
                 right_loop_count += 1
             
             if loc_left.is_loop_index():
                 left_loop_count += 1
 
-            if self.__is_valid_capture_either_direction(start_location, loc_right, loc_left, right_loop_count, left_loop_count):
+            if self.__is_valid_capture_left_or_right(start_location, end_loc, loc_right, loc_left, right_loop_count, left_loop_count):
                 return True
             
             if not self.__check_direction_valid(start_location, loc_right, right_loop_count):
@@ -301,42 +305,34 @@ class Board:
             if right_invalid and left_invalid:
                 return False
             
-    def __switch_piece_board_position(self, start_loc, end_loc):
+    def __displace_piece(self, start_loc, end_loc):
+
+        """moves a piece from start_loc to end_loc"""
 
         start_cords = start_loc.get_cords()
         end_cords = end_loc.get_cords()
 
         self.__board[end_cords[0]][end_cords[1]].set_piece(start_loc.get_piece())
         self.__board[start_cords[0]][start_cords[1]].set_piece(None)
-
-
         
-    def move_piece(self, start_loc, end_loc, player):
-        if self.check_normal_legal(start_loc, end_loc, player): # ! GET RID OF SECOND CHECK THIS IS POINTLESS
-            
-            self.__inner_loop.replace_item(end_loc, start_loc)
-            self.__outer_loop.replace_item(end_loc, start_loc)
-            self.__switch_piece_board_position(start_loc, end_loc)
-
-
-            print()
-
+    def move_piece(self, start_loc, end_loc):
+        self.__displace_piece(start_loc, end_loc)
   
     def capture_piece(self, start_loc, end_loc):
-        if end_loc.get_colour() == "B":
+        if end_loc.get_colour() == "y":
             self.__num_player1_pieces -= 1
 
-        elif end_loc.get_colour() == "G":
+        elif end_loc.get_colour() == "g":
             self.__num_player2_pieces -= 1
 
-        self.__switch_piece_board_position(start_loc, end_loc)
+        self.__displace_piece(start_loc, end_loc)
 
         board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
 
         for i,board_loop in enumerate(board_loop_tuple):
             if board_loop == None:
                 continue
-            board_loop.replace_item(end_loc, start_loc)
+            board_loop.displace_item(end_loc, start_loc)
             if i == 0:
                 self.__outer_loop = board_loop
             elif i == 1:
@@ -359,7 +355,10 @@ class Board:
 
         return adjacent_lst
     
-    def check_has_legal_moves(self, location, player):
+    def check_loc_legal_moves(self, location, player):
+
+        """Checks if any legal moves can be made from a given location."""
+
         if location.get_piece() == None:
             return False
 
@@ -372,22 +371,7 @@ class Board:
                 opponent_locs.append(loc)
 
         for end_loc in opponent_locs:
-            if self.check_move_legal(location, end_loc, player):
+            if self.check_move_legal(location, end_loc, player, "capture") or self.check_move_legal(location, end_loc, player, "move"):
                 return True
 
         return False
-
-
-
-
-
-# TODO (generally for MVP)
-    # add constants / constant class (e.g. for cordinates, colours, etc.)
-    # add comments and docstrings
-    # add terminal UI
-    # add main game loop
-    # work on player class / implementing player functionality
-
-
-
-
