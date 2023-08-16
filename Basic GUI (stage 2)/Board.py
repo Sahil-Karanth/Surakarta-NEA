@@ -58,25 +58,25 @@ class Board:
         
         for i in Board.OUTER_LOOP_CORDS:
             if i in BLUE_TEST_OUTER_LOOP:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("B"))
+                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_OUTER_LOOP:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
+                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
             else:
                 outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(None)
 
         for i in Board.INNER_LOOP_CORDS:
             if i in BLUE_TEST_INNER_LOOP:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("B"))
+                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
             elif i in GREEN_TEST_INNER_LOOP:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("G"))
+                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
             else:
                 inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(None)
 
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[2][4].set_piece(Piece("B"))
-        self.__board[4][4].set_piece(Piece("G"))
+        self.__board[2][4].set_piece(Piece("y"))
+        self.__board[4][4].set_piece(Piece("g"))
 
         for i in self.__inner_loop.get_lst_TEST():
             print(i.get_cords(), i.get_piece())
@@ -98,27 +98,15 @@ class Board:
 
     def __build_board(self):
         board = []
-        # outer_loop_lst = []
-        # inner_loop_lst = []
 
         for i in range(6):
             for j in range(6):
                 location = GridLocation((i, j))
                 board.append(location)
 
-                # if location.get_cords() in Board.OUTER_LOOP_CORDS:
-                #     outer_loop_lst.append(location)
-                
-                # elif location.get_cords() in Board.INNER_LOOP_CORDS:
-                #     inner_loop_lst.append(location)
-
-
-
         self.__board = [board[i:i+6] for i in range(0, len(board), 6)]
         self.__board = oneD_to_twoD_array(board, 6)
         
-        # self.__inner_loop = CircularList(inner_loop_lst)
-        # self.__outer_loop = CircularList(outer_loop_lst)
 
     def __is_valid_coordinate(self, coordinate):
         if coordinate[0] < 0 or coordinate[0] > 5:
@@ -205,7 +193,7 @@ class Board:
         if start_loc.get_colour() != player.get_colour():
             return False
         
-        if start_loc.get_colour() == end_loc.get_piece().get_colour():
+        if start_loc.get_colour() == end_loc.get_colour():
             return False
 
         if self.__either_locations_vacant(start_loc, end_loc):
@@ -256,7 +244,7 @@ class Board:
     def __is_valid_capture(self, start_location, end_location, loop_count):
         if end_location.is_empty():
             return False
-        if (end_location.get_piece().get_colour() != start_location.get_piece().get_colour()) and (loop_count > 0):
+        if (end_location.get_colour() != start_location.get_colour()) and (loop_count > 0):
             return True
 
     def __is_valid_capture_either_direction(self, start_location, loc_right, loc_left, right_loop_count, left_loop_count):
@@ -365,10 +353,10 @@ class Board:
 
   
     def capture_piece(self, start_loc, end_loc):
-        if end_loc.get_colour() == "B":
+        if end_loc.get_colour() == "y":
             self.__num_player1_pieces -= 1
 
-        elif end_loc.get_colour() == "G":
+        elif end_loc.get_colour() == "g":
             self.__num_player2_pieces -= 1
 
         self.__switch_piece_board_position(start_loc, end_loc)

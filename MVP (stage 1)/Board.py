@@ -205,7 +205,7 @@ class Board:
         if start_loc.get_colour() != player.get_colour():
             return False
         
-        if start_loc.get_colour() == end_loc.get_piece().get_colour():
+        if start_loc.get_colour() == end_loc.get_colour():
             return False
 
         if self.__either_locations_vacant(start_loc, end_loc):
@@ -256,7 +256,7 @@ class Board:
     def __is_valid_capture(self, start_location, end_location, loop_count):
         if end_location.is_empty():
             return False
-        if (end_location.get_piece().get_colour() != start_location.get_piece().get_colour()) and (loop_count > 0):
+        if (end_location.get_colour() != start_location.get_colour()) and (loop_count > 0):
             return True
 
     def __is_valid_capture_either_direction(self, start_location, loc_right, loc_left, right_loop_count, left_loop_count):

@@ -44,7 +44,7 @@ class Terminal_UI:
                 if loc.get_piece() == None:
                     disp_board.append(f"{'.'}")
                 else:
-                    disp_board.append(loc.get_piece().get_colour())
+                    disp_board.append(loc.get_colour())
         
         disp_board = oneD_to_twoD_array(disp_board, 6)
 
