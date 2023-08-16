@@ -39,8 +39,8 @@ class CircularList:
     
     def replace_item(self, to_replace, replace_with): # * find better name for this method
         
-        print("to_replace: ", to_replace)
-        print("replace_with: ", replace_with)
+        print("to_replace: ", to_replace.get_cords())
+        print("replace_with: ", replace_with.get_cords())
 
         try:
             ind_to_replace = self.__get_all_occurence_indexes(self.__lst, to_replace)
@@ -60,7 +60,18 @@ class CircularList:
             if n.get_cords() == item.get_cords():
                 ind_lst.append(i)
 
+        # so that ind_to_replace and ind_replace_with are the same length for the zip
+        if len(ind_lst) == 1:
+            ind_lst.append(ind_lst[0])
+
         return ind_lst
+    
+    def update_list(self, before_val, after_val):
+
+        ind_lst = self.__get_all_occurence_indexes(self.__lst, before_val)
+
+        for i in ind_lst:
+            self.__lst[i].set_piece(after_val.get_piece())
 
 
 

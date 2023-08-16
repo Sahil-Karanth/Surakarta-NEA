@@ -313,9 +313,15 @@ class Board:
         
     def move_piece(self, start_loc, end_loc, player):
         if self.check_normal_legal(start_loc, end_loc, player): # ! GET RID OF SECOND CHECK THIS IS POINTLESS
+
+            self.__inner_loop.update_list(start_loc, end_loc)
+            self.__inner_loop.update_list(end_loc, start_loc)
+
+            self.__outer_loop.update_list(start_loc, end_loc)
+            self.__outer_loop.update_list(end_loc, start_loc)
             
-            self.__inner_loop.replace_item(end_loc, start_loc)
-            self.__outer_loop.replace_item(end_loc, start_loc)
+            # self.__outer_loop.replace_item(end_loc, start_loc)
+            # self.__inner_loop.replace_item(end_loc, start_loc)
             self.__switch_piece_board_position(start_loc, end_loc)
 
 
@@ -331,16 +337,23 @@ class Board:
 
         self.__switch_piece_board_position(start_loc, end_loc)
 
-        board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
 
-        for i,board_loop in enumerate(board_loop_tuple):
-            if board_loop == None:
-                continue
-            board_loop.replace_item(end_loc, start_loc)
-            if i == 0:
-                self.__outer_loop = board_loop
-            elif i == 1:
-                self.__inner_loop = board_loop
+        self.__inner_loop.update_list(start_loc, end_loc)
+        self.__inner_loop.update_list(end_loc, start_loc)
+
+        self.__outer_loop.update_list(start_loc, end_loc)
+        self.__outer_loop.update_list(end_loc, start_loc)
+
+        # board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
+
+        # for i,board_loop in enumerate(board_loop_tuple):
+        #     if board_loop == None:
+        #         continue
+        #     board_loop.replace_item(end_loc, start_loc)
+        #     if i == 0:
+        #         self.__outer_loop = board_loop
+        #     elif i == 1:
+        #         self.__inner_loop = board_loop
 
     def __get_adjacent(cords):
 
