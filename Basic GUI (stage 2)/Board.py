@@ -275,6 +275,7 @@ class Board:
             return False
         
         return True
+    
 
     def __can_capture_either_direction(self, start_location, ind, board_loop):
 
@@ -296,48 +297,37 @@ class Board:
         prev_right = start_location
         prev_left = start_location
 
-        while True:
-            loc_right = board_loop.get_next_right()
-            loc_left = board_loop.get_next_left()
 
-
-            # if loc_right.is_loop_index():
-            #     right_loop_count += 1
+        while not right_invalid:
             
-            # if loc_left.is_loop_index():
-            #     left_loop_count += 1
-
+            loc_right = board_loop.get_next_right()
 
             if self.__loop_used(prev_right, loc_right):
                 right_loop_count += 1
             
-            if self.__loop_used(prev_left, loc_left):
-                left_loop_count += 1
-
-
-            if self.__is_valid_capture_either_direction(start_location, loc_right, loc_left, right_loop_count, left_loop_count):
+            if self.__is_valid_capture(start_location, loc_right, right_loop_count):
                 return True
             
             if not self.__check_direction_valid(start_location, loc_right, right_loop_count):
                 right_invalid = True
 
-            if not self.__check_direction_valid(start_location, loc_left, left_loop_count):
-                left_invalid = True
-        
-            if right_invalid and left_invalid:
-                return False
-            
             prev_right = loc_right
 
-            print("PREV RIGHT")
-            print(prev_right.get_cords(), prev_right.get_colour())
+
+        while not left_invalid:
+            
+            loc_left = board_loop.get_next_left()
+
+            if self.__loop_used(prev_left, loc_left):
+                left_loop_count += 1
+            
+            if self.__is_valid_capture(start_location, loc_left, left_loop_count):
+                return True
+            
+            if not self.__check_direction_valid(start_location, loc_left, left_loop_count):
+                left_invalid = True
 
             prev_left = loc_left
-
-            print("PREV LEFT")
-            print(prev_left.get_cords(), prev_left.get_colour())
-
-            print()
 
             
     def __switch_piece_board_position(self, start_loc, end_loc):
