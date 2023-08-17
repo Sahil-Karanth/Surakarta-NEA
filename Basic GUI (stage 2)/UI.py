@@ -104,7 +104,7 @@ class Terminal_UI(UI):
 
         """The main game loop. Runs until the game is over."""
 
-        while not self.__game.get_game_over():
+        while not self.__game.is_game_over():
             self.display_board()
             print()
             print(f"{self.__game.get_current_player_name()}'s turn.")
@@ -418,10 +418,25 @@ class Graphical_UI(UI):
             print("MOVE IS LEGAL")
 
             self.__update_board(start_loc, end_loc)
-            self.__game.move_piece(start_loc, end_loc)
+            self.__game.move_piece(start_loc, end_loc, move_type)
 
             self.__update_current_player_display()
             self.__game.switch_current_player()
+
+            self.__game.set_game_status()
+            
+            # if move_type == "capture":
+            #     self.__game.set_game_status()
+
+            if self.__game.is_game_over():
+                winning_player = self.__game.get_winner()
+
+                if winning_player == None:
+                    sg.popup("The game was a draw!", keep_on_top=True)
+                else:
+                    sg.popup(f"{winning_player.get_name()} has won the game!", keep_on_top=True)
+
+
 
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
@@ -498,7 +513,6 @@ class Graphical_UI(UI):
 
     def play_game(self):
 
-        # ! CODE THIS
         display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
 
         for i in display_board:

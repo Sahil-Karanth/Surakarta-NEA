@@ -26,7 +26,7 @@ class Board:
         self.__outer_loop = CircularList([GridLocation(i) for i in Board.OUTER_LOOP_CORDS])
 
         self.__build_board()
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
         # self.__num_player1_pieces = 12
         # self.__num_player2_pieces = 12
@@ -50,33 +50,37 @@ class Board:
         outer_lst = [GridLocation(i) for i in Board.OUTER_LOOP_CORDS]
         inner_lst = [GridLocation(i) for i in Board.INNER_LOOP_CORDS]
 
-        BLUE_TEST_OUTER_LOOP = [(2,4)]
+        YELLOW_TEST_OUTER_LOOP = [(2,4), (2,2)]
         GREEN_TEST_OUTER_LOOP = []
 
-        BLUE_TEST_INNER_LOOP = [(2,4)]
+        YELLOW_TEST_INNER_LOOP = [(2,4)]
         GREEN_TEST_INNER_LOOP = [(4,4)]
-        
-        for i in Board.OUTER_LOOP_CORDS:
-            if i in BLUE_TEST_OUTER_LOOP:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
-            elif i in GREEN_TEST_OUTER_LOOP:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
-            else:
-                outer_lst[Board.OUTER_LOOP_CORDS.index(i)].set_piece(None)
 
-        for i in Board.INNER_LOOP_CORDS:
-            if i in BLUE_TEST_INNER_LOOP:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("y"))
-            elif i in GREEN_TEST_INNER_LOOP:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(Piece("g"))
+
+        for i in outer_lst:
+            if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
+                i.set_piece(Piece("y"))
+            elif i.get_cords() in GREEN_TEST_OUTER_LOOP:
+                i.set_piece(Piece("g"))
             else:
-                inner_lst[Board.INNER_LOOP_CORDS.index(i)].set_piece(None)
+                i.set_piece(None)
+
+        for i in inner_lst:
+            if i.get_cords() in YELLOW_TEST_INNER_LOOP:
+                i.set_piece(Piece("y"))
+            elif i.get_cords() in GREEN_TEST_INNER_LOOP:
+                i.set_piece(Piece("g"))
+            else:
+                i.set_piece(None)
+
 
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
         self.__board[2][4].set_piece(Piece("y"))
         self.__board[4][4].set_piece(Piece("g"))
+        self.__board[2][2].set_piece(Piece("g"))
+
 
         for i in self.__inner_loop.get_lst_TEST():
             print(i.get_cords(), i.get_piece())
@@ -336,7 +340,7 @@ class Board:
             return True
 
         
-    def move_piece(self, start_loc, end_loc):
+    def move_piece(self, start_loc, end_loc, move_type):
 
         self.__inner_loop.update_list(start_loc, end_loc)
         self.__inner_loop.update_list(end_loc, start_loc)
@@ -344,40 +348,47 @@ class Board:
         self.__outer_loop.update_list(start_loc, end_loc)
         self.__outer_loop.update_list(end_loc, start_loc)
         
-        # self.__outer_loop.replace_item(end_loc, start_loc)
-        # self.__inner_loop.replace_item(end_loc, start_loc)
+        if move_type == "capture":
+            self.__update_piece_counts(end_loc)
+
+
         self.__switch_piece_board_position(start_loc, end_loc)
 
-
-        print()
-
-  
-    def capture_piece(self, start_loc, end_loc):
+    
+    def __update_piece_counts(self, end_loc):
         if end_loc.get_colour() == "y":
             self.__num_player1_pieces -= 1
 
         elif end_loc.get_colour() == "g":
             self.__num_player2_pieces -= 1
 
-        self.__switch_piece_board_position(start_loc, end_loc)
+
+    # def capture_piece(self, start_loc, end_loc):
+    #     if end_loc.get_colour() == "y":
+    #         self.__num_player1_pieces -= 1
+
+    #     elif end_loc.get_colour() == "g":
+    #         self.__num_player2_pieces -= 1
+
+    #     self.__switch_piece_board_position(start_loc, end_loc)
 
 
-        self.__inner_loop.update_list(start_loc, end_loc)
-        self.__inner_loop.update_list(end_loc, start_loc)
+    #     self.__inner_loop.update_list(start_loc, end_loc)
+    #     self.__inner_loop.update_list(end_loc, start_loc)
 
-        self.__outer_loop.update_list(start_loc, end_loc)
-        self.__outer_loop.update_list(end_loc, start_loc)
+    #     self.__outer_loop.update_list(start_loc, end_loc)
+    #     self.__outer_loop.update_list(end_loc, start_loc)
 
-        # board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
+    #     # board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
 
-        # for i,board_loop in enumerate(board_loop_tuple):
-        #     if board_loop == None:
-        #         continue
-        #     board_loop.replace_item(end_loc, start_loc)
-        #     if i == 0:
-        #         self.__outer_loop = board_loop
-        #     elif i == 1:
-        #         self.__inner_loop = board_loop
+    #     # for i,board_loop in enumerate(board_loop_tuple):
+    #     #     if board_loop == None:
+    #     #         continue
+    #     #     board_loop.replace_item(end_loc, start_loc)
+    #     #     if i == 0:
+    #     #         self.__outer_loop = board_loop
+    #     #     elif i == 1:
+    #     #         self.__inner_loop = board_loop
 
     def __get_adjacent(cords):
 
