@@ -48,10 +48,10 @@ class GridLocation:
         """determines which piece should be placed on a location at the start"""
 
         if self.__cords[0] in BoardConstants.PLAYER_1_ROWS:
-            return Piece("y")
+            return Piece(BoardConstants.PLAYER_1_COLOUR)
         
         elif self.__cords[0] in BoardConstants.PLAYER_2_ROWS:
-            return Piece("g")
+            return Piece(BoardConstants.PLAYER_2_COLOUR)
 
         else:
             return None
