@@ -240,10 +240,6 @@ class Board:
         if (end_location.get_colour() != start_location.get_colour()) and (loop_count > 0):
             return True
 
-    def __is_valid_capture_either_direction(self, start_location, loc_right, loc_left, right_loop_count, left_loop_count):
-        if self.__is_valid_capture(start_location, loc_right, right_loop_count) or self.__is_valid_capture(start_location, loc_left, left_loop_count):
-            return True
-        return False
 
     def __check_direction_valid(self, start_location, end_location, loop_count):
 
