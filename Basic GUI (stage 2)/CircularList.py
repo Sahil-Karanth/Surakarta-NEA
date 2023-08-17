@@ -58,12 +58,15 @@ class CircularList:
 
         return ind_lst
     
-    def update_list(self, before_val, after_val):
+    def switch_positions(self, pos1, pos2):
 
-        """updates all occurences of before_val in the list to after_val"""
+        """replaces all occurences of pos1 with pos2 and all occurences of pos2 with pos1"""
 
-        ind_lst = self.__get_all_occurence_indexes(self.__lst, before_val)
+        pos1_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos1)
+        pos2_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos2)
 
-        for i in ind_lst:
-            self.__lst[i].set_piece(after_val.get_piece())
+        for i in pos1_ind_lst:
+            self.__lst[i].set_piece(pos2.get_piece())
 
+        for i in pos2_ind_lst:
+            self.__lst[i].set_piece(pos1.get_piece())

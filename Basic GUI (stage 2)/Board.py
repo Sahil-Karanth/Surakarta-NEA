@@ -123,7 +123,7 @@ class Board:
         start_cord = start_loc.get_cords()
         end_cord = end_loc.get_cords()
 
-        if start_loc.get_piece() == None:
+        if start_loc.is_empty():
             return False
 
         if not self.__is_valid_cord_pair(start_cord, end_cord):
@@ -134,7 +134,7 @@ class Board:
 
         moving_to_location = self.__board[end_cord[0]][end_cord[1]]
         
-        if self.__is_adjacent(start_loc, end_loc) and moving_to_location.get_piece() == None: # ! potentially change to moving_to_location.get_colour() == None
+        if self.__is_adjacent(start_loc, end_loc) and moving_to_location.is_empty(): # ! potentially change to moving_to_location.get_colour() == None
             return True
         
         return False
@@ -161,7 +161,7 @@ class Board:
 
         """Returns True if either start_location or end_location is vacant otherwise returns False"""
 
-        if start_location.get_piece() == None or end_location.get_piece() == None:
+        if start_location.is_empty() or end_location.is_empty():
             return True
         return False
 
@@ -220,12 +220,6 @@ class Board:
 
         return False
 
-    
-    def check_move_legal(self, start_loc, end_loc, player):
-        if self.check_normal_legal(start_loc, end_loc, player) or self.check_capture_legal(start_loc, end_loc, player):
-            return True
-        return False
-
     def __loop_pieces_same_colour(self, loc1, loc2):
         if (loc1.get_colour() == loc2.get_colour()) and (loc1.get_cords() != loc2.get_cords()):
             return True
@@ -251,7 +245,7 @@ class Board:
         if loop_count == 0 and not end_location.is_empty():
             return False
         
-        if (loop_count == 4) and (start_location.get_cords() == end_location.get_cords()):
+        if (loop_count == BoardConstants.NUM_BOARD_LOOPS) and (start_location.get_cords() == end_location.get_cords()):
             return False
         
         return True
@@ -269,56 +263,19 @@ class Board:
         board_loop.set_pointer(ind, "right")
         board_loop.set_pointer(ind, "left")
 
-        # left_loop_count = 0
-        # right_loop_count = 0
-        # right_invalid = False 
-        # left_invalid = False
-
         # the first two will be the same (the value at ind) so we can skip them
         board_loop.get_next_right()
         board_loop.get_next_left()
 
-        # prev_right = start_location
-        # prev_left = start_location
 
         if self.__search_direction(start_location, board_loop, "right") or self.__search_direction(start_location, board_loop, "left"):
             return True
 
-        return False        
-
-        # while not right_invalid:
-            
-        #     loc_right = board_loop.get_next_right()
-
-        #     if self.__loop_used(prev_right, loc_right):
-        #         right_loop_count += 1
-            
-        #     if self.__is_valid_capture(start_location, loc_right, right_loop_count):
-        #         return True
-            
-        #     if not self.__check_direction_valid(start_location, loc_right, right_loop_count):
-        #         right_invalid = True
-
-        #     prev_right = loc_right
-
-
-        # while not left_invalid:
-            
-        #     loc_left = board_loop.get_next_left()
-
-        #     if self.__loop_used(prev_left, loc_left):
-        #         left_loop_count += 1
-            
-        #     if self.__is_valid_capture(start_location, loc_left, left_loop_count):
-        #         return True
-            
-        #     if not self.__check_direction_valid(start_location, loc_left, left_loop_count):
-        #         left_invalid = True
-
-        #     prev_left = loc_left
-
+        return False
     
     def __search_direction(self, start_location, board_loop, direction):
+
+        """Returns True if a valid capture can be made in the direction specified by direction. Otherwise it returns False."""
 
         invalid = False
         loop_count = 0
@@ -345,7 +302,9 @@ class Board:
         return False
 
             
-    def __switch_piece_board_position(self, start_loc, end_loc):
+    def __switch_piece_positions(self, start_loc, end_loc):
+
+        """Switches the positions of the pieces at start_loc and end_loc in self.__board"""
 
         start_cords = start_loc.get_cords()
         end_cords = end_loc.get_cords()
@@ -361,7 +320,7 @@ class Board:
         prev_cords = prev_loc.get_cords()
         curr_cords = curr_loc.get_cords()
 
-        # a change in x and y cords mean a loop has been used
+        # a change in x and y cords between adjacent elements in a CircularList board loop mean a loop has been used
         if prev_cords[0] != curr_cords[0] and prev_cords[1] != curr_cords[1]:
             return True
         
@@ -370,24 +329,20 @@ class Board:
         
     def move_piece(self, start_loc, end_loc, move_type):
 
-        self.__inner_loop.update_list(start_loc, end_loc)
-        self.__inner_loop.update_list(end_loc, start_loc)
-
-        self.__outer_loop.update_list(start_loc, end_loc)
-        self.__outer_loop.update_list(end_loc, start_loc)
+        self.__inner_loop.switch_positions(start_loc, end_loc)
+        self.__outer_loop.switch_positions(start_loc, end_loc)
         
         if move_type == "capture":
             self.__update_piece_counts(end_loc)
 
-
-        self.__switch_piece_board_position(start_loc, end_loc)
+        self.__switch_piece_positions(start_loc, end_loc)
 
     
     def __update_piece_counts(self, end_loc):
-        if end_loc.get_colour() == "y":
+        if end_loc.get_colour() == BoardConstants.PLAYER_1_COLOUR:
             self.__num_player1_pieces -= 1
 
-        elif end_loc.get_colour() == "g":
+        elif end_loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
             self.__num_player2_pieces -= 1
 
 
@@ -418,24 +373,11 @@ class Board:
     #     #     elif i == 1:
     #     #         self.__inner_loop = board_loop
 
-    def __get_adjacent(cords):
-
-        adjacent_lst = []
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if (i == 0) and (j == 0):
-                    continue
-
-                adjacent_cord = (abs(cords[0] + i), abs(cords[1] + j))
-
-                if (cords[0] + i) < 0 or (cords[1] + j) > 5 or adjacent_cord in adjacent_lst:
-                    continue
-
-                adjacent_lst.append(adjacent_cord)
-
-        return adjacent_lst
     
     def check_has_legal_moves(self, location, player):
+
+        """Returns True if the location has a legal move to make otherwise returns False"""
+
         if location.get_piece() == None:
             return False
 
@@ -448,7 +390,7 @@ class Board:
                 opponent_locs.append(loc)
 
         for end_loc in opponent_locs:
-            if self.check_move_legal(location, end_loc, player):
+            if self.is_legal_move(location, end_loc, player, "move") or self.is_legal_move(location, end_loc, player, "capture"):
                 return True
 
         return False
@@ -457,12 +399,6 @@ class Board:
 
 
 
-# TODO (generally for MVP)
-    # add constants / constant class (e.g. for cordinates, colours, etc.)
-    # add comments and docstrings
-    # add terminal UI
-    # add main game loop
-    # work on player class / implementing player functionality
 
 
 

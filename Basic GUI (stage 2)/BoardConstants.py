@@ -9,6 +9,7 @@ class BoardConstants:
     PLAYER_2_COLOUR = "g"
     NUM_STARTING_PIECES_EACH = 12
     ADJACENT_CORD_DIFFS = (1, 2)
+    NUM_BOARD_LOOPS = 4
 
     OUTER_LOOP_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
