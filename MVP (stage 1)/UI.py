@@ -1,6 +1,7 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
+from BoardConstants import BoardConstants
 
 class Terminal_UI:
     
@@ -12,8 +13,8 @@ class Terminal_UI:
         # player1name = input("Enter player 1's name: ")
         # player2name = input("Enter player 2's name: ")
         # TEST CODE
-        player1name = "Player 1 (B)"
-        player2name = "Player 2 (G)"
+        player1name = f"Player 1 ({BoardConstants.PLAYER_1_COLOUR})"
+        player2name = f"Player 2 ({BoardConstants.PLAYER_2_COLOUR})"
         # END TEST CODE
         return Game(player1name, player2name)
     
@@ -41,12 +42,12 @@ class Terminal_UI:
         disp_board = []
         for row in board:
             for loc in row:
-                if loc.get_piece() == None:
+                if loc.is_empty():
                     disp_board.append(f"{'.'}")
                 else:
                     disp_board.append(loc.get_colour())
         
-        disp_board = oneD_to_twoD_array(disp_board, 6)
+        disp_board = oneD_to_twoD_array(disp_board, BoardConstants.MAX_ROW_INDEX + 1)
 
         self.__display_row_indexes()
 
@@ -56,7 +57,7 @@ class Terminal_UI:
 
     def __display_row_indexes(self):
         print("     ", end="")
-        print("  ".join([str(i) for i in range(6)]))
+        print("  ".join([str(i) for i in range(BoardConstants.MAX_ROW_INDEX + 1)]))
         print("    ", end="")
         print("—" * 17)
 
@@ -79,10 +80,10 @@ class Terminal_UI:
 
     def play_game(self):
 
-        while not self.__game.get_game_over():
+        while not self.__game.is_game_over():
             self.display_board()
             print()
-            print(f"{self.__game.get_current_player().get_name()}'s turn.")
+            print(f"{self.__game.get_current_player_name()}'s turn.")
             print()
 
             valid = False
@@ -109,22 +110,11 @@ class Terminal_UI:
                 else:
                     print("Invalid move. Please try again.")
 
-            if move_type == "move":
-                self.__game.move_piece(start_loc, end_loc)
-
-            elif move_type == "capture":
-                self.__game.capture_piece(start_loc, end_loc)
-
+            self.__game.move_piece(start_loc, end_loc, move_type)
+            
             self.__game.switch_current_player()
             self.__game.set_game_status()
 
         self.display_board()
         self.display_winner()
       
-
-
-ui = Terminal_UI()
-    
-ui.play_game()
-
-

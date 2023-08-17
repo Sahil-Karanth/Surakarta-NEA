@@ -512,12 +512,3 @@ class Graphical_UI(UI):
                 self.__make_move_on_display(values)
 
         self.__window.close()
-
-
-
-
-
-
-ui = Graphical_UI()
-
-ui.play_game()

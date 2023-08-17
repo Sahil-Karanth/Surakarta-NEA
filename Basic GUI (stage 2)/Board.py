@@ -65,10 +65,6 @@ class Board:
         self.__board[2][2].set_piece(Piece("g"))
 
 
-        for i in self.__inner_loop.get_lst_TEST():
-            print(i.get_cords(), i.get_piece())
-
-
     def __get_loop_from_text(self, text):
         if text == "INNER":
             return (self.__inner_loop, None)

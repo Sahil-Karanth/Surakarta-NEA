@@ -1,23 +1,19 @@
 from Player import HumanPlayer
 from Board import Board
-from GridLocation import GridLocation
+from BoardConstants import BoardConstants
 
 class Game:
 
     def __init__(self, player1name, player2name):
-        self.__player1 = HumanPlayer(player1name, "B") # ! FIX THIS: make sure colours are in some class or centralised
-        self.__player2 = HumanPlayer(player2name, "G")
+        self.__player1 = HumanPlayer(player1name, BoardConstants.PLAYER_1_COLOUR)
+        self.__player2 = HumanPlayer(player2name, BoardConstants.PLAYER_2_COLOUR)
         self.__game_over = False
         self.__board = Board()
         self.__current_player = self.__player1
         self.__non_current_player = self.__player2
 
     def is_legal_move(self, start_loc, end_loc, move_type):
-        if move_type == "move":
-            return self.__board.check_normal_legal(start_loc, end_loc, self.__current_player)
-        
-        elif move_type == "capture":
-            return self.__board.check_capture_legal(start_loc, end_loc, self.__current_player)
+        return self.__board.is_legal_move(start_loc, end_loc, self.__current_player, move_type)
 
     def set_game_status(self):
 
@@ -41,14 +37,11 @@ class Game:
     def get_board_state(self):
         return self.__board.get_board_state()
     
-    def get_board(self):
-        return self.__board
-    
-    def get_game_over(self):
+    def is_game_over(self):
         return self.__game_over
 
     def get_winner(self):
-        if self.get_game_over() == True:
+        if self.is_game_over() == True:
             if self.__board.get_piece_count("player1") > self.__board.get_piece_count("player2"):
                 return self.__player1
             
@@ -56,18 +49,18 @@ class Game:
                 return self.__player2
             
             else:
-                return "DRAW"
+                return None
             
         return False
 
-    def move_piece(self, start_location, end_location):
-        self.__board.move_piece(start_location, end_location, self.__current_player)
+    def move_piece(self, start_location, end_location, move_type):
+        self.__board.move_piece(start_location, end_location, move_type)
 
-    def capture_piece(self, start_location, end_location):
-        self.__board.capture_piece(start_location, end_location)
+    # def capture_piece(self, start_location, end_location):
+    #     self.__board.capture_piece(start_location, end_location)
 
-    def get_current_player(self):
-        return self.__current_player
+    def get_current_player_name(self):
+        return self.__current_player.get_name()
     
     def switch_current_player(self):
         self.__current_player, self.__non_current_player = self.__non_current_player, self.__current_player

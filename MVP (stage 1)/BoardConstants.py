@@ -5,6 +5,11 @@ class BoardConstants:
     PLAYER_1_ROWS = (0, 1)
     PLAYER_2_ROWS = (4, 5)
     EDGE_LOCATION_CORDS = ((0, 0), (0, 5), (5, 0), (5, 5))
+    PLAYER_1_COLOUR = "y"
+    PLAYER_2_COLOUR = "g"
+    NUM_STARTING_PIECES_EACH = 12
+    ADJACENT_CORD_DIFFS = (1, 2)
+    NUM_BOARD_LOOPS = 4
 
     OUTER_LOOP_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),

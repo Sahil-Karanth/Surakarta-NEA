@@ -1,5 +1,5 @@
-from UI import Terminal_UI
+from UI import Graphical_UI
 
-ui = Terminal_UI()
+ui = Graphical_UI()
 
 ui.play_game()
