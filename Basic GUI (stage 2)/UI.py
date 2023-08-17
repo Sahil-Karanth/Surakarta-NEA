@@ -173,7 +173,8 @@ class Graphical_UI(UI):
 
         self.__highlighted_board_positions = []
 
-        self.__window = self.__setup_home_page()
+        self.__window = None
+        self.__setup_home_page()
 
         self.__game = None
 
@@ -226,8 +227,11 @@ class Graphical_UI(UI):
         ]
 
 
-        # needs to be returned as this is the first window created
-        return self.__create_window("Surakarta", layout, "center")
+        # if returning to the home page (self.__window is not None), close the current window
+        if self.__window:
+            self.__window.close()
+
+        self.__create_window("Surakarta", layout, "center")
     
     def __create_menu(self):
 
@@ -359,6 +363,7 @@ class Graphical_UI(UI):
             [board_layout],
         ]
 
+        self.__window.close()
         self.__create_window("Match", layout, "center")
 
 
@@ -406,12 +411,14 @@ class Graphical_UI(UI):
                 else:
                     sg.popup(f"{winning_player.get_name()} has won the game!", keep_on_top=True)
 
-
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
 
         self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
         self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
+
+        if self.__game.is_game_over():
+            self.__setup_home_page()
 
         self.__highlighted_board_positions = []
 
@@ -506,7 +513,8 @@ class Graphical_UI(UI):
                 self.__toggle_highlight_board_position(event)
 
             elif event == "Home":
-                self.__setup_home_page() # ! FIXME doesn't fully work (doesn't close the window)
+                self.__window.close()
+                self.__setup_home_page()
 
             elif event == "submit_move_button":
                 self.__make_move_on_display(values)
