@@ -397,11 +397,8 @@ class Graphical_UI(UI):
 
             self.__update_current_player_display()
             self.__game.switch_current_player()
-
-            # self.__game.set_game_status()
             
-            if move_type == "capture": # ! optimisation to use instead of above
-                self.__end_if_game_over()
+            self.__end_if_game_over()
 
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
@@ -423,11 +420,7 @@ class Graphical_UI(UI):
 
         if self.__game.is_game_over():
             winning_player = self.__game.get_winner()
-
-            if winning_player == None:
-                sg.popup("The game was a draw!", keep_on_top=True)
-            else:
-                sg.popup(f"{winning_player.get_name()} has won the game!", keep_on_top=True)
+            sg.popup(f"{winning_player.get_name()} has won the game!", keep_on_top=True)
 
 
 

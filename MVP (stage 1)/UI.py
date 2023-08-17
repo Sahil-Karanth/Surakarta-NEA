@@ -63,10 +63,7 @@ class Terminal_UI:
 
     def display_winner(self):
         winner = self.__game.get_winner()
-        if winner == "DRAW":
-            print("The game has ended in a draw.")
-        else:
-            print(f"{winner.get_name()} won!")
+        print(f"{winner.get_name()} won!")
 
     def get_move_type(self):
         valid = False
@@ -113,6 +110,7 @@ class Terminal_UI:
             self.__game.move_piece(start_loc, end_loc, move_type)
             
             self.__game.switch_current_player()
+            
             self.__game.set_game_status()
 
         self.display_board()

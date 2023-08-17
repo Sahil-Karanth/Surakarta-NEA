@@ -17,22 +17,12 @@ class Game:
 
     def set_game_status(self):
 
-        if self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0:
+        """Sets self.__game_over to True if either player has no pieces left. A legal move can always
+        be played in Surakarta, so this is the only way the game can end."""
+
+        if (self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0):
             self.__game_over = True
             return
-        
-        for row in self.__board.get_board_state():
-            for loc in row:
-                if loc.get_piece() == None:
-                    continue
-                elif loc.get_colour() == self.__current_player.get_colour():
-                    move_is_legal = self.__board.check_has_legal_moves(loc, self.__current_player)
-
-                elif loc.get_colour() == self.__non_current_player.get_colour():
-                    move_is_legal = self.__board.check_has_legal_moves(loc, self.__non_current_player)
-
-                if move_is_legal:
-                    return
 
     def get_board_state(self):
         return self.__board.get_board_state()
