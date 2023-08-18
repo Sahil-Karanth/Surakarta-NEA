@@ -26,7 +26,6 @@ class Game:
 
         if (self.__player1.get_piece_count() == 0 or self.__player2.get_piece_count() == 0):
             self.__game_over = True
-            return
 
         # if (self.__board.get_piece_count("player1") == 0) or (self.__board.get_piece_count("player2") == 0):
         #     self.__game_over = True
@@ -38,13 +37,13 @@ class Game:
     def is_game_over(self):
         return self.__game_over
 
-    def get_winner(self): # ! THIS IS EXTRA WORK FOR THE PROGRAM DON'T NEED IT
-        if self.is_game_over() == True:
-            if self.__player1.get_piece_count() > self.__player2.get_piece_count():
-                return self.__player1
-            
-            elif self.__player2.get_piece_count() > self.__player1.get_piece_count():
-                return self.__player2
+    def get_winner(self):
+        # if self.is_game_over() == True:
+        if self.__player1.get_piece_count() > self.__player2.get_piece_count():
+            return self.__player1
+        
+        elif self.__player2.get_piece_count() > self.__player1.get_piece_count():
+            return self.__player2
 
 
             # if self.__board.get_piece_count("player1") > self.__board.get_piece_count("player2"):
@@ -52,11 +51,10 @@ class Game:
             
             # elif self.__board.get_piece_count("player2") > self.__board.get_piece_count("player1"):
             #     return self.__player2
+        
+        else:
+            raise Exception("Attempting to get winner when game is not over.")
             
-            else:
-                return None
-            
-        return False
 
     def move_piece(self, start_location, end_location, move_type):
         self.__board.move_piece(start_location, end_location, move_type)

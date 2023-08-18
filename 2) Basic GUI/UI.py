@@ -268,7 +268,7 @@ class Graphical_UI(UI):
         start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
         end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
 
-        start_loc_colour = start_loc.get_colour()
+        # start_loc_colour = start_loc.get_colour()
 
         if values["move_type_radio_move"]:
             move_type = "move"
@@ -294,22 +294,21 @@ class Graphical_UI(UI):
                 self.__update_display_number_captured_pieces()
                 self.__end_if_game_over()
             
-
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
 
         self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
         self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
 
+        self.__highlighted_board_positions = []
+
         if self.__game.is_game_over():
             self.__setup_home_page()
-
-        self.__highlighted_board_positions = []
 
 
     def __end_if_game_over(self):
 
-        """uses set_game_status to update the game's status and end the game with a popup if necessary"""
+        """uses set_game_status to update the game's status and ends the game with a popup if necessary"""
 
         self.__game.set_game_status()
 
