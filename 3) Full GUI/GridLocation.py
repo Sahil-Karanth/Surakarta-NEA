@@ -4,7 +4,7 @@ from BoardConstants import BoardConstants
 class GridLocation:
 
     """represnts information about a location on the board such as
-    the piece on it, its coordinates, and whether it is a loop index"""
+    the piece on it and its coordinates"""
 
     def __init__(self, cords):
         self.__cords = cords
@@ -12,16 +12,6 @@ class GridLocation:
         # initial values set for a fresh board
         self.__piece = self.__set_initial_piece()
         self.__loop = self.__set_loop()
-        self.__loop_index = self.__set_loop_index()
-
-    def __set_loop_index(self):
-        
-        """determines whether a location is a loop index"""
-
-        if (BoardConstants.MAX_ROW_INDEX in self.__cords or BoardConstants.MAX_ROW_INDEX in self.__cords) and self.__cords not in BoardConstants.EDGE_LOCATION_CORDS:
-            return True
-        else:
-            return False
 
     def __set_loop(self):
 
@@ -76,7 +66,4 @@ class GridLocation:
     
     def get_loop(self):
         return self.__loop
-    
-    def is_loop_index(self):
-        return self.__loop_index
 

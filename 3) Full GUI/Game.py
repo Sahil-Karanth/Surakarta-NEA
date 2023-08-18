@@ -1,6 +1,7 @@
 from Player import HumanPlayer
 from Board import Board
 from BoardConstants import BoardConstants
+from Move import Move
 
 class Game:
 
@@ -15,6 +16,9 @@ class Game:
 
         self.__game_over = False
         self.__board = Board(self.__player1, self.__player2)
+
+        self.__move_history_stack = []
+
         self.__current_player = self.__player1
         self.__non_current_player = self.__player2
 
@@ -50,6 +54,9 @@ class Game:
 
     def move_piece(self, start_location, end_location, move_type):
         self.__board.move_piece(start_location, end_location, move_type)
+        
+        move_obj = Move(start_location, end_location, move_type)
+        self.__move_history_stack.append(move_obj)
 
     def get_current_player_name(self):
         return self.__current_player.get_name()

@@ -341,33 +341,3 @@ class Board:
         elif end_loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
             self.__player2.remove_piece()
 
-    
-    def check_has_legal_moves(self, location, player):
-
-        """Returns True if the location has a legal move to make otherwise returns False"""
-
-        if location.get_piece() == None:
-            return False
-
-        opponent_locs = []
-
-        for row in self.__board:
-            for loc in row:
-                if loc.get_piece() == None or loc.get_colour() == player.get_colour():
-                    continue
-                opponent_locs.append(loc)
-
-        for end_loc in opponent_locs:
-            if self.is_legal_move(location, end_loc, player, "move") or self.is_legal_move(location, end_loc, player, "capture"):
-                return True
-
-        return False
-
-
-
-
-
-
-
-
-

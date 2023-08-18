@@ -230,6 +230,8 @@ class Graphical_UI(UI):
         capture_option = sg.Radio("Capture", key="move_type_radio_capture", group_id="move_type_radio", font=self.SUBHEADING_FONT_PARAMS)
         submit_move_button = sg.Button("Submit Move", font=(self.FONT, 15), key="submit_move_button")
 
+        undo_move_button = sg.Button("Undo Move", font=(self.FONT, 15), key="undo_move_button")
+
         player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
         player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
 
@@ -239,7 +241,7 @@ class Graphical_UI(UI):
         layout = [
             [self.__create_menu()],
             [player_turn_frame],
-            [move_option, capture_option, submit_move_button],
+            [undo_move_button, move_option, capture_option, submit_move_button],
             [sg.Column(player1_captured_layout), sg.Column(board_layout), sg.Column(player2_captured_layout)],
         ]
 
@@ -370,6 +372,17 @@ class Graphical_UI(UI):
             self.__highlighted_board_positions.append(key)
 
 
+    def __undo_move(self):
+
+        """undoes the last move made"""
+
+        # ! to implement
+        # call an undo method in game class
+        # update board display
+        # update current player display
+        # update number of captured pieces display
+
+
     def __create_game_object(self, name1, name2):
         self.__game = Game(name1, name2)
 
@@ -399,6 +412,9 @@ class Graphical_UI(UI):
             elif event == "submit_AI_play_button":
                 # print("AI SUBMIT")
                 pass
+
+            elif event == "undo_move_button":
+                self.__undo_move()
 
             elif self.__is_board_position(event):
                 self.__toggle_highlight_board_position(event)
