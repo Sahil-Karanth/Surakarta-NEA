@@ -93,23 +93,6 @@ class Board:
         return tuple(common_loops)
         
 
-        
-
-
-
-        # if text == "INNER":
-        #     return (self.__inner_loop, None)
-        # elif text == "OUTER":
-        #     return (None, self.__outer_loop)
-        # elif text == "BOTH":
-        #     return (self.__inner_loop, self.__outer_loop)
-        
-    # def get_piece_count(self, colour):
-    #     if colour == "player1":
-    #         return self.__num_player1_pieces
-    #     elif colour == "player2":
-    #         return self.__num_player2_pieces
-
     def __build_board(self):
         board = []
 
@@ -192,16 +175,6 @@ class Board:
             return True
         return False
 
-    def __both_locations_same_loop(self, start_location, end_location):
-
-        """Returns True if both start_location and end_location are in the same loop otherwise returns False"""
-
-        if start_location.get_loop() == "BOTH" or end_location.get_loop() == "BOTH":
-            return True
-        if start_location.get_loop() == end_location.get_loop():
-            return True
-        return False
-
     def check_capture_legal(self, start_loc, end_loc, player): # try all possible captures
 
         start_cords = start_loc.get_cords()
@@ -218,9 +191,6 @@ class Board:
 
         if self.__either_locations_vacant(start_loc, end_loc):
             return False
-        
-        # if not self.__both_locations_same_loop(start_loc, end_loc):
-        #     return False
 
         board_loop_tuple = self.__get_common_loops(start_loc.get_loop(), end_loc.get_loop())
         
@@ -353,26 +323,8 @@ class Board:
         
     def move_piece(self, start_loc, end_loc, move_type):
 
-        # print("INNER LOOP BEFORE")
-        # for i in self.__inner_loop.get_lst_TEST():
-        #     print(i.get_cords(), i.get_colour())
-
         self.__inner_loop.switch_positions(start_loc, end_loc)
-
-        # print("INNER LOOP AFTER")
-        # for i in self.__inner_loop.get_lst_TEST():
-        #     print(i.get_cords(), i.get_colour())
-
-
-        # print("OUTER LOOP BEFORE")
-        # for i in self.__outer_loop.get_lst_TEST():
-        #     print(i.get_cords(), i.get_colour())
-
         self.__outer_loop.switch_positions(start_loc, end_loc)
-
-        # print("OUTER LOOP AFTER")
-        # for i in self.__outer_loop.get_lst_TEST():
-        #     print(i.get_cords(), i.get_colour())
         
         if move_type == "capture":
             self.__inner_loop.remove_piece(start_loc)
@@ -388,33 +340,6 @@ class Board:
 
         elif end_loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
             self.__player2.remove_piece()
-
-    # def capture_piece(self, start_loc, end_loc):
-    #     if end_loc.get_colour() == "y":
-    #         self.__num_player1_pieces -= 1
-
-    #     elif end_loc.get_colour() == "g":
-    #         self.__num_player2_pieces -= 1
-
-    #     self.__switch_piece_board_position(start_loc, end_loc)
-
-
-    #     self.__inner_loop.update_list(start_loc, end_loc)
-    #     self.__inner_loop.update_list(end_loc, start_loc)
-
-    #     self.__outer_loop.update_list(start_loc, end_loc)
-    #     self.__outer_loop.update_list(end_loc, start_loc)
-
-    #     # board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
-
-    #     # for i,board_loop in enumerate(board_loop_tuple):
-    #     #     if board_loop == None:
-    #     #         continue
-    #     #     board_loop.replace_item(end_loc, start_loc)
-    #     #     if i == 0:
-    #     #         self.__outer_loop = board_loop
-    #     #     elif i == 1:
-    #     #         self.__inner_loop = board_loop
 
     
     def check_has_legal_moves(self, location, player):

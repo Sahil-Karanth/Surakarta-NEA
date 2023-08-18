@@ -255,9 +255,6 @@ class Graphical_UI(UI):
         self.__window["player2_captured_text"].update(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}")
 
 
-
-
-
     def __make_move_on_display(self, values):
 
         """updates the onscreen board and game object board with the move made"""

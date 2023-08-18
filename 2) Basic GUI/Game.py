@@ -29,9 +29,6 @@ class Game:
         if (self.__player1.get_piece_count() == 0 or self.__player2.get_piece_count() == 0):
             self.__game_over = True
 
-        # if (self.__board.get_piece_count("player1") == 0) or (self.__board.get_piece_count("player2") == 0):
-        #     self.__game_over = True
-        #     return
 
     def get_board_state(self):
         return self.__board.get_board_state()
@@ -46,13 +43,6 @@ class Game:
         
         elif self.__player2.get_piece_count() > self.__player1.get_piece_count():
             return self.__player2
-
-
-            # if self.__board.get_piece_count("player1") > self.__board.get_piece_count("player2"):
-            #     return self.__player1
-            
-            # elif self.__board.get_piece_count("player2") > self.__board.get_piece_count("player1"):
-            #     return self.__player2
         
         else:
             raise Exception("Attempting to get winner when game is not over.")
@@ -61,44 +51,17 @@ class Game:
     def move_piece(self, start_location, end_location, move_type):
         self.__board.move_piece(start_location, end_location, move_type)
 
-    # def capture_piece(self, start_location, end_location):
-    #     self.__board.capture_piece(start_location, end_location)
-
     def get_current_player_name(self):
         return self.__current_player.get_name()
     
     def switch_current_player(self):
         self.__current_player, self.__non_current_player = self.__non_current_player, self.__current_player
-
-    # def get_player1_name(self):
-    #     return self.__player1.get_name()
-    
-    # def get_player2_name(self):
-    #     return self.__player2.get_name()
     
     def get_player_name(self, player_number):
         return self.__player_lst[player_number - 1].get_name()
     
-    # def get_player1_colour(self):
-    #     return self.__player1.get_colour()
-    
-    # def get_player2_colour(self):
-    #     return self.__player2.get_colour()
-    
     def get_player_colour(self, player_number):
         return self.__player_lst[player_number - 1].get_colour()
-
-    # def get_player1_piece_count(self):
-    #     return self.__player1.get_piece_count()
-    
-    # def get_player2_piece_count(self):
-    #     return self.__player2.get_piece_count()
     
     def get_player_piece_count(self, player_number):
         return self.__player_lst[player_number - 1].get_piece_count()
-    
-    # def get_num_player1_has_captured(self):
-    #     return self.__num_player1_has_captured
-
-    # def get_num_player2_has_captured(self):
-    #     return self.__num_player2_has_captured
