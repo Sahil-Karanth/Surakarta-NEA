@@ -7,8 +7,12 @@ class Game:
     def __init__(self, player1name, player2name):
         self.__player1 = HumanPlayer(player1name, BoardConstants.PLAYER_1_COLOUR)
         self.__player2 = HumanPlayer(player2name, BoardConstants.PLAYER_2_COLOUR)
+
+        # self.__num_player1_has_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__player2.get_piece_count()
+        # self.__num_player2_has_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__player1.get_piece_count()
+
         self.__game_over = False
-        self.__board = Board()
+        self.__board = Board(self.__player1, self.__player2)
         self.__current_player = self.__player1
         self.__non_current_player = self.__player2
 
@@ -20,9 +24,13 @@ class Game:
         """Sets self.__game_over to True if either player has no pieces left. A legal move can always
         be played in Surakarta, so this is the only way the game can end."""
 
-        if (self.__board.get_piece_count("player1") == 0 or self.__board.get_piece_count("player2") == 0):
+        if (self.__player1.get_piece_count() == 0 or self.__player2.get_piece_count() == 0):
             self.__game_over = True
             return
+
+        # if (self.__board.get_piece_count("player1") == 0) or (self.__board.get_piece_count("player2") == 0):
+        #     self.__game_over = True
+        #     return
 
     def get_board_state(self):
         return self.__board.get_board_state()
@@ -30,13 +38,20 @@ class Game:
     def is_game_over(self):
         return self.__game_over
 
-    def get_winner(self):
+    def get_winner(self): # ! THIS IS EXTRA WORK FOR THE PROGRAM DON'T NEED IT
         if self.is_game_over() == True:
-            if self.__board.get_piece_count("player1") > self.__board.get_piece_count("player2"):
+            if self.__player1.get_piece_count() > self.__player2.get_piece_count():
                 return self.__player1
             
-            elif self.__board.get_piece_count("player2") > self.__board.get_piece_count("player1"):
+            elif self.__player2.get_piece_count() > self.__player1.get_piece_count():
                 return self.__player2
+
+
+            # if self.__board.get_piece_count("player1") > self.__board.get_piece_count("player2"):
+            #     return self.__player1
+            
+            # elif self.__board.get_piece_count("player2") > self.__board.get_piece_count("player1"):
+            #     return self.__player2
             
             else:
                 return None
@@ -66,3 +81,15 @@ class Game:
     
     def get_player2_colour(self):
         return self.__player2.get_colour()
+    
+    def get_player1_piece_count(self):
+        return self.__player1.get_piece_count()
+    
+    def get_player2_piece_count(self):
+        return self.__player2.get_piece_count()
+    
+    # def get_num_player1_has_captured(self):
+    #     return self.__num_player1_has_captured
+
+    # def get_num_player2_has_captured(self):
+    #     return self.__num_player2_has_captured

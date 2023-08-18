@@ -60,7 +60,7 @@ class CircularList:
     
     def switch_positions(self, pos1, pos2):
 
-        """replaces all occurences of pos1 with pos2 and all occurences of pos2 with pos1"""
+        """replaces all occurences of pos1's piece with pos2's piece and all occurences of pos2's piece with pos1's piece"""
 
         pos1_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos1)
         pos2_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos2)
@@ -70,3 +70,13 @@ class CircularList:
 
         for i in pos2_ind_lst:
             self.__lst[i].set_piece(pos1.get_piece())
+
+
+    def remove_piece(self, val):
+
+        """replaces all occurences of val's piece with None"""
+
+        ind_lst = self.__get_all_occurence_indexes(self.__lst, val)
+
+        for i in ind_lst:
+            self.__lst[i].set_piece(None)

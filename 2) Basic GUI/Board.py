@@ -6,21 +6,25 @@ from Piece import Piece
 
 class Board:
 
-    def __init__(self):
+    def __init__(self, player1, player2):
         self.__board = []
         self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
         self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
 
         self.__build_board()
-        self.__edit_board_for_testing()
+        # self.__edit_board_for_testing()
 
         # self.__num_player1_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
         # self.__num_player2_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
 
-        # TEST CODE
-        self.__num_player1_pieces = 1
-        self.__num_player2_pieces = 2
-        # END TEST CODE
+        # # TEST CODE
+        # self.__num_player1_pieces = 1
+        # self.__num_player2_pieces = 2
+        # # END TEST CODE
+
+        self.__player1 = player1
+        self.__player2 = player2
+
 
     def get_board_state(self):
         return self.__board
@@ -61,6 +65,7 @@ class Board:
         self.__inner_loop = CircularList(inner_lst)
 
         self.__board[2][4].set_piece(Piece("y"))
+        self.__board[0][0].set_piece(Piece("y"))
         self.__board[4][4].set_piece(Piece("g"))
         self.__board[2][2].set_piece(Piece("g"))
 
@@ -73,11 +78,11 @@ class Board:
         elif text == "BOTH":
             return (self.__inner_loop, self.__outer_loop)
         
-    def get_piece_count(self, colour):
-        if colour == "player1":
-            return self.__num_player1_pieces
-        elif colour == "player2":
-            return self.__num_player2_pieces
+    # def get_piece_count(self, colour):
+    #     if colour == "player1":
+    #         return self.__num_player1_pieces
+    #     elif colour == "player2":
+    #         return self.__num_player2_pieces
 
     def __build_board(self):
         board = []
@@ -229,6 +234,8 @@ class Board:
             return False
         if (end_location.get_colour() != start_location.get_colour()) and (loop_count > 0):
             return True
+        
+        return False
 
 
     def __check_direction_valid(self, start_location, end_location, loop_count):
@@ -325,10 +332,30 @@ class Board:
         
     def move_piece(self, start_loc, end_loc, move_type):
 
+        # print("INNER LOOP BEFORE")
+        # for i in self.__inner_loop.get_lst_TEST():
+        #     print(i.get_cords(), i.get_colour())
+
         self.__inner_loop.switch_positions(start_loc, end_loc)
+
+        # print("INNER LOOP AFTER")
+        # for i in self.__inner_loop.get_lst_TEST():
+        #     print(i.get_cords(), i.get_colour())
+
+
+        # print("OUTER LOOP BEFORE")
+        # for i in self.__outer_loop.get_lst_TEST():
+        #     print(i.get_cords(), i.get_colour())
+
         self.__outer_loop.switch_positions(start_loc, end_loc)
+
+        # print("OUTER LOOP AFTER")
+        # for i in self.__outer_loop.get_lst_TEST():
+        #     print(i.get_cords(), i.get_colour())
         
         if move_type == "capture":
+            self.__inner_loop.remove_piece(start_loc)
+            self.__outer_loop.remove_piece(start_loc)
             self.__update_piece_counts(end_loc)
 
         self.__switch_piece_positions(start_loc, end_loc)
@@ -336,11 +363,10 @@ class Board:
     
     def __update_piece_counts(self, end_loc):
         if end_loc.get_colour() == BoardConstants.PLAYER_1_COLOUR:
-            self.__num_player1_pieces -= 1
+            self.__player1.remove_piece()
 
         elif end_loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
-            self.__num_player2_pieces -= 1
-
+            self.__player2.remove_piece()
 
     # def capture_piece(self, start_loc, end_loc):
     #     if end_loc.get_colour() == "y":

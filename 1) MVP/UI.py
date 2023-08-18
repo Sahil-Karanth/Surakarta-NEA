@@ -111,7 +111,8 @@ class Terminal_UI:
             
             self.__game.switch_current_player()
             
-            self.__game.set_game_status()
+            if move_type == "capture":
+                self.__game.set_game_status()
 
         self.display_board()
         self.display_winner()
