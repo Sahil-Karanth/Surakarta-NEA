@@ -53,10 +53,20 @@ class Game:
             
 
     def move_piece(self, start_location, end_location, move_type):
-        self.__board.move_piece(start_location, end_location, move_type)
-        
         move_obj = Move(start_location, end_location, move_type)
         self.__move_history_stack.append(move_obj)
+
+        self.__board.move_piece(start_location, end_location, move_type)
+
+
+    def undo_move(self):
+        if len(self.__move_history_stack) == 0:
+            return None
+        
+        move_obj = self.__move_history_stack.pop()
+        self.__board.undo_move(move_obj)
+
+        return move_obj
 
     def get_current_player_name(self):
         return self.__current_player.get_name()

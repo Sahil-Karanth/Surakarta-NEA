@@ -317,15 +317,20 @@ class Graphical_UI(UI):
 
 
 
-    def __update_board_display(self, start_loc, end_loc):
+    def __update_board_display(self, start_loc, end_loc, move_obj=None):
 
-        """updates the onscreen board with the move made"""
+        """updates the onscreen board with the move made. move_obj is only required when undoing a move"""
     
         start_cords = f"{start_loc.get_cords()[0]},{start_loc.get_cords()[1]}"
         end_cords = f"{end_loc.get_cords()[0]},{end_loc.get_cords()[1]}"
 
+        print("start loc colour: ", start_loc.get_colour())
+        print("end loc colour: ", end_loc.get_colour())
+
         self.__window[f"{start_cords}"].update(image_filename=f"blank_counter.png")   
-        self.__window[f"{end_cords}"].update(image_filename=f"{start_loc.get_colour()}_counter.png") 
+
+        self.__window[f"{end_cords}"].update(image_filename=f"{start_loc.get_colour()}_counter.png")
+
 
 
     def __update_current_player_display(self):
@@ -375,6 +380,17 @@ class Graphical_UI(UI):
     def __undo_move(self):
 
         """undoes the last move made"""
+
+        move_obj = self.__game.undo_move()
+
+        if move_obj == None:
+            sg.popup("No moves to undo", keep_on_top=True)
+            return
+
+        self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc())
+        self.__update_display_number_captured_pieces()
+        # self.__game.switch_current_player()
+        self.__update_current_player_display()
 
         # ! to implement
         # call an undo method in game class

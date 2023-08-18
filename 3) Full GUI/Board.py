@@ -341,3 +341,10 @@ class Board:
         elif end_loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
             self.__player2.remove_piece()
 
+    
+    def undo_move(self, move_obj):
+
+        """Undo the move specified by move_obj by making the move in reverse"""
+
+        if move_obj.get_move_type() == "move":
+            self.move_piece(move_obj.get_end_loc(), move_obj.get_start_loc(), "move")
