@@ -70,13 +70,39 @@ class Board:
         self.__board[2][2].set_piece(Piece("g"))
 
 
-    def __get_loop_from_text(self, text):
-        if text == "INNER":
-            return (self.__inner_loop, None)
-        elif text == "OUTER":
-            return (None, self.__outer_loop)
-        elif text == "BOTH":
-            return (self.__inner_loop, self.__outer_loop)
+    def __get_common_loops(self, text_loop_1, text_loop_2):
+
+        """Returns a tuple in the form in the form (inner_loop, outer_loop) containing the common 
+        loops between the two text loop representations passed in as arguments. If a loop is not common,
+        the corresponding element in the tuple will be None."""
+
+        loop_text_to_tuple_map = {
+            "INNER": (self.__inner_loop, None),
+            "OUTER": (None, self.__outer_loop),
+            "BOTH": (self.__inner_loop, self.__outer_loop)
+        }
+
+        loop_1_tuple = loop_text_to_tuple_map[text_loop_1]
+        loop_2_tuple = loop_text_to_tuple_map[text_loop_2]
+        common_loops = []
+
+        for a,b in zip(loop_1_tuple, loop_2_tuple):
+            if a and b:
+                common_loops.append(a)
+
+        return tuple(common_loops)
+        
+
+        
+
+
+
+        # if text == "INNER":
+        #     return (self.__inner_loop, None)
+        # elif text == "OUTER":
+        #     return (None, self.__outer_loop)
+        # elif text == "BOTH":
+        #     return (self.__inner_loop, self.__outer_loop)
         
     # def get_piece_count(self, colour):
     #     if colour == "player1":
@@ -193,17 +219,12 @@ class Board:
         if self.__either_locations_vacant(start_loc, end_loc):
             return False
         
-        if not self.__both_locations_same_loop(start_loc, end_loc):
-            return False
+        # if not self.__both_locations_same_loop(start_loc, end_loc):
+        #     return False
 
-        board_loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
-
-        if board_loop_tuple == None: # ! this should never happen so potentially get rid of this
-            return False
+        board_loop_tuple = self.__get_common_loops(start_loc.get_loop(), end_loc.get_loop())
         
         for board_loop in board_loop_tuple:
-            if board_loop == None:
-                continue
             starting_indexes = self.__get_piece_indexes_at(board_loop, start_loc)
             for ind in starting_indexes:
                 if self.__can_capture_either_direction(start_loc, ind, board_loop):
