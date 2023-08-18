@@ -220,8 +220,8 @@ class Graphical_UI(UI):
         board_layout = oneD_to_twoD_array(board_layout, len(display_board))
 
         player_turn_layout = [
-            [sg.Text(f"{self.__game.get_player1_name()}'s Turn", key="player1_turn_text", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
-            [sg.Text(f"{self.__game.get_player2_name()}'s Turn", key="player2_turn_text", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
+            [sg.Text(f"{self.__game.get_player_name(1)}'s Turn", key="player1_turn_text", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
+            [sg.Text(f"{self.__game.get_player_name(2)}'s Turn", key="player2_turn_text", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
         ]
 
         player_turn_frame = sg.Frame("", layout=player_turn_layout, border_width=0)
@@ -230,11 +230,11 @@ class Graphical_UI(UI):
         capture_option = sg.Radio("Capture", key="move_type_radio_capture", group_id="move_type_radio", font=self.SUBHEADING_FONT_PARAMS)
         submit_move_button = sg.Button("Submit Move", font=(self.FONT, 15), key="submit_move_button")
 
-        player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player2_piece_count()
-        player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player1_piece_count()
+        player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
+        player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
 
-        player1_captured_layout = [[sg.Text(f"{self.__game.get_player1_name()} captured pieces: {player1_captured}", key="player1_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
-        player2_captured_layout = [[sg.Text(f"{self.__game.get_player2_name()} captured pieces: {player2_captured}", key="player2_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
+        player1_captured_layout = [[sg.Text(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}", key="player1_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
+        player2_captured_layout = [[sg.Text(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}", key="player2_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
         
         layout = [
             [self.__create_menu()],
@@ -248,11 +248,11 @@ class Graphical_UI(UI):
 
 
     def __update_display_number_captured_pieces(self):
-        player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player2_piece_count()
-        player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player1_piece_count()
+        player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
+        player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
 
-        self.__window["player1_captured_text"].update(f"{self.__game.get_player1_name()} captured pieces: {player1_captured}")
-        self.__window["player2_captured_text"].update(f"{self.__game.get_player2_name()} captured pieces: {player2_captured}")
+        self.__window["player1_captured_text"].update(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}")
+        self.__window["player2_captured_text"].update(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}")
 
 
 
@@ -335,11 +335,11 @@ class Graphical_UI(UI):
 
         current_text = self.__window["player1_turn_text"]
 
-        if self.__game.get_current_player_name() == self.__game.get_player1_name():
-            current_text.update(f"{self.__game.get_player2_name()}'s Turn")
+        if self.__game.get_current_player_name() == self.__game.get_player_name(1):
+            current_text.update(f"{self.__game.get_player_name(2)}'s Turn")
         
-        elif self.__game.get_current_player_name() == self.__game.get_player2_name():
-            current_text.update(f"{self.__game.get_player1_name()}'s Turn")
+        elif self.__game.get_current_player_name() == self.__game.get_player_name(2):
+            current_text.update(f"{self.__game.get_player_name(1)}'s Turn")
 
 
     def __is_board_position(self, key):

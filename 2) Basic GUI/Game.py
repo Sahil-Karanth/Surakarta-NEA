@@ -8,6 +8,8 @@ class Game:
         self.__player1 = HumanPlayer(player1name, BoardConstants.PLAYER_1_COLOUR)
         self.__player2 = HumanPlayer(player2name, BoardConstants.PLAYER_2_COLOUR)
 
+        self.__player_lst = [self.__player1, self.__player2]
+
         # self.__num_player1_has_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__player2.get_piece_count()
         # self.__num_player2_has_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__player1.get_piece_count()
 
@@ -68,23 +70,32 @@ class Game:
     def switch_current_player(self):
         self.__current_player, self.__non_current_player = self.__non_current_player, self.__current_player
 
-    def get_player1_name(self):
-        return self.__player1.get_name()
+    # def get_player1_name(self):
+    #     return self.__player1.get_name()
     
-    def get_player2_name(self):
-        return self.__player2.get_name()
+    # def get_player2_name(self):
+    #     return self.__player2.get_name()
     
-    def get_player1_colour(self):
-        return self.__player1.get_colour()
+    def get_player_name(self, player_number):
+        return self.__player_lst[player_number - 1].get_name()
     
-    def get_player2_colour(self):
-        return self.__player2.get_colour()
+    # def get_player1_colour(self):
+    #     return self.__player1.get_colour()
     
-    def get_player1_piece_count(self):
-        return self.__player1.get_piece_count()
+    # def get_player2_colour(self):
+    #     return self.__player2.get_colour()
     
-    def get_player2_piece_count(self):
-        return self.__player2.get_piece_count()
+    def get_player_colour(self, player_number):
+        return self.__player_lst[player_number - 1].get_colour()
+
+    # def get_player1_piece_count(self):
+    #     return self.__player1.get_piece_count()
+    
+    # def get_player2_piece_count(self):
+    #     return self.__player2.get_piece_count()
+    
+    def get_player_piece_count(self, player_number):
+        return self.__player_lst[player_number - 1].get_piece_count()
     
     # def get_num_player1_has_captured(self):
     #     return self.__num_player1_has_captured
