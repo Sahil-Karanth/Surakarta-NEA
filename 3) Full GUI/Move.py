@@ -21,6 +21,3 @@ class Move:
 
     def get_move_type(self):
         return self.__move_type
-
-    def get_colour(self):
-        return self.__colour

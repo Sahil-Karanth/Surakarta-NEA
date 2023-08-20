@@ -317,19 +317,21 @@ class Graphical_UI(UI):
 
 
 
-    def __update_board_display(self, start_loc, end_loc, move_obj=None):
+    def __update_board_display(self, start_loc, end_loc, undo=False):
 
-        """updates the onscreen board with the move made. move_obj is only required when undoing a move"""
+        """updates the onscreen board with the move made. undo is True when undoing a move"""
     
         start_cords = f"{start_loc.get_cords()[0]},{start_loc.get_cords()[1]}"
         end_cords = f"{end_loc.get_cords()[0]},{end_loc.get_cords()[1]}"
 
-        print("start loc colour: ", start_loc.get_colour())
-        print("end loc colour: ", end_loc.get_colour())
-
         self.__window[f"{start_cords}"].update(image_filename=f"blank_counter.png")   
 
-        self.__window[f"{end_cords}"].update(image_filename=f"{start_loc.get_colour()}_counter.png")
+        if undo:
+            colour = end_loc.get_colour()
+        else:
+            colour = start_loc.get_colour()
+
+        self.__window[f"{end_cords}"].update(image_filename=f"{colour}_counter.png")
 
 
 
@@ -360,6 +362,12 @@ class Graphical_UI(UI):
 
         return tuple(int(i) for i in string_key.split(","))
     
+    def __tuple_key_cords_str(self, tuple_key):
+
+        """converts a tuple key of the form (x,y) to a string of the form 'x,y' where x and y are integers"""
+
+        return f"{tuple_key[0]},{tuple_key[1]}"
+    
 
     def __toggle_highlight_board_position(self, key):
 
@@ -386,18 +394,24 @@ class Graphical_UI(UI):
         if move_obj == None:
             sg.popup("No moves to undo", keep_on_top=True)
             return
+        
+        if move_obj.get_move_type() == "move":
+            self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc(), undo=True)
 
-        self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc())
+        elif move_obj.get_move_type() == "capture":
+            self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc(), undo=True)
+            
+            cords = self.__tuple_key_cords_str(move_obj.get_end_loc().get_cords())
+
+            print(move_obj.get_start_loc().get_colour())
+            print(move_obj.get_end_loc().get_colour())
+
+            self.__window[f"{cords}"].update(image_filename=f"g_counter.png")
+
+
         self.__update_display_number_captured_pieces()
-        # self.__game.switch_current_player()
         self.__update_current_player_display()
-
-        # ! to implement
-        # call an undo method in game class
-        # update board display
-        # update current player display
-        # update number of captured pieces display
-
+        self.__game.switch_current_player()
 
     def __create_game_object(self, name1, name2):
         self.__game = Game(name1, name2)
