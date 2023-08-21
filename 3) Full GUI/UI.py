@@ -50,9 +50,6 @@ class Graphical_UI(UI):
 
         self.__game = None
 
-        self.__capture_count_TEST = 0 # ! DELETE ME TEST CODE
-
-
     def __create_window(self, title, layout, justification):
 
         """Creates a window with the given title, layout and justification"""
@@ -395,18 +392,13 @@ class Graphical_UI(UI):
             sg.popup("No moves to undo", keep_on_top=True)
             return
         
-        if move_obj.get_move_type() == "move":
-            self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc(), undo=True)
+        
+        self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc(), undo=True)
 
-        elif move_obj.get_move_type() == "capture":
-            self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc(), undo=True)
-            
+        if move_obj.get_move_type() == "capture":            
             cords = self.__tuple_key_cords_str(move_obj.get_end_loc().get_cords())
 
-            print(move_obj.get_start_loc().get_colour())
-            print(move_obj.get_end_loc().get_colour())
-
-            self.__window[f"{cords}"].update(image_filename=f"g_counter.png")
+            self.__window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
 
 
         self.__update_display_number_captured_pieces()

@@ -16,6 +16,14 @@ class Player:
         self.__piece_count -= 1
         if self.__piece_count < 0:
             raise ValueError("Player has no pieces left, cannot remove piece")
+        
+    def add_piece(self):
+
+        """Adds a piece to the player's piece count. Only used to return a piece to a player after a move is undone."""
+
+        self.__piece_count += 1
+        if self.__piece_count > BoardConstants.NUM_STARTING_PIECES_EACH:
+            raise ValueError("Player has too many pieces, cannot add piece")
     
 
 class HumanPlayer(Player):

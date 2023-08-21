@@ -66,6 +66,9 @@ class Game:
         move_obj = self.__move_history_stack.pop()
         self.__board.undo_move(move_obj)
 
+        if move_obj.get_move_type() == "capture":
+            self.__current_player.add_piece()
+
         return move_obj
 
     def get_current_player_name(self):
