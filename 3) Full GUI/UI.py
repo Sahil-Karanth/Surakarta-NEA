@@ -47,9 +47,11 @@ class Graphical_UI(UI):
         self.__highlighted_board_positions = []
 
         self.__window = None
+        self.__current_page = None
         self.__setup_home_page()
 
         self.__game = None
+
 
     def __create_window(self, title, layout, justification):
 
@@ -103,6 +105,8 @@ class Graphical_UI(UI):
         if self.__window:
             self.__window.close()
 
+        self.__current_page = "home_page"
+
         self.__create_window("Surakarta", layout, "center")
     
     def __create_menu(self):
@@ -110,7 +114,7 @@ class Graphical_UI(UI):
         """Creates the menu which is displayed on every page"""
 
         menu_layout = [
-            ["Utilities", ["Home"]],
+            ["Utilities", ["Home", "Restart Match"]],
         ]
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
@@ -146,6 +150,7 @@ class Graphical_UI(UI):
         ]
 
         self.__window.close()
+        self.__current_page = "new_game_page"
         self.__window = self.__create_window("New Game", layout, "center")
 
     def __setup_help_page(self):
@@ -169,6 +174,7 @@ class Graphical_UI(UI):
         ]
 
         self.__window.close()
+        self.__current_page = "help_page"
         self.__window = self.__create_window("Help Page", layout, "center")
 
     def __toggle_play_inputs(self, key_to_make_visible):
@@ -192,9 +198,11 @@ class Graphical_UI(UI):
     def __make_piece_button(self, piece_type, key, visible=False):
         return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, pad=(30,30), key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
-    def __setup_match_page(self):
+    def __setup_match_page(self, player1name, player2name):
 
         """Creates the match page window where the game is played"""
+
+        self.__create_game_object(player1name, player2name)
 
         display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
         board_layout = []
@@ -244,6 +252,7 @@ class Graphical_UI(UI):
         ]
 
         self.__window.close()
+        self.__current_page = "match_page"
         self.__create_window("Match", layout, "center")
 
 
@@ -409,7 +418,6 @@ class Graphical_UI(UI):
     def __create_game_object(self, name1, name2):
         self.__game = Game(name1, name2)
 
-
     def play_game(self):
         while True:
             event, values = self.__window.read()
@@ -429,8 +437,7 @@ class Graphical_UI(UI):
                 self.__toggle_play_inputs("local_play_inputs")
 
             elif event == "submit_local_play_button":
-                self.__create_game_object(values["player_1_name_input"], values["player_2_name_input"])
-                self.__setup_match_page()
+                self.__setup_match_page(values["player_1_name_input"], values["player_2_name_input"])
 
             elif event == "submit_AI_play_button":
                 # print("AI SUBMIT")
@@ -445,6 +452,12 @@ class Graphical_UI(UI):
             elif event == "Home":
                 self.__window.close()
                 self.__setup_home_page()
+
+            elif event == "Restart Match":
+                if self.__current_page == "match_page":
+                    player1_name = self.__game.get_player_name(1)
+                    player2_name = self.__game.get_player_name(2)
+                    self.__setup_match_page(player1_name, player2_name)
 
             elif event == "submit_move_button":
                 self.__make_move_on_display(values)
