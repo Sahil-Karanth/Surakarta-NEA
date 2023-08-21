@@ -1,7 +1,6 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
-import sys
 from BoardConstants import BoardConstants
 import PySimpleGUI as sg
 import textwrap
@@ -128,7 +127,7 @@ class Graphical_UI(UI):
             [sg.Text("Difficulty", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Slider(range=(1, 3), default_value=1, orientation="h", size=(40, 15), pad=(0, self.COLUMN_PAD), key="difficulty_slider")],
             [sg.Text("Player Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.InputText("Enter your name", pad=(0, self.COLUMN_PAD), key="player_name_input")],
+            [sg.InputText("Player 1", pad=(0, self.COLUMN_PAD), key="player_name_input")],
         ]
 
         AI_input_col = sg.Column(key="AI_play_inputs", layout=AI_input_layout, pad=(0, self.COLUMN_PAD), visible=False)
@@ -198,11 +197,11 @@ class Graphical_UI(UI):
     def __make_piece_button(self, piece_type, key, visible=False):
         return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, pad=(30,30), key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
-    def __setup_match_page(self, player1name, player2name):
+    def __setup_match_page(self, player1name, player2name, ai_level=None):
 
         """Creates the match page window where the game is played"""
 
-        self.__create_game_object(player1name, player2name)
+        self.__create_game_object(player1name, player2name, ai_level)
 
         display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
         board_layout = []
@@ -411,8 +410,17 @@ class Graphical_UI(UI):
         self.__update_current_player_display()
         self.__game.switch_current_player()
 
-    def __create_game_object(self, name1, name2):
-        self.__game = Game(name1, name2)
+    def __difficulty_level_to_ai_name(self, difficulty_level):
+        name_level_dict = {
+            1: "Easy AI",
+            2: "Medium AI",
+            3: "Hard AI"
+        }
+
+        return name_level_dict[difficulty_level]
+
+    def __create_game_object(self, name1, name2, ai_level):
+        self.__game = Game(name1, name2, ai_level=ai_level)
 
     def play_game(self):
         while True:
@@ -436,8 +444,9 @@ class Graphical_UI(UI):
                 self.__setup_match_page(values["player_1_name_input"], values["player_2_name_input"])
 
             elif event == "submit_AI_play_button":
-                # print("AI SUBMIT")
-                pass
+                difficulty_level = int(values['difficulty_slider'])
+                ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
+                self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
 
             elif event == "undo_move_button":
                 self.__undo_move()

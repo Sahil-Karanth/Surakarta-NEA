@@ -1,18 +1,19 @@
-from Player import HumanPlayer
+from Player import HumanPlayer, EasyAIPlayer, MediumAIPlayer, HardAIPlayer
 from Board import Board
 from BoardConstants import BoardConstants
 from Move import Move
 
 class Game:
 
-    def __init__(self, player1name, player2name):
+    def __init__(self, player1name, player2name, ai_level=None):
         self.__player1 = HumanPlayer(player1name, BoardConstants.PLAYER_1_COLOUR)
-        self.__player2 = HumanPlayer(player2name, BoardConstants.PLAYER_2_COLOUR)
+
+        if ai_level:
+            self.__player2 = self.__make_ai_player(player2name)
+        else:
+            self.__player2 = HumanPlayer(player2name, BoardConstants.PLAYER_2_COLOUR)
 
         self.__player_lst = [self.__player1, self.__player2]
-
-        # self.__num_player1_has_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__player2.get_piece_count()
-        # self.__num_player2_has_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__player1.get_piece_count()
 
         self.__game_over = False
         self.__board = Board(self.__player1, self.__player2)
@@ -21,6 +22,15 @@ class Game:
 
         self.__current_player = self.__player1
         self.__non_current_player = self.__player2
+
+    def __make_ai_player(self, player2name):
+        difficulty_dict = {
+            "Easy AI": EasyAIPlayer,
+            "Medium AI": MediumAIPlayer,
+            "Hard AI": HardAIPlayer,
+        }
+
+        return difficulty_dict[player2name](BoardConstants.PLAYER_2_COLOUR)
 
     def is_legal_move(self, start_loc, end_loc, move_type):
         return self.__board.is_legal_move(start_loc, end_loc, self.__current_player, move_type)

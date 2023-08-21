@@ -34,6 +34,34 @@ class HumanPlayer(Player):
 
     def get_name(self):
         return self.__name
+    
+
+class EasyAIPlayer(Player):
+
+    def __init__(self, piece_colour):
+        super().__init__(piece_colour)
+        self.__name = "Easy AI"
+
+    def get_name(self):
+        return self.__name
+    
+
+class MediumAIPlayer(Player):
+    
+    def __init__(self, piece_colour):
+        super().__init__(piece_colour)
+        self.__name = "Medium AI"
+    def get_name(self):
+        return self.__name
+    
+class HardAIPlayer(Player):
+        
+    def __init__(self, piece_colour):
+        super().__init__(piece_colour)
+        self.__name = "Hard AI"
+
+    def get_name(self):
+        return self.__name
 
 
     
