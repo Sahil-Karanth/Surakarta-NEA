@@ -34,6 +34,7 @@ class Graphical_UI(UI):
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold", "underline")
     PARAGRAPH_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE)
 
+
     def __init__(self):
         super().__init__()
         self.__UI_type = "GRAPHICAL"
@@ -58,7 +59,7 @@ class Graphical_UI(UI):
             title=title,
             layout=layout,
             size=(700, 700),
-            resizable=False,
+            resizable=True,
             keep_on_top=True,
             margins=(20,20),
             element_justification=justification,
@@ -126,7 +127,7 @@ class Graphical_UI(UI):
             [sg.InputText("Enter your name", pad=(0, self.COLUMN_PAD), key="player_name_input")],
         ]
 
-        AI_input_frame = sg.Frame(title="", key="AI_play_inputs", layout=AI_input_layout, border_width=0, pad=(0, self.COLUMN_PAD), visible=False)
+        AI_input_col = sg.Column(key="AI_play_inputs", layout=AI_input_layout, pad=(0, self.COLUMN_PAD), visible=False)
 
         Local_input_layout = [
             [sg.Text("Player 1 Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
@@ -135,12 +136,12 @@ class Graphical_UI(UI):
             [sg.InputText("Player 2", pad=(0, self.COLUMN_PAD), key="player_2_name_input")],
         ]
 
-        Local_input_frame = sg.Frame(title="", key="local_play_inputs", layout=Local_input_layout, border_width=0, pad=(0, self.COLUMN_PAD), visible=False)
+        Local_input_col = sg.Column(key="local_play_inputs", layout=Local_input_layout, pad=(0, self.COLUMN_PAD), visible=False)
 
         layout = [
             [self.__create_menu()],
             [sg.Button("Local Play", font=(self.FONT, self.BUTTON_SIZE),pad=(100,100),size=self.BUTTON_DIMENSIONS, key="local_play_button"), sg.Button("AI Play", font=(self.FONT, self.BUTTON_SIZE), pad=(100,100), size=self.BUTTON_DIMENSIONS, key="AI_play_button")],
-            [AI_input_frame, Local_input_frame],
+            [AI_input_col, Local_input_col],
             [sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_local_play_button", visible=False), sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_AI_play_button", visible=False)],
         ]
 
