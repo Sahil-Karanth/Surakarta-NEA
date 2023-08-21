@@ -459,6 +459,10 @@ class Graphical_UI(UI):
                     player2_name = self.__game.get_player_name(2)
                     self.__setup_match_page(player1_name, player2_name)
 
+                else:
+                    sg.popup("You can only restart a match from the match page", title="Error Restarting Match", keep_on_top=True)
+
+
             elif event == "submit_move_button":
                 self.__make_move_on_display(values)
 
