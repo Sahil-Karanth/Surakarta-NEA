@@ -114,7 +114,7 @@ class Graphical_UI(UI):
         """Creates the menu which is displayed on every page"""
 
         menu_layout = [
-            ["Utilities", ["Home", "Restart Match"]],
+            ["Utilities", ["Home", "Restart Match", "Quit"]],
         ]
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
@@ -320,9 +320,7 @@ class Graphical_UI(UI):
 
         if self.__game.is_game_over():
             winning_player = self.__game.get_winner()
-            sg.popup(f"{winning_player.get_name()} has won the game!", keep_on_top=True)
-
-
+            sg.popup(f"{winning_player.get_name()} has won the game!", title="Game Over", keep_on_top=True)
 
     def __update_board_display(self, start_loc, end_loc, undo=False):
 
@@ -339,8 +337,6 @@ class Graphical_UI(UI):
             colour = start_loc.get_colour()
 
         self.__window[f"{end_cords}"].update(image_filename=f"{colour}_counter.png")
-
-
 
     def __update_current_player_display(self):
 
@@ -421,7 +417,7 @@ class Graphical_UI(UI):
     def play_game(self):
         while True:
             event, values = self.__window.read()
-            if event == sg.WIN_CLOSED or event == 'Cancel':
+            if event == sg.WIN_CLOSED or event == 'Quit':
                 break
 
             if event == "new_game_button":

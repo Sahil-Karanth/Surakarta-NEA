@@ -37,7 +37,7 @@ class Board:
         outer_lst = [GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS]
         inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
 
-        YELLOW_TEST_OUTER_LOOP = [(2,4), (2,2)]
+        YELLOW_TEST_OUTER_LOOP = [(2,4)]
         GREEN_TEST_OUTER_LOOP = []
 
         YELLOW_TEST_INNER_LOOP = [(2,4)]
@@ -65,9 +65,7 @@ class Board:
         self.__inner_loop = CircularList(inner_lst)
 
         self.__board[2][4].set_piece(Piece("y"))
-        self.__board[0][0].set_piece(Piece("y"))
         self.__board[4][4].set_piece(Piece("g"))
-        self.__board[2][2].set_piece(Piece("g"))
 
 
     def __get_common_loops(self, text_loop_1, text_loop_2):
