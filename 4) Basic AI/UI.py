@@ -51,6 +51,8 @@ class Graphical_UI(UI):
 
         self.__game = None
 
+        self.__ai_mode = False
+
 
     def __create_window(self, title, layout, justification):
 
@@ -263,7 +265,15 @@ class Graphical_UI(UI):
         self.__window["player2_captured_text"].update(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}")
 
 
-    def __make_move_on_display(self, values):
+    def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
+        self.__update_board_display(start_loc, end_loc)
+        self.__game.move_piece(start_loc, end_loc, move_type)
+
+        self.__update_current_player_display()
+        self.__game.switch_current_player()
+
+
+    def __make_move_on_display(self, values, ai_mode=False):
 
         """updates the onscreen board and game object board with the move made"""
 
@@ -272,8 +282,6 @@ class Graphical_UI(UI):
 
         start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
         end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
-
-        # start_loc_colour = start_loc.get_colour()
 
         if values["move_type_radio_move"]:
             move_type = "move"
@@ -289,11 +297,7 @@ class Graphical_UI(UI):
 
         if self.__game.is_legal_move(start_loc, end_loc, move_type):
 
-            self.__update_board_display(start_loc, end_loc)
-            self.__game.move_piece(start_loc, end_loc, move_type)
-
-            self.__update_current_player_display()
-            self.__game.switch_current_player()
+            self.__update_game_and_UI_post_move(start_loc, end_loc, move_type)
 
             if move_type == "capture":
                 self.__update_display_number_captured_pieces()
@@ -309,6 +313,11 @@ class Graphical_UI(UI):
 
         if self.__game.is_game_over():
             self.__setup_home_page()
+
+
+        if ai_mode:
+            move = self.__game.make_ai_move()
+            self.__update_game_and_UI_post_move(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
 
 
     def __end_if_game_over(self):
@@ -446,6 +455,7 @@ class Graphical_UI(UI):
             elif event == "submit_AI_play_button":
                 difficulty_level = int(values['difficulty_slider'])
                 ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
+                self.__ai_mode = True
                 self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
 
             elif event == "undo_move_button":
@@ -469,6 +479,6 @@ class Graphical_UI(UI):
 
 
             elif event == "submit_move_button":
-                self.__make_move_on_display(values)
+                self.__make_move_on_display(values, self.__ai_mode)
 
         self.__window.close()

@@ -31,7 +31,8 @@ class Board:
         self.loop_text_to_tuple_map = {
             "INNER": (self.__inner_loop, None),
             "OUTER": (None, self.__outer_loop),
-            "BOTH": (self.__inner_loop, self.__outer_loop)
+            "BOTH": (self.__inner_loop, self.__outer_loop),
+            None: (None, None)
         }
 
 
@@ -95,7 +96,6 @@ class Board:
         return tuple(common_loops)
     
     def __get_loop_from_text(self, text_loop):
-
         return self.loop_text_to_tuple_map[text_loop]
         
 
@@ -136,20 +136,25 @@ class Board:
             return True
         
     
-    def __get_adjacent(cords):
+    def __get_adjacent(self, loc):
 
-        """Returns a list of the coordinates of the locations adjacent to the location at cords"""
+        """Returns a list of the grid loccations on thte board that are adjacent to loc"""
 
+        cords = loc.get_cords()
         adjacent_lst = []
+        
         for i in range(-1, 2):
             for j in range(-1, 2):
-                if (i == 0) and (j == 0):
+                
+                if (i, j) == (0, 0):
                     continue
-                adjacent_cord = (abs(cords[0] + i), abs(cords[1] + j))
-                if (cords[0] + i) < 0 or (cords[1] + j) > BoardConstants.MAX_ROW_INDEX or adjacent_cord in adjacent_lst:
-                    continue
-                adjacent_lst.append(adjacent_cord)
-        return adjacent_lst
+
+                adjacent_cord = (cords[0] + i, cords[1] + j)
+                
+                if (adjacent_cord[0] >= 0 and adjacent_cord[0] <= 5) and (adjacent_cord[1] >= 0 and adjacent_cord[1] <= 5):
+                    adjacent_lst.append(adjacent_cord)
+
+        return [self.__board[i[0]][i[1]] for i in adjacent_lst]
 
     
     def check_normal_legal(self, start_loc, end_loc, player):

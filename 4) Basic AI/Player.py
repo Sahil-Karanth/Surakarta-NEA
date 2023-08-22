@@ -50,16 +50,15 @@ class EasyAIPlayer(Player):
         for row in board.get_board_state():
             for loc in row:
                 if (loc.get_colour() == self.get_colour()):
-                    move = self.board.get_capture_with(loc)
+                    move = board.get_capture_with(loc)
 
                     if move:
                         return move
                     
-                    move = self.board.get_corner_move(loc)
+                    move = board.get_corner_move(loc)
 
                     if move:
                         return move
-                    
                     
                     
                 
