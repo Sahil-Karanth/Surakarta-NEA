@@ -3,6 +3,7 @@ from GridLocation import GridLocation
 from BoardConstants import BoardConstants
 from utility_functions import oneD_to_twoD_array
 from Piece import Piece
+from Move import Move
 
 class Board:
 
@@ -24,6 +25,13 @@ class Board:
 
         self.__player1 = player1
         self.__player2 = player2
+
+
+        self.loop_text_to_tuple_map = {
+            "INNER": (self.__inner_loop, None),
+            "OUTER": (None, self.__outer_loop),
+            "BOTH": (self.__inner_loop, self.__outer_loop)
+        }
 
 
     def get_board_state(self):
@@ -74,14 +82,9 @@ class Board:
         loops between the two text loop representations passed in as arguments. If a loop is not common,
         the corresponding element in the tuple will be None."""
 
-        loop_text_to_tuple_map = {
-            "INNER": (self.__inner_loop, None),
-            "OUTER": (None, self.__outer_loop),
-            "BOTH": (self.__inner_loop, self.__outer_loop)
-        }
 
-        loop_1_tuple = loop_text_to_tuple_map[text_loop_1]
-        loop_2_tuple = loop_text_to_tuple_map[text_loop_2]
+        loop_1_tuple = self.loop_text_to_tuple_map[text_loop_1]
+        loop_2_tuple = self.loop_text_to_tuple_map[text_loop_2]
         common_loops = []
 
         for a,b in zip(loop_1_tuple, loop_2_tuple):
@@ -89,6 +92,10 @@ class Board:
                 common_loops.append(a)
 
         return tuple(common_loops)
+    
+    def __get_loop_from_text(self, text_loop):
+
+        return self.loop_text_to_tuple_map[text_loop]
         
 
     def __build_board(self):
@@ -243,7 +250,7 @@ class Board:
         return True
     
 
-    def __can_capture_either_direction(self, start_location, ind, board_loop):
+    def __can_capture_either_direction(self, start_location, ind, board_loop, return_capture=False):
 
         """Returns True if a capture can be made in either direction starting at the piece at ind in board_loop. Otherwise it returns False.
         If a valid capture cannot be made with adjacent locations, further locations are checked until either a valid capture is found or
@@ -259,15 +266,29 @@ class Board:
         board_loop.get_next_right()
         board_loop.get_next_left()
 
+        right_search = self.__search_direction(start_location, board_loop, "right", return_capture)
 
-        if self.__search_direction(start_location, board_loop, "right") or self.__search_direction(start_location, board_loop, "left"):
+        if right_search and return_capture:
+            return right_search
+        
+        elif right_search:
+            return True
+        
+        left_search = self.__search_direction(start_location, board_loop, "left", return_capture)
+
+        if left_search and return_capture:
+            return left_search
+        
+        elif left_search:
             return True
 
         return False
     
-    def __search_direction(self, start_location, board_loop, direction):
+    def __search_direction(self, start_location, board_loop, direction, return_capture=False):
 
-        """Returns True if a valid capture can be made in the direction specified by direction. Otherwise it returns False."""
+        """Returns True if a valid capture can be made in the direction specified by direction. Otherwise it returns False.
+        If return_capture is True, the method will return the Move object representing the capture if a valid capture is found.
+        This is used by the Easy AI opponent"""
 
         invalid = False
         loop_count = 0
@@ -284,8 +305,10 @@ class Board:
                 loop_count += 1
             
             if self.__is_valid_capture(start_location, curr_loc, loop_count):
+                if return_capture:
+                    return Move(start_location, curr_loc, "capture")
                 return True
-            
+
             if not self.__check_direction_valid(start_location, curr_loc, loop_count):
                 invalid = True
 
@@ -356,3 +379,54 @@ class Board:
         piece = Piece(colour)
 
         self.__board[cords[0]][cords[1]].set_piece(piece)
+
+
+    def check_has_legal_moves(self, location, player):
+
+        """Returns True if the location has a legal move to make otherwise returns False"""
+
+        if location.get_piece() == None:
+            return False
+
+        opponent_locs = []
+
+        for row in self.__board:
+            for loc in row:
+                if loc.get_piece() == None or loc.get_colour() == player.get_colour():
+                    continue
+                opponent_locs.append(loc)
+
+        for end_loc in opponent_locs:
+            if self.is_legal_move(location, end_loc, player, "move") or self.is_legal_move(location, end_loc, player, "capture"):
+                return True
+
+        return False
+    
+    def get_capture_with(self, start_loc):
+        
+        """returns a possible capture with the piece at loc"""
+
+        loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
+
+        for loop in loop_tuple:
+            if loop == None:
+                continue
+
+            starting_indexes = self.__get_piece_indexes_at(loop, start_loc)
+
+            for ind in starting_indexes:
+                capturing_move = self.__can_capture_either_direction(start_loc, ind, loop, return_capture=True)
+                if capturing_move:
+                    return capturing_move
+            
+        return None
+    
+
+    def get_corner_move():
+
+        """Returns a move using a corner location to move out of the corner if one is available otherwise returns None"""
+
+
+
+
+

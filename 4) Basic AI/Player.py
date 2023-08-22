@@ -45,6 +45,23 @@ class EasyAIPlayer(Player):
     def get_name(self):
         return self.__name
     
+    def get_move(self, board):
+        
+        for row in board.get_board_state():
+            for loc in row:
+                if (loc.get_colour() == self.get_colour()):
+                    move = self.board.get_capture_with(loc)
+
+                    if move:
+                        return move
+                    
+                    move = self.board.get_move_with(loc)
+                    
+                
+
+                    
+
+    
 
 class MediumAIPlayer(Player):
     
