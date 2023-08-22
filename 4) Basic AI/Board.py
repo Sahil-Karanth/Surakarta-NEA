@@ -1,7 +1,7 @@
 from CircularList import CircularList
 from GridLocation import GridLocation
 from BoardConstants import BoardConstants
-from utility_functions import oneD_to_twoD_array
+from utility_functions import oneD_to_twoD_array, shuffle_2D_array
 from Piece import Piece
 from Move import Move
 import random
@@ -482,7 +482,7 @@ class Board:
 
         """Returns a random move that can be made on the board for the Easy AI opponent"""
 
-        shuffled_board = random.shuffle(random.shuffle([i for i in self.__board]))
+        shuffled_board = shuffle_2D_array(self.__board)
 
         for row in shuffled_board:
             for loc in row:

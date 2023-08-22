@@ -60,6 +60,9 @@ class EasyAIPlayer(Player):
                     if move:
                         return move
                     
+        
+        return board.get_random_move()
+                    
                     
                 
 

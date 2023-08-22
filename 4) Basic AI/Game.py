@@ -35,7 +35,7 @@ class Game:
 
     def make_ai_move(self):
         move = self.__current_player.get_move(self.__board)
-        self.move_piece(move.get_start_location(), move.get_end_location(), move.get_move_type())
+        self.move_piece(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
 
         return move
 
