@@ -55,7 +55,12 @@ class EasyAIPlayer(Player):
                     if move:
                         return move
                     
-                    move = self.board.get_move_with(loc)
+                    move = self.board.get_corner_move(loc)
+
+                    if move:
+                        return move
+                    
+                    
                     
                 
 

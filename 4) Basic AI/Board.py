@@ -4,6 +4,7 @@ from BoardConstants import BoardConstants
 from utility_functions import oneD_to_twoD_array
 from Piece import Piece
 from Move import Move
+import random
 
 class Board:
 
@@ -133,6 +134,23 @@ class Board:
         
         if total_diff in BoardConstants.ADJACENT_CORD_DIFFS:
             return True
+        
+    
+    def __get_adjacent(cords):
+
+        """Returns a list of the coordinates of the locations adjacent to the location at cords"""
+
+        adjacent_lst = []
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if (i == 0) and (j == 0):
+                    continue
+                adjacent_cord = (abs(cords[0] + i), abs(cords[1] + j))
+                if (cords[0] + i) < 0 or (cords[1] + j) > BoardConstants.MAX_ROW_INDEX or adjacent_cord in adjacent_lst:
+                    continue
+                adjacent_lst.append(adjacent_cord)
+        return adjacent_lst
+
     
     def check_normal_legal(self, start_loc, end_loc, player):
         start_cord = start_loc.get_cords()
@@ -422,11 +440,57 @@ class Board:
         return None
     
 
-    def get_corner_move():
+    def __get_edge_locations(self):
+
+        edge_locs = [
+            self.__board[BoardConstants.MIN_ROW_INDEX][BoardConstants.MIN_ROW_INDEX],
+            self.__board[BoardConstants.MIN_ROW_INDEX][BoardConstants.MAX_ROW_INDEX],
+            self.__board[BoardConstants.MAX_ROW_INDEX][BoardConstants.MIN_ROW_INDEX],
+            self.__board[BoardConstants.MAX_ROW_INDEX][BoardConstants.MAX_ROW_INDEX]
+        ]
+
+        return edge_locs
+
+
+    def get_corner_move(self, start_loc):
 
         """Returns a move using a corner location to move out of the corner if one is available otherwise returns None"""
 
+        edge_locs = self.__get_edge_locations()
 
+        if start_loc not in edge_locs:
+            return None
+        
+        return self.__get_adjacent_move(start_loc)
+            
+    def __get_adjacent_move(self, start_loc):
+
+        """Returns a move using a location adjacent to start_loc if one is available otherwise returns None"""
+
+        for end_loc in self.__get_adjacent(start_loc):
+            if end_loc.is_empty():
+                return Move(start_loc, end_loc, "move")
+            
+        return None
+
+    def get_random_move(self):
+
+        """Returns a random move that can be made on the board for the Easy AI opponent"""
+
+        shuffled_board = random.shuffle(random.shuffle([i for i in self.__board]))
+
+        for row in shuffled_board:
+            for loc in row:
+                if loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
+                    move = self.__get_adjacent_move(loc)
+                    if move:
+                        return move
+ 
+        return None
+
+
+                
+        
 
 
 
