@@ -4,6 +4,7 @@ import re
 from BoardConstants import BoardConstants
 import PySimpleGUI as sg
 import textwrap
+import time
 
 # ! todo: change uses of class attributes to use self instead of class name
 
@@ -323,6 +324,9 @@ class Graphical_UI(UI):
 
         if ai_mode and prev_move_legal:
             move = self.__game.get_ai_move()
+
+            time.sleep(0.1) # delay so the move is not made instantly which is jarring
+
             self.__update_game_and_UI_post_move(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
 
             if move.get_move_type() == "capture":

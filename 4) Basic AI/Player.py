@@ -1,4 +1,5 @@
 from BoardConstants import BoardConstants
+import random
 
 class Player:
 
@@ -55,7 +56,7 @@ class EasyAIPlayer(Player):
                 if (loc.get_colour() == self.get_colour()):
                     move = board.get_capture_with(loc)
 
-                    if move:
+                    if move and random.randint(0, 1) == 0: # 50% chance of capturing
                         return move
                     
                     move = board.get_corner_move(loc)
