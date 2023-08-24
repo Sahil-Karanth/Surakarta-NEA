@@ -53,6 +53,8 @@ class Graphical_UI(UI):
 
         self.__ai_mode = False
 
+        self.count_test = 0
+
 
     def __create_window(self, title, layout, justification):
 
@@ -266,6 +268,9 @@ class Graphical_UI(UI):
 
 
     def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
+
+        # print(start_loc.get_cords(), start_loc.get_colour(), end_loc.get_cords(), end_loc.get_colour())
+
         self.__update_board_display(start_loc, end_loc)
         self.__game.move_piece(start_loc, end_loc, move_type)
 
@@ -316,8 +321,12 @@ class Graphical_UI(UI):
 
 
         if ai_mode:
-            move = self.__game.make_ai_move()
+            move = self.__game.get_ai_move()
+            print(move.get_start_loc().get_cords(), move.get_start_loc().get_colour(), move.get_end_loc().get_cords(), move.get_end_loc().get_colour())
             self.__update_game_and_UI_post_move(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
+
+
+        self.count_test += 1
 
 
     def __end_if_game_over(self):

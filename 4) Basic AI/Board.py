@@ -465,7 +465,7 @@ class Board:
 
         if start_loc not in edge_locs:
             return None
-        
+                
         return self.__get_adjacent_move(start_loc)
             
     def __get_adjacent_move(self, start_loc):
@@ -474,6 +474,7 @@ class Board:
 
         for end_loc in self.__get_adjacent(start_loc):
             if end_loc.is_empty():
+
                 return Move(start_loc, end_loc, "move")
             
         return None
