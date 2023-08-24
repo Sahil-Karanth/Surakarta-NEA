@@ -269,8 +269,6 @@ class Graphical_UI(UI):
 
     def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
 
-        # print(start_loc.get_cords(), start_loc.get_colour(), end_loc.get_cords(), end_loc.get_colour())
-
         self.__update_board_display(start_loc, end_loc)
         self.__game.move_piece(start_loc, end_loc, move_type)
 
@@ -299,6 +297,8 @@ class Graphical_UI(UI):
             self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
             self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
             return
+        
+        prev_move_legal = True
 
         if self.__game.is_legal_move(start_loc, end_loc, move_type):
 
@@ -310,6 +310,7 @@ class Graphical_UI(UI):
             
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
+            prev_move_legal = False
 
         self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
         self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
@@ -320,10 +321,13 @@ class Graphical_UI(UI):
             self.__setup_home_page()
 
 
-        if ai_mode:
+        if ai_mode and prev_move_legal:
             move = self.__game.get_ai_move()
-            print(move.get_start_loc().get_cords(), move.get_start_loc().get_colour(), move.get_end_loc().get_cords(), move.get_end_loc().get_colour())
             self.__update_game_and_UI_post_move(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
+
+            if move.get_move_type() == "capture":
+                self.__update_display_number_captured_pieces()
+                self.__end_if_game_over()
 
 
         self.count_test += 1

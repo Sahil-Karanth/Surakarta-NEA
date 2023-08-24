@@ -41,12 +41,15 @@ class EasyAIPlayer(Player):
     def __init__(self, piece_colour):
         super().__init__(piece_colour)
         self.__name = "Easy AI"
+        self.count_test = 0
 
     def get_name(self):
         return self.__name
     
     def get_move(self, board):
         
+        self.count_test += 1
+
         for row in board.get_board_state():
             for loc in row:
                 if (loc.get_colour() == self.get_colour()):
@@ -59,6 +62,8 @@ class EasyAIPlayer(Player):
 
                     if move:
                         return move
+                    
+
                     
         
         return board.get_random_move()

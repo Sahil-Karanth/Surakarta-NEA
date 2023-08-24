@@ -32,12 +32,6 @@ class Game:
 
         return difficulty_dict[player2name](BoardConstants.PLAYER_2_COLOUR)
 
-
-    def make_ai_move(self, move):
-        # move = self.__current_player.get_move(self.__board)
-        self.move_piece(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
-
-        # return move
     
     def get_ai_move(self):
         return self.__current_player.get_move(self.__board)
