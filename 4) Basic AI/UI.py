@@ -361,6 +361,7 @@ class Graphical_UI(UI):
         else:
             colour = start_loc.get_colour()
 
+
         self.__window[f"{end_cords}"].update(image_filename=f"{colour}_counter.png")
 
     def __update_current_player_display(self):
@@ -413,16 +414,15 @@ class Graphical_UI(UI):
             self.__highlighted_board_positions.append(key)
 
 
-    def __undo_move(self):
+    def __undo_move(self, ai_mode=False):
 
-        """undoes the last move made"""
+        """undoes the last move made. If in AI mode, undoes two moves"""
 
         move_obj = self.__game.undo_move()
 
         if move_obj == None:
             sg.popup("No moves to undo", keep_on_top=True)
             return
-        
         
         self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc(), undo=True)
 
@@ -435,6 +435,9 @@ class Graphical_UI(UI):
         self.__update_display_number_captured_pieces()
         self.__update_current_player_display()
         self.__game.switch_current_player()
+
+        if ai_mode:
+            self.__undo_move()
 
     def __difficulty_level_to_ai_name(self, difficulty_level):
         name_level_dict = {
@@ -476,7 +479,7 @@ class Graphical_UI(UI):
                 self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
 
             elif event == "undo_move_button":
-                self.__undo_move()
+                self.__undo_move(self.__ai_mode)
 
             elif self.__is_board_position(event):
                 self.__toggle_highlight_board_position(event)

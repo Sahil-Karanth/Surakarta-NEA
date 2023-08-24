@@ -78,7 +78,26 @@ class Game:
             return None
         
         move_obj = self.__move_history_stack.pop()
+
+        # print(f"MOVE POPPED OFF STACK {(move_obj.get_start_loc().get_colour(), move_obj.get_start_loc().get_cords())}")
+        # print(f"TO {move_obj.get_end_loc().get_colour(), move_obj.get_end_loc().get_cords()}")
+
         self.__board.undo_move(move_obj)
+
+        print(move_obj.get_start_loc().get_colour(), move_obj.get_start_loc().get_cords())
+        print(move_obj.get_end_loc().get_colour(), move_obj.get_end_loc().get_cords())
+
+        # print("BOARD STATE BEFORE UNDO: ")
+
+        # for row in self.__board.get_board_state():
+        #     print([i.get_colour() for i in row])
+
+
+        # print("BOARD STATE AFTER UNDO: ")
+
+        # for row in self.__board.get_board_state():
+        #     print([i.get_colour() for i in row])
+
 
         if move_obj.get_move_type() == "capture":
             self.__current_player.add_piece()
