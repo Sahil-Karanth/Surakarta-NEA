@@ -270,11 +270,12 @@ class Graphical_UI(UI):
 
     def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
 
-        self.__update_board_display(start_loc, end_loc)
-        self.__game.move_piece(start_loc, end_loc, move_type)
+        move_obj = self.__game.move_piece(start_loc, end_loc, move_type)
+        self.__update_board_display(move_obj.get_start_cords(), move_obj.get_end_cords(), move_obj.get_start_colour())
 
         self.__update_current_player_display()
         self.__game.switch_current_player()
+
 
 
     def __make_move_on_display(self, values, ai_mode=False):
@@ -347,22 +348,16 @@ class Graphical_UI(UI):
             winning_player = self.__game.get_winner()
             sg.popup(f"{winning_player.get_name()} has won the game!", title="Game Over", keep_on_top=True)
 
-    def __update_board_display(self, start_loc, end_loc, undo=False):
+    def __update_board_display(self, start_cords, end_cords, start_colour, end_colour=None):
 
         """updates the onscreen board with the move made. undo is True when undoing a move"""
     
-        start_cords = f"{start_loc.get_cords()[0]},{start_loc.get_cords()[1]}"
-        end_cords = f"{end_loc.get_cords()[0]},{end_loc.get_cords()[1]}"
+        start_cords_str = f"{start_cords[0]},{start_cords[1]}"
+        end_cords_str = f"{end_cords[0]},{end_cords[1]}"
 
-        self.__window[f"{start_cords}"].update(image_filename=f"blank_counter.png")   
+        self.__window[f"{start_cords_str}"].update(image_filename=f"blank_counter.png")   
 
-        if undo:
-            colour = end_loc.get_colour()
-        else:
-            colour = start_loc.get_colour()
-
-
-        self.__window[f"{end_cords}"].update(image_filename=f"{colour}_counter.png")
+        self.__window[f"{end_cords_str}"].update(image_filename=f"{start_colour}_counter.png")
 
     def __update_current_player_display(self):
 
@@ -424,7 +419,7 @@ class Graphical_UI(UI):
             sg.popup("No moves to undo", keep_on_top=True)
             return
         
-        self.__update_board_display(move_obj.get_end_loc(), move_obj.get_start_loc(), undo=True)
+        self.__update_board_display(move_obj.get_end_cords(), move_obj.get_start_cords(), move_obj.get_start_colour())
 
         if move_obj.get_move_type() == "capture":            
             cords = self.__tuple_key_cords_str(move_obj.get_end_loc().get_cords())

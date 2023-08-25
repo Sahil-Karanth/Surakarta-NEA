@@ -72,6 +72,8 @@ class Game:
 
         self.__board.move_piece(start_location, end_location, move_type)
 
+        return move_obj
+
 
     def undo_move(self):
         if len(self.__move_history_stack) == 0:

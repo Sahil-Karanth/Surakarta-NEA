@@ -17,6 +17,12 @@ class Move:
     
     def get_end_loc(self):
         return self.__end_loc
+    
+    def get_start_cords(self):
+        return self.__start_loc.get_cords()
+    
+    def get_end_cords(self):
+        return self.__end_loc.get_cords()
 
     def get_move_type(self):
         return self.__move_type
