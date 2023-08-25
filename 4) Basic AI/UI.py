@@ -54,7 +54,7 @@ class Graphical_UI(UI):
 
         self.__ai_mode = False
 
-        self.count_test = 0
+        self.capture_count_test = 0
 
 
     def __create_window(self, title, layout, justification):
@@ -273,6 +273,9 @@ class Graphical_UI(UI):
         move_obj = self.__game.move_piece(start_loc, end_loc, move_type)
         self.__update_board_display(move_obj.get_start_cords(), move_obj.get_end_cords(), move_obj.get_start_colour())
 
+        for row in self.__game.get_board_state():
+            print([i.get_colour() for i in row])
+
         self.__update_current_player_display()
         self.__game.switch_current_player()
 
@@ -307,6 +310,7 @@ class Graphical_UI(UI):
             self.__update_game_and_UI_post_move(start_loc, end_loc, move_type)
 
             if move_type == "capture":
+                self.capture_count_test += 1
                 self.__update_display_number_captured_pieces()
                 self.__end_if_game_over()
             
@@ -335,7 +339,6 @@ class Graphical_UI(UI):
                 self.__end_if_game_over()
 
 
-        self.count_test += 1
 
 
     def __end_if_game_over(self):
@@ -421,14 +424,6 @@ class Graphical_UI(UI):
 
         if move_obj == None:
             sg.popup("No moves to undo", keep_on_top=True)
-
-
-            # print("PRINTING NEW BOARD")
-
-            # for row in self.__game.get_board_state():
-            #     print([i.get_colour() for i in row])
-
-
             return
         
         self.__update_board_display(move_obj.get_end_cords(), move_obj.get_start_cords(), move_obj.get_start_colour())
@@ -444,12 +439,6 @@ class Graphical_UI(UI):
 
         if ai_mode:
             self.__undo_move()
-
-
-        print("POST UNDO BOARD STATE")
-
-        for row in self.__game.get_board_state():
-            print([i.get_colour() for i in row])
 
 
 

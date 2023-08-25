@@ -368,8 +368,8 @@ class Board:
     def move_piece(self, start_loc, end_loc, move_type):
 
         if move_type == "capture":
-            self.__inner_loop.remove_piece(start_loc)
-            self.__outer_loop.remove_piece(start_loc)
+            self.__inner_loop.remove_piece(end_loc)
+            self.__outer_loop.remove_piece(end_loc)
             self.__update_piece_counts(end_loc)
             
         self.__inner_loop.switch_positions(start_loc, end_loc)
