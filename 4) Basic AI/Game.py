@@ -34,7 +34,11 @@ class Game:
 
     
     def get_ai_move(self):
-        return self.__current_player.get_move(self.__board)
+        move = self.__current_player.get_move(self.__board)
+
+        print(f"AI MOVE FOUND FROM {move.get_start_colour()}, {move.get_start_cords()} TO {move.get_end_colour()}, {move.get_end_cords()}")
+
+        return move
 
     def is_legal_move(self, start_loc, end_loc, move_type):
         return self.__board.is_legal_move(start_loc, end_loc, self.__current_player, move_type)
@@ -85,9 +89,6 @@ class Game:
         # print(f"TO {move_obj.get_end_loc().get_colour(), move_obj.get_end_loc().get_cords()}")
 
         self.__board.undo_move(move_obj)
-
-        print(move_obj.get_start_loc().get_colour(), move_obj.get_start_loc().get_cords())
-        print(move_obj.get_end_loc().get_colour(), move_obj.get_end_loc().get_cords())
 
         # print("BOARD STATE BEFORE UNDO: ")
 

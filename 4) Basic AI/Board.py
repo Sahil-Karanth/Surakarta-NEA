@@ -390,10 +390,13 @@ class Board:
 
         """Undo the move specified by move_obj by making the move in reverse"""
 
-        self.move_piece(move_obj.get_end_loc(), move_obj.get_start_loc(), "move")
 
         if move_obj.get_move_type() == "capture":
+            self.__spawn_piece(move_obj.get_start_colour(), move_obj.get_start_loc())
             self.__spawn_piece(move_obj.get_end_colour(), move_obj.get_end_loc())
+        
+        elif move_obj.get_move_type() == "move":
+            self.move_piece(move_obj.get_end_loc(), move_obj.get_start_loc(), "move")
 
     def __spawn_piece(self, colour, loc):
 

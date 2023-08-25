@@ -355,7 +355,11 @@ class Graphical_UI(UI):
         start_cords_str = f"{start_cords[0]},{start_cords[1]}"
         end_cords_str = f"{end_cords[0]},{end_cords[1]}"
 
+        print(f"UI MAKING {start_cords_str} BLANK")
+
         self.__window[f"{start_cords_str}"].update(image_filename=f"blank_counter.png")   
+
+        print(f"UI MAKING {end_cords_str} {start_colour}")
 
         self.__window[f"{end_cords_str}"].update(image_filename=f"{start_colour}_counter.png")
 
@@ -417,13 +421,20 @@ class Graphical_UI(UI):
 
         if move_obj == None:
             sg.popup("No moves to undo", keep_on_top=True)
+
+
+            # print("PRINTING NEW BOARD")
+
+            # for row in self.__game.get_board_state():
+            #     print([i.get_colour() for i in row])
+
+
             return
         
         self.__update_board_display(move_obj.get_end_cords(), move_obj.get_start_cords(), move_obj.get_start_colour())
 
         if move_obj.get_move_type() == "capture":            
             cords = self.__tuple_key_cords_str(move_obj.get_end_loc().get_cords())
-
             self.__window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
 
 
@@ -433,6 +444,14 @@ class Graphical_UI(UI):
 
         if ai_mode:
             self.__undo_move()
+
+
+        print("POST UNDO BOARD STATE")
+
+        for row in self.__game.get_board_state():
+            print([i.get_colour() for i in row])
+
+
 
     def __difficulty_level_to_ai_name(self, difficulty_level):
         name_level_dict = {
