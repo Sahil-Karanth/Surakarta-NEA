@@ -74,7 +74,7 @@ class Game:
         move_obj = Move(start_location, end_location, move_type)
         self.__move_history_stack.append(move_obj)
 
-        self.__board.move_piece(start_location, end_location, move_type)
+        self.__board.move_piece(move_obj)
 
         return move_obj
 

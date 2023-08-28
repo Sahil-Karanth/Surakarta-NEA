@@ -1,5 +1,6 @@
 from BoardConstants import BoardConstants
 import random
+from utility_functions import shuffle_2D_array
 
 class Player:
 
@@ -51,7 +52,10 @@ class EasyAIPlayer(Player):
         
         self.count_test += 1
 
-        for row in board.get_board_state():
+        corner_move_lst = []
+        shuffled_board = shuffle_2D_array(board.get_board_state())
+
+        for row in shuffled_board:
             for loc in row:
                 if (loc.get_colour() == self.get_colour()):
                     move = board.get_capture_with(loc)
@@ -63,7 +67,10 @@ class EasyAIPlayer(Player):
                     move = board.get_corner_move(loc)
 
                     if move:
-                        return move
+                        corner_move_lst.append(move)
+
+        if len(corner_move_lst) > 0:
+            return random.choice(corner_move_lst)
 
         return board.get_random_move()
                     
