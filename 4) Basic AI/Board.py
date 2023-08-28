@@ -14,7 +14,7 @@ class Board:
         self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
 
         self.__build_board()
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
         # self.__num_player1_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
         # self.__num_player2_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
@@ -47,11 +47,11 @@ class Board:
         outer_lst = [GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS]
         inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
 
-        YELLOW_TEST_OUTER_LOOP = [(2,4)]
-        GREEN_TEST_OUTER_LOOP = []
+        YELLOW_TEST_OUTER_LOOP = [(1,2), (2,5), (0,3), (1,3), ]
+        GREEN_TEST_OUTER_LOOP = [(2,4), (4,3), (5,3), ]
 
-        YELLOW_TEST_INNER_LOOP = [(2,4)]
-        GREEN_TEST_INNER_LOOP = [(4,4)]
+        YELLOW_TEST_INNER_LOOP = [(1,1), (0,1), (1,2), (1,3), (1,5), (0,4), ]
+        GREEN_TEST_INNER_LOOP = [(2,4), (4,4), (5,4), (4,5), (4,4), (4,1), (5,1)]
 
 
         for i in outer_lst:
@@ -74,8 +74,32 @@ class Board:
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[2][4].set_piece(Piece("y"))
+        self.__board[0][0].set_piece(Piece("y"))
+        self.__board[0][1].set_piece(Piece("y"))
+        self.__board[0][3].set_piece(Piece("y"))
+        self.__board[0][4].set_piece(Piece("y"))
+        self.__board[0][5].set_piece(Piece("y"))
+
+        self.__board[1][1].set_piece(Piece("y"))
+        self.__board[1][2].set_piece(Piece("y"))
+        self.__board[1][3].set_piece(Piece("y"))
+        self.__board[1][5].set_piece(Piece("y"))
+
+        self.__board[2][4].set_piece(Piece("g"))
+        self.__board[2][5].set_piece(Piece("y"))
+
+        self.__board[4][0].set_piece(Piece("g"))
+        self.__board[4][1].set_piece(Piece("g"))
+        self.__board[4][3].set_piece(Piece("g"))
         self.__board[4][4].set_piece(Piece("g"))
+        self.__board[4][5].set_piece(Piece("g"))
+
+        self.__board[5][0].set_piece(Piece("g"))
+        self.__board[5][1].set_piece(Piece("g"))
+        self.__board[5][3].set_piece(Piece("g"))
+        self.__board[5][4].set_piece(Piece("g"))
+        self.__board[5][5].set_piece(Piece("g"))
+
 
 
     def __get_common_loops(self, text_loop_1, text_loop_2):
@@ -225,7 +249,10 @@ class Board:
         for board_loop in board_loop_tuple:
             starting_indexes = self.__get_piece_indexes_at(board_loop, start_loc)
             for ind in starting_indexes:
-                if self.__can_capture_either_direction(start_loc, ind, board_loop):
+                move = self.__get_capture_either_direction(start_loc, ind, board_loop)
+                if move == False:
+                    continue
+                elif move.get_end_cords() == end_loc.get_cords():
                     return True
                 
         return False
@@ -273,9 +300,9 @@ class Board:
         return True
     
 
-    def __can_capture_either_direction(self, start_location, ind, board_loop, return_capture=False):
+    def __get_capture_either_direction(self, start_location, ind, board_loop):
 
-        """Returns True if a capture can be made in either direction starting at the piece at ind in board_loop. Otherwise it returns False.
+        """Returns a move object if a capture can be made in either direction starting at the piece at ind in board_loop. Otherwise it returns False.
         If a valid capture cannot be made with adjacent locations, further locations are checked until either a valid capture is found or
         the direction being checked is can no longer have a valid capture on it."""
 
@@ -289,27 +316,21 @@ class Board:
         board_loop.get_next_right()
         board_loop.get_next_left()
 
-        right_search = self.__search_direction(start_location, board_loop, "right", return_capture)
+        right_search = self.__search_direction_for_capture(start_location, board_loop, "right")
 
-        if right_search and return_capture:
+        if right_search:
             return right_search
         
-        elif right_search:
-            return True
-        
-        left_search = self.__search_direction(start_location, board_loop, "left", return_capture)
+        left_search = self.__search_direction_for_capture(start_location, board_loop, "left")
 
-        if left_search and return_capture:
+        if left_search:
             return left_search
-        
-        elif left_search:
-            return True
 
         return False
     
-    def __search_direction(self, start_location, board_loop, direction, return_capture=False):
+    def __search_direction_for_capture(self, start_location, board_loop, direction):
 
-        """Returns True if a valid capture can be made in the direction specified by direction. Otherwise it returns False.
+        """Returns a move object if a valid capture can be made in the direction specified by direction. Otherwise it returns False.
         If return_capture is True, the method will return the Move object representing the capture if a valid capture is found.
         This is used by the Easy AI opponent"""
 
@@ -328,9 +349,7 @@ class Board:
                 loop_count += 1
             
             if self.__is_valid_capture(start_location, curr_loc, loop_count):
-                if return_capture:
-                    return Move(start_location, curr_loc, "capture")
-                return True
+                return Move(start_location, curr_loc, "capture")
 
             if not self.__check_direction_valid(start_location, curr_loc, loop_count):
                 invalid = True
@@ -367,14 +386,14 @@ class Board:
         
     def move_piece(self, start_loc, end_loc, move_type):
 
-        if move_type == "capture":
-            self.__inner_loop.remove_piece(end_loc)
-            self.__outer_loop.remove_piece(end_loc)
-            self.__update_piece_counts(end_loc)
-            
         self.__inner_loop.switch_positions(start_loc, end_loc)
         self.__outer_loop.switch_positions(start_loc, end_loc)
-        
+
+        if move_type == "capture":
+
+            self.__inner_loop.remove_piece(start_loc)
+            self.__outer_loop.remove_piece(start_loc)
+            self.__update_piece_counts(end_loc)
 
         self.__switch_piece_positions(start_loc, end_loc)
 
@@ -442,7 +461,7 @@ class Board:
             starting_indexes = self.__get_piece_indexes_at(loop, start_loc)
 
             for ind in starting_indexes:
-                capturing_move = self.__can_capture_either_direction(start_loc, ind, loop, return_capture=True)
+                capturing_move = self.__get_capture_either_direction(start_loc, ind, loop)
                 if capturing_move:
                     return capturing_move
             

@@ -273,8 +273,8 @@ class Graphical_UI(UI):
         move_obj = self.__game.move_piece(start_loc, end_loc, move_type)
         self.__update_board_display(move_obj.get_start_cords(), move_obj.get_end_cords(), move_obj.get_start_colour())
 
-        for row in self.__game.get_board_state():
-            print([i.get_colour() for i in row])
+        # for row in self.__game.get_board_state():
+        #     print([i.get_colour() for i in row])
 
         self.__update_current_player_display()
         self.__game.switch_current_player()
