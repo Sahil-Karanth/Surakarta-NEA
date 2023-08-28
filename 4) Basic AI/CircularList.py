@@ -1,3 +1,6 @@
+from Piece import Piece
+from BoardConstants import BoardConstants
+
 class CircularList:
 
     """The data structure used for the board's two loops.
@@ -80,3 +83,17 @@ class CircularList:
 
         for i in ind_lst:
             self.__lst[i].set_piece(None)
+
+    def update_piece(self, val):
+
+        """replaces all occurences of val's piece with the opposite colour piece"""
+
+        piece_colour_map = {
+            BoardConstants.PLAYER_1_COLOUR: BoardConstants.PLAYER_2_COLOUR,
+            BoardConstants.PLAYER_2_COLOUR: BoardConstants.PLAYER_1_COLOUR
+        }
+
+        ind_lst = self.__get_all_occurence_indexes(self.__lst, val)
+
+        for i in ind_lst:
+            self.__lst[i].set_piece(Piece(piece_colour_map[val.get_colour()]))

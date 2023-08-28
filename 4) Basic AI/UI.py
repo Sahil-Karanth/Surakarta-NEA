@@ -358,11 +358,7 @@ class Graphical_UI(UI):
         start_cords_str = f"{start_cords[0]},{start_cords[1]}"
         end_cords_str = f"{end_cords[0]},{end_cords[1]}"
 
-        print(f"UI MAKING {start_cords_str} BLANK")
-
         self.__window[f"{start_cords_str}"].update(image_filename=f"blank_counter.png")   
-
-        print(f"UI MAKING {end_cords_str} {start_colour}")
 
         self.__window[f"{end_cords_str}"].update(image_filename=f"{start_colour}_counter.png")
 

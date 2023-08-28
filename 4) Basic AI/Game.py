@@ -85,8 +85,10 @@ class Game:
         
         move_obj = self.__move_history_stack.pop()
 
-        # print(f"MOVE POPPED OFF STACK {(move_obj.get_start_loc().get_colour(), move_obj.get_start_loc().get_cords())}")
-        # print(f"TO {move_obj.get_end_loc().get_colour(), move_obj.get_end_loc().get_cords()}")
+
+
+        print(f"MOVE POPPED OFF STACK {(move_obj.get_start_loc().get_colour(), move_obj.get_start_loc().get_cords(), move_obj.get_move_type())}")
+        print(f"TO {move_obj.get_end_loc().get_colour(), move_obj.get_end_loc().get_cords()}")
 
         self.__board.undo_move(move_obj)
 
