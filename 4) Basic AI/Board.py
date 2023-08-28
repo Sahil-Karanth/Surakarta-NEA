@@ -12,6 +12,7 @@ class Board:
         self.__board = []
         self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
         self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
+        self.count_test = 0
 
         self.__build_board()
         self.__edit_board_for_testing()
@@ -368,7 +369,6 @@ class Board:
 
         self.__board[end_cords[0]][end_cords[1]].set_piece(start_loc.get_piece())
         self.__board[start_cords[0]][start_cords[1]].set_piece(None)
-
     
     def __loop_used(self, prev_loc, curr_loc):
 
@@ -384,34 +384,41 @@ class Board:
         return False
 
         
-    def move_piece(self, start_loc, end_loc, move_type):
+    def move_piece(self, move_obj, undo=False):
 
-        self.__update_loops_after_move(start_loc, end_loc, move_type)
+        self.__update_loops_after_move(move_obj)
 
-        if move_type == "capture":
-            self.__update_piece_counts(end_loc)
+        if move_obj.get_move_type() == "capture":
+            self.__update_piece_counts(move_obj.get_end_colour())
 
-        self.__switch_piece_positions(start_loc, end_loc)
-
-
-    def __update_loops_after_move(self, start_loc, end_loc, move_type, undo=False):
-
-        self.__inner_loop.switch_positions(start_loc, end_loc)
-        self.__outer_loop.switch_positions(start_loc, end_loc)
-
-        if move_type == "capture":
-            if undo:
-                self.__inner_loop.update_piece(start_loc)
-                self.__outer_loop.update_piece(start_loc)
-            else:
-                self.__inner_loop.remove_piece(start_loc)
-                self.__outer_loop.remove_piece(start_loc)
     
-    def __update_piece_counts(self, end_loc):
-        if end_loc.get_colour() == BoardConstants.PLAYER_1_COLOUR:
+        if undo:
+            self.__switch_piece_positions(move_obj.get_end_loc(), move_obj.get_start_loc())
+        
+        else:
+            self.__switch_piece_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+
+
+
+
+    def __update_loops_after_move(self, move_obj, undo=False):
+
+        self.__inner_loop.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+        self.__outer_loop.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+
+        if move_obj.get_move_type() == "capture":
+            if undo:
+                self.__inner_loop.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
+                self.__outer_loop.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
+            else:
+                self.__inner_loop.remove_piece(move_obj.get_start_cords())
+                self.__outer_loop.remove_piece(move_obj.get_start_cords())
+    
+    def __update_piece_counts(self, end_colour):
+        if end_colour == BoardConstants.PLAYER_1_COLOUR:
             self.__player1.remove_piece()
 
-        elif end_loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
+        elif end_colour == BoardConstants.PLAYER_2_COLOUR:
             self.__player2.remove_piece()
 
     def undo_move(self, move_obj):
@@ -419,7 +426,7 @@ class Board:
         """Undo the move specified by move_obj by making the move in reverse"""
 
         if move_obj.get_move_type() == "capture":
-            self.__update_loops_after_move(move_obj.get_end_loc(), move_obj.get_start_loc(), move_obj.get_move_type(), undo=True)
+            self.__update_loops_after_move(move_obj, undo=True)
             self.__spawn_piece(move_obj.get_start_colour(), move_obj.get_start_loc())
             self.__spawn_piece(move_obj.get_end_colour(), move_obj.get_end_loc())
 
@@ -428,7 +435,7 @@ class Board:
             #     print(i.get_cords(), i.get_colour())
         
         elif move_obj.get_move_type() == "move":
-            self.move_piece(move_obj.get_end_loc(), move_obj.get_start_loc(), move_obj.get_move_type())
+            self.move_piece(move_obj, undo=True)
 
     def __spawn_piece(self, colour, loc):
 

@@ -50,13 +50,13 @@ class CircularList:
         self.__left_pointer = (self.__left_pointer - 1) % len(self.__lst)
         return item
     
-    def __get_all_occurence_indexes(self, lst, item):
+    def __get_all_occurence_indexes(self, lst, cords):
 
-        """returns a list of all the indexes that item is found in lst"""
+        """returns a list of all the indexes that a location with the specified cords is found in lst"""
 
         ind_lst = []
         for i,n in enumerate(lst):
-            if n.get_cords() == item.get_cords():
+            if n.get_cords() == cords:
                 ind_lst.append(i)
 
         return ind_lst
@@ -65,8 +65,8 @@ class CircularList:
 
         """replaces all occurences of pos1's piece with pos2's piece and all occurences of pos2's piece with pos1's piece"""
 
-        pos1_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos1)
-        pos2_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos2)
+        pos1_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos1.get_cords())
+        pos2_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos2.get_cords())
 
         for i in pos1_ind_lst:
             self.__lst[i].set_piece(pos2.get_piece())
@@ -75,25 +75,20 @@ class CircularList:
             self.__lst[i].set_piece(pos1.get_piece())
 
 
-    def remove_piece(self, val):
+    def remove_piece(self, cords):
 
-        """replaces all occurences of val's piece with None"""
+        """replaces all occurences of a piece at cords with None"""
 
-        ind_lst = self.__get_all_occurence_indexes(self.__lst, val)
+        ind_lst = self.__get_all_occurence_indexes(self.__lst, cords)
 
         for i in ind_lst:
             self.__lst[i].set_piece(None)
 
-    def update_piece(self, val):
+    def update_piece(self, cords, piece_colour):
 
-        """replaces all occurences of val's piece with the opposite colour piece"""
+        """replaces all occurences of val's piece with a piece of the specified colour"""
 
-        piece_colour_map = {
-            BoardConstants.PLAYER_1_COLOUR: BoardConstants.PLAYER_2_COLOUR,
-            BoardConstants.PLAYER_2_COLOUR: BoardConstants.PLAYER_1_COLOUR
-        }
-
-        ind_lst = self.__get_all_occurence_indexes(self.__lst, val)
+        ind_lst = self.__get_all_occurence_indexes(self.__lst, cords)
 
         for i in ind_lst:
-            self.__lst[i].set_piece(Piece(piece_colour_map[val.get_colour()]))
+            self.__lst[i].set_piece(Piece(piece_colour))
