@@ -200,7 +200,8 @@ class Graphical_UI(UI):
             self.__window["submit_local_play_button"].update(visible=True)
 
     def __make_piece_button(self, piece_type, key, visible=False):
-        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, pad=(30,30), key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
+        # NOTE removed pad=(30,30)
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
     def __setup_match_page(self, player1name, player2name, ai_level=None):
 
@@ -228,6 +229,13 @@ class Graphical_UI(UI):
                 board_layout.append(button)
 
         board_layout = oneD_to_twoD_array(board_layout, len(display_board))
+
+        # # ! DELETE ME
+        board_layout.insert(0, [self.__make_piece_button("empty", key, visible=True) for key in range(4)])
+
+        board_layout[0].append(self.__make_piece_button("top_right_loop", "a", visible=True))
+        board_layout[0].insert(0, self.__make_piece_button("top_right_loop", "b", visible=True))
+
 
         player_turn_layout = [
             [sg.Text(f"{self.__game.get_player_name(1)}'s Turn", key="player1_turn_text", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
@@ -339,8 +347,6 @@ class Graphical_UI(UI):
                 self.__end_if_game_over()
 
 
-
-
     def __end_if_game_over(self):
 
         """uses set_game_status to update the game's status and ends the game with a popup if necessary"""
@@ -350,8 +356,9 @@ class Graphical_UI(UI):
         if self.__game.is_game_over():
             winning_player = self.__game.get_winner()
             sg.popup(f"{winning_player.get_name()} has won the game!", title="Game Over", keep_on_top=True)
-
-    def __update_board_display(self, start_cords, end_cords, start_colour, end_colour=None):
+            self.__setup_home_page()
+  
+    def __update_board_display(self, start_cords, end_cords, start_colour):
 
         """updates the onscreen board with the move made. undo is True when undoing a move"""
     
