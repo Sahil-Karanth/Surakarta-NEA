@@ -29,19 +29,21 @@ class GameTree:
 
     def __init__(self, root_state):
         self.__root = Node(root_state)
+        self.__current_node = self.__root
 
     def __str__(self):
         """returns each node and it's children on a new line"""
 
 
-    def add_node(self, child_val, parent_node):
-        
+    def add_node(self, child_val):
         """adds a node to the tree"""
-        
         child = Node(child_val)
-        parent_node.add_child(child)
+        self.__current_node.add_child(child)
+        # self.__current_node = child
 
     def UCB1(self, node):
+
+        # ! TODO move this to the Node class
         
         """returns the UCB1 value of a node"""
         
@@ -49,6 +51,25 @@ class GameTree:
             return 0
         else:
             return (node.get_val() / node.get_visited_count()) + math.sqrt(2 * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
+        
+
+    def current_is_leaf(self):
+
+        return len(self.__current_node.get_children()) == 0
+    
+
+    def set_new_current(self):
+
+        """sets the current node to the best child of the current node"""
+
+        children = self.__current_node.get_children()
+
+        best_child = None
+        for child in children:
+            child_ucb1 = self.UCB1(child)
+            # if child_ucb1 > best_ucb1:
+
+
 
 
     def get_next_move(self):
