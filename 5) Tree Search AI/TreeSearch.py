@@ -2,8 +2,9 @@ import math
 
 class Node:
 
-    def __init__(self, val):
-        self.__val = val
+    def __init__(self, board):
+        self.__board = board
+        self.__val = 0
         self.__visited_count = 0
         self.__children = []
         self.__parent = None
@@ -42,8 +43,6 @@ class GameTree:
         # self.__current_node = child
 
     def UCB1(self, node):
-
-        # ! TODO move this to the Node class
         
         """returns the UCB1 value of a node"""
         
@@ -62,19 +61,31 @@ class GameTree:
 
         """sets the current node to the best child of the current node"""
 
-        children = self.__current_node.get_children()
+        ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
 
-        best_child = None
-        for child in children:
-            child_ucb1 = self.UCB1(child)
-            # if child_ucb1 > best_ucb1:
+        self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
+
+    def node_expansion(self):
+
+        """expands the current node"""
+
+        for node in self.__get_legal_next_states():
+            self.add_node(node)
+
+    def __get_legal_next_states(self):
+
+        """returns a list of legal next states form the current node"""
+
+        
 
 
 
 
-    def get_next_move(self):
+    def get_next_move(self): # ! main method to call
 
         """returns the next move to make"""
+
+        pass
 
 
 
