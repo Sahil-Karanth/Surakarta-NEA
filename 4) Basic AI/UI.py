@@ -200,8 +200,7 @@ class Graphical_UI(UI):
             self.__window["submit_local_play_button"].update(visible=True)
 
     def __make_piece_button(self, piece_type, key, visible=False):
-        # NOTE removed pad=(30,30)
-        return sg.Button("", image_filename=f"{piece_type}_counter.png", visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
+        return sg.Button("", image_filename=f"{piece_type}_counter.png", pad=(30,30), visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
     def __setup_match_page(self, player1name, player2name, ai_level=None):
 
@@ -229,13 +228,6 @@ class Graphical_UI(UI):
                 board_layout.append(button)
 
         board_layout = oneD_to_twoD_array(board_layout, len(display_board))
-
-        # # ! DELETE ME
-        board_layout.insert(0, [self.__make_piece_button("empty", key, visible=True) for key in range(4)])
-
-        board_layout[0].append(self.__make_piece_button("top_right_loop", "a", visible=True))
-        board_layout[0].insert(0, self.__make_piece_button("top_right_loop", "b", visible=True))
-
 
         player_turn_layout = [
             [sg.Text(f"{self.__game.get_player_name(1)}'s Turn", key="player1_turn_text", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
