@@ -26,7 +26,7 @@ class Graphical_UI(UI):
 
     BUTTON_SIZE = 30
     FONT = "Helvetica"
-    TITLE_FONT_SIZE = 25
+    TITLE_FONT_SIZE = 40
     BUTTON_DIMENSIONS = (10, 1)
     COLUMN_PAD = 20
     PARAGRAPH_FONT_SIZE = 15
