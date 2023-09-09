@@ -161,7 +161,7 @@ class Board:
             return True
         
     
-    def __get_adjacent(self, loc):
+    def get_adjacent(self, loc):
 
         """Returns a list of the grid loccations on thte board that are adjacent to loc"""
 
@@ -451,7 +451,7 @@ class Board:
         if location.get_piece() == None:
             return False
 
-        opponent_locs = []
+        opponent_locs = [] # ! CHANGE NAME as this also includes empty locations
 
         for row in self.__board:
             for loc in row:
@@ -464,6 +464,40 @@ class Board:
                 return True
 
         return False
+    
+
+    def __get_loc_legal_moves(self, loc, player):
+
+        """Returns a list of legal moves that can be made from loc"""
+
+        legal_moves = []
+
+        for end_loc in self.get_adjacent(loc):
+            if self.is_legal_move(loc, end_loc, player, "move"):
+                legal_moves.append(Move(loc, end_loc, "move"))
+
+        
+        for end_loc in self.__board.get_opponent_locs(player):
+            if self.is_legal_move(loc, end_loc, player, "capture"):
+                legal_moves.append(Move(loc, end_loc, "capture"))
+
+
+        return legal_moves
+    
+
+    def get_legal_moves(self, player):
+
+        """Returns a list of legal moves that can be made by player"""
+
+        legal_moves = []
+
+        for row in self.__board:
+            for loc in row:
+                if loc.get_colour() == player.get_colour():
+                    legal_moves += self.__get_loc_legal_moves(loc, player)
+
+        return legal_moves
+
     
     def get_capture_with(self, start_loc):
         
@@ -512,7 +546,7 @@ class Board:
 
         """Returns a move using a location adjacent to start_loc if one is available otherwise returns None"""
 
-        for end_loc in self.__get_adjacent(start_loc):
+        for end_loc in self.get_adjacent(start_loc):
             if end_loc.is_empty():
 
                 return Move(start_loc, end_loc, "move")

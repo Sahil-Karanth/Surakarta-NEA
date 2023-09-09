@@ -2,12 +2,14 @@ import math
 
 class Node:
 
-    def __init__(self, board):
+    def __init__(self, board, player_turn_colour):
         self.__board = board
+        self.__player_turn_colour = player_turn_colour
         self.__val = 0
         self.__visited_count = 0
         self.__children = []
         self.__parent = None
+        self.__next_legal_states = self.__board.get_legal_moves(self.__player_turn_colour)
 
     def add_child(self, child):
         self.__children.append(child)
@@ -24,6 +26,9 @@ class Node:
     
     def get_val(self):
         return self.__val
+    
+    def get_next_legal_states(self):
+        return self.__next_legal_states
     
 
 class GameTree:
@@ -57,7 +62,7 @@ class GameTree:
         return len(self.__current_node.get_children()) == 0
     
 
-    def set_new_current(self):
+    def select_new_current(self):
 
         """sets the current node to the best child of the current node"""
 
@@ -69,12 +74,12 @@ class GameTree:
 
         """expands the current node"""
 
-        for node in self.__get_legal_next_states():
-            self.add_node(node)
+        for move_obj in self.__current_node.get_next_legal_states():
+            board_copy = self.__current_node.get_board().copy()
+            board_copy.move_piece(move_obj)
+            self.add_node(board_copy)
 
-    def __get_legal_next_states(self):
 
-        """returns a list of legal next states form the current node"""
 
         
 
