@@ -1,15 +1,20 @@
 from BoardConstants import BoardConstants
 import random
 from utility_functions import shuffle_2D_array
+from TreeSearch import GameTree
 
 class Player:
 
-    def __init__(self, piece_colour):
+    def __init__(self, name, piece_colour):
+        self.__name = name
         self.__piece_colour = piece_colour
         self.__piece_count = BoardConstants.NUM_STARTING_PIECES_EACH
 
     def get_colour(self):
         return self.__piece_colour
+    
+    def get_name(self):
+        return self.__name
     
     def get_piece_count(self):
         return self.__piece_count
@@ -31,27 +36,25 @@ class Player:
 class HumanPlayer(Player):
 
     def __init__(self, name, piece_colour):
-        super().__init__(piece_colour)
-        self.__name = name
-
-    def get_name(self):
-        return self.__name
+        super().__init__(name, piece_colour)
     
 
-class EasyAIPlayer(Player):
+class AIPlayer(Player):
+    
+    def __init__(self, name, piece_colour):
+        super().__init__(name, piece_colour)
+
+    def get_move(self, board):
+        raise NotImplementedError("AI opponent classes must have a get_move method")
+
+
+class EasyAIPlayer(AIPlayer):
 
     def __init__(self, piece_colour):
-        super().__init__(piece_colour)
-        self.__name = "Easy AI"
-        self.count_test = 0
-
-    def get_name(self):
-        return self.__name
+        super().__init__("Easy AI", piece_colour)
     
     def get_move(self, board):
         
-        self.count_test += 1
-
         corner_move_lst = []
         shuffled_board = shuffle_2D_array(board.get_board_state())
 
@@ -72,30 +75,28 @@ class EasyAIPlayer(Player):
             return random.choice(corner_move_lst)
 
         return board.get_random_move()
-                    
-                    
-                
 
-                    
 
-    
-
-class MediumAIPlayer(Player):
+class MediumAIPlayer(AIPlayer):
     
     def __init__(self, piece_colour):
-        super().__init__(piece_colour)
-        self.__name = "Medium AI"
-    def get_name(self):
-        return self.__name
+        super().__init__("Medium AI", piece_colour)
+
+    def get_move(self, board):
+        
+        game_tree = GameTree(board)
+        return game_tree.get_next_move()
+
     
-class HardAIPlayer(Player):
+class HardAIPlayer(AIPlayer):
         
     def __init__(self, piece_colour):
-        super().__init__(piece_colour)
-        self.__name = "Hard AI"
+        super().__init__("Hard AI", piece_colour)
 
-    def get_name(self):
-        return self.__name
+    def get_move(self, board):
+        pass
+
+
 
 
     

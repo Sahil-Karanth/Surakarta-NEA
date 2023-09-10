@@ -57,8 +57,8 @@ class GameTree:
     WIN = 1
     TIME_FOR_MOVE = 1 # seconds
 
-    def __init__(self, root_state):
-        self.__root = Node(root_state)
+    def __init__(self, root_board):
+        self.__root = Node(root_board)
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
 
