@@ -1,24 +1,22 @@
 import math
 import random
 from BoardConstants import BoardConstants
+import time
 
 class Node:
 
-    def __init__(self, board, player_turn_colour):
+    def __init__(self, board, move_obj=None):
         self.__board = board
-        # self.__board_copy = board.copy() # used with rollouts
-        self.__player_turn_colour = player_turn_colour
-        self.__val = 0
+        self.__move_obj = move_obj # the move that led to this node
+        # self.__player_turn_colour = player_turn_colour
+        self.__value = 0
         self.__visited_count = 0
         self.__children = []
         self.__parent = None
-        self.__next_legal_states = self.__board.get_legal_moves(self.__player_turn_colour)
+        self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
 
     def get_board(self):
         return self.__board.copy() # copy is used to prevent the original board from being changed
-    
-    # def get_board_copy(self):
-    #     return self.__board_copy
 
     def add_child(self, child):
         self.__children.append(child)
@@ -30,6 +28,9 @@ class Node:
     def get_parent(self):
         return self.__parent
     
+    def get_move_obj(self):
+        return self.__move_obj
+    
     def get_visited_count(self):
         return self.__visited_count
     
@@ -39,8 +40,11 @@ class Node:
     def get_children(self):
         return self.__children
     
-    def get_val(self):
-        return self.__val
+    def get_value(self):
+        return self.__value
+    
+    def increase_value(self, value):
+        self.__value += value
     
     def get_next_legal_states(self):
         return self.__next_legal_states
@@ -51,20 +55,20 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
+    TIME_FOR_MOVE = 1 # seconds
 
     def __init__(self, root_state):
         self.__root = Node(root_state)
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
-        # self.__current_node_copy = None # used with rollouts
 
     def __str__(self):
         """returns each node and it's children on a new line"""
 
 
-    def add_node(self, child_val):
+    def add_node(self, child_val, move_obj):
         """adds a node to the tree"""
-        child = Node(child_val)
+        child = Node(child_val, move_obj)
         self.__current_node.add_child(child)
         # self.__current_node = child
 
@@ -75,14 +79,13 @@ class GameTree:
         if node.get_parent() == None:
             return 0
         else:
-            return (node.get_val() / node.get_visited_count()) + math.sqrt(2 * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
+            return (node.get_value() / node.get_visited_count()) + math.sqrt(2 * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
         
 
     def current_is_leaf(self):
 
         return len(self.__current_node.get_children()) == 0
     
-
     def select_new_current(self):
 
         """sets the current node to the best child of the current node"""
@@ -98,9 +101,7 @@ class GameTree:
         for move_obj in self.__current_node.get_next_legal_states():
             board = self.__current_node.get_board()
             board.move_piece(move_obj)
-            self.add_node(board)
-
-
+            self.add_node(board, move_obj)
     
     def rollout(self):
 
@@ -132,13 +133,10 @@ class GameTree:
 
         while node != None:
             node.increment_visited_count()
-            node.__val += result
+            node.increase_value(result)
             node = node.get_parent()
 
-
-    def get_next_move(self): # ! main method to call
-
-        """returns the next move to make"""
+    def run_MCTS_iteration(self):
 
         if not self.current_is_leaf():
             self.select_new_current()
@@ -155,3 +153,16 @@ class GameTree:
 
         self.__current_node = self.__root
 
+
+    def get_next_move(self): # ! main method to call
+
+        """returns the next move to make"""
+
+        start_time = time.time()
+
+        while time.time() - start_time < GameTree.TIME_FOR_MOVE:
+            self.run_MCTS_iteration()
+
+        best_node = max(self.__root.get_children(), key=lambda node: node.get_value())
+        
+        return best_node.get_move_obj()
