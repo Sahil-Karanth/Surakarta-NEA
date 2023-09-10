@@ -10,6 +10,7 @@ class BoardConstants:
     NUM_STARTING_PIECES_EACH = 1
     ADJACENT_CORD_DIFFS = (1, 2)
     NUM_BOARD_LOOPS = 4
+    DRAW_THRESHOLD = 50
 
     OUTER_LOOP_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),

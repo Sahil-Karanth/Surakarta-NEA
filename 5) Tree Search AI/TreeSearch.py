@@ -1,15 +1,24 @@
 import math
+import random
+from BoardConstants import BoardConstants
 
 class Node:
 
     def __init__(self, board, player_turn_colour):
         self.__board = board
+        # self.__board_copy = board.copy() # used with rollouts
         self.__player_turn_colour = player_turn_colour
         self.__val = 0
         self.__visited_count = 0
         self.__children = []
         self.__parent = None
         self.__next_legal_states = self.__board.get_legal_moves(self.__player_turn_colour)
+
+    def get_board(self):
+        return self.__board.copy() # copy is used to prevent the original board from being changed
+    
+    # def get_board_copy(self):
+    #     return self.__board_copy
 
     def add_child(self, child):
         self.__children.append(child)
@@ -20,6 +29,12 @@ class Node:
 
     def get_parent(self):
         return self.__parent
+    
+    def get_visited_count(self):
+        return self.__visited_count
+    
+    def increment_visited_count(self):
+        self.__visited_count += 1
     
     def get_children(self):
         return self.__children
@@ -33,9 +48,15 @@ class Node:
 
 class GameTree:
 
+    LOSS = -1
+    DRAW = 0
+    WIN = 1
+
     def __init__(self, root_state):
         self.__root = Node(root_state)
         self.__current_node = self.__root
+        self.__rollout_board = None # used with rollouts
+        # self.__current_node_copy = None # used with rollouts
 
     def __str__(self):
         """returns each node and it's children on a new line"""
@@ -75,22 +96,62 @@ class GameTree:
         """expands the current node"""
 
         for move_obj in self.__current_node.get_next_legal_states():
-            board_copy = self.__current_node.get_board().copy()
-            board_copy.move_piece(move_obj)
-            self.add_node(board_copy)
+            board = self.__current_node.get_board()
+            board.move_piece(move_obj)
+            self.add_node(board)
 
 
+    
+    def rollout(self):
 
-        
+        moves_without_capture = 0
+        self.__rollout_board = self.__current_node.get_board()
+
+        while True:
+            simulated_move = random.choice(self.__current_node.get_next_legal_states())
+
+            if simulated_move.get_move_type() == "move":
+                moves_without_capture += 1
+
+            self.__rollout_board.move_piece(simulated_move)
 
 
+            if self.__rollout_board.get_piece_counts(1) == 0:
+                return GameTree.WIN
+            
+            elif self.__rollout_board.get_piece_counts(2) == 0:
+                return GameTree.LOSS
+            
+            elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
+                return GameTree.DRAW
+            
+    
+    def backpropagate(self, result):
+
+        node = self.__current_node
+
+        while node != None:
+            node.increment_visited_count()
+            node.__val += result
+            node = node.get_parent()
 
 
     def get_next_move(self): # ! main method to call
 
         """returns the next move to make"""
 
-        pass
+        if not self.current_is_leaf():
+            self.select_new_current()
 
+        elif self.__current_node.get_visited_count() == 0:
+            result = self.rollout()
+            self.backpropagate(result)
 
+        else:
+            self.node_expansion()
+            self.__current_node = self.__current_node.get_children()[0]
+            self.rollout()
+            self.backpropagate(result)
+
+        self.__current_node = self.__root
 

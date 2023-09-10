@@ -13,6 +13,7 @@ class Board:
         self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
         self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
         self.count_test = 0
+        self.__game_over = False # used by the MCTS AI opponent
 
         self.__build_board()
         self.__edit_board_for_testing()
@@ -25,8 +26,10 @@ class Board:
         # self.__num_player2_pieces = 2
         # # END TEST CODE
 
-        self.__player1 = player1
-        self.__player2 = player2
+        # self.__player1 = player1
+        # self.__player2 = player2
+
+        self.__player_lst = [self.__player1, self.__player2]
 
 
         self.loop_text_to_tuple_map = {
@@ -413,10 +416,10 @@ class Board:
     
     def __update_piece_counts(self, end_colour):
         if end_colour == BoardConstants.PLAYER_1_COLOUR:
-            self.__player1.remove_piece()
+            self.__player_lst[0].remove_piece()
 
         elif end_colour == BoardConstants.PLAYER_2_COLOUR:
-            self.__player2.remove_piece()
+            self.__player_lst[1].remove_piece()
 
     def undo_move(self, move_obj):
 
@@ -569,7 +572,10 @@ class Board:
         return None
 
 
-                
+
+    def get_piece_count(self, player_number):
+        return self.__player_lst[player_number + 1].get_piece_count()
+
         
 
 
