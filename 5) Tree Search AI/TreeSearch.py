@@ -2,6 +2,7 @@ import math
 import random
 from BoardConstants import BoardConstants
 import time
+from copy import deepcopy
 
 class Node:
 
@@ -16,7 +17,7 @@ class Node:
         self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
 
     def get_board(self):
-        return self.__board.copy() # copy is used to prevent the original board from being changed
+        return deepcopy(self.__board) # copy is used to prevent the original board from being changed
 
     def add_child(self, child):
         self.__children.append(child)
@@ -79,8 +80,12 @@ class GameTree:
         if node.get_parent() == None:
             return 0
         else:
-            return (node.get_value() / node.get_visited_count()) + math.sqrt(2 * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
+
+            try:
+                return (node.get_value() / node.get_visited_count()) + math.sqrt(2 * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
         
+            except ZeroDivisionError:
+                return math.inf
 
     def current_is_leaf(self):
 
@@ -117,10 +122,10 @@ class GameTree:
             self.__rollout_board.move_piece(simulated_move)
 
 
-            if self.__rollout_board.get_piece_counts(1) == 0:
+            if self.__rollout_board.get_piece_count(1) == 0:
                 return GameTree.WIN
             
-            elif self.__rollout_board.get_piece_counts(2) == 0:
+            elif self.__rollout_board.get_piece_count(2) == 0:
                 return GameTree.LOSS
             
             elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
@@ -148,13 +153,13 @@ class GameTree:
         else:
             self.node_expansion()
             self.__current_node = self.__current_node.get_children()[0]
-            self.rollout()
+            result = self.rollout()
             self.backpropagate(result)
 
         self.__current_node = self.__root
 
 
-    def get_next_move(self): # ! main method to call
+    def get_next_move(self): # main method to call
 
         """returns the next move to make"""
 

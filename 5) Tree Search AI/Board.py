@@ -16,7 +16,7 @@ class Board:
         self.__game_over = False # used by the MCTS AI opponent
 
         self.__build_board()
-        self.__edit_board_for_testing()
+        # self.__edit_board_for_testing()
 
         # self.__num_player1_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
         # self.__num_player2_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
@@ -29,7 +29,7 @@ class Board:
         # self.__player1 = player1
         # self.__player2 = player2
 
-        self.__player_lst = [self.__player1, self.__player2]
+        self.__player_lst = [player1, player2]
 
 
         self.loop_text_to_tuple_map = {
@@ -37,6 +37,12 @@ class Board:
             "OUTER": (None, self.__outer_loop),
             "BOTH": (self.__inner_loop, self.__outer_loop),
             None: (None, None)
+        }
+
+
+        self.__player_colour_map = {
+            BoardConstants.PLAYER_1_COLOUR: player1,
+            BoardConstants.PLAYER_2_COLOUR: player2
         }
 
 
@@ -480,19 +486,28 @@ class Board:
                 legal_moves.append(Move(loc, end_loc, "move"))
 
         
-        for end_loc in self.__board.get_opponent_locs(player):
-            if self.is_legal_move(loc, end_loc, player, "capture"):
-                legal_moves.append(Move(loc, end_loc, "capture"))
+        # for end_loc in self.__board.get_opponent_locs(player):
+        #     if self.is_legal_move(loc, end_loc, player, "capture"):
+        #         legal_moves.append(Move(loc, end_loc, "capture"))
+
+
+        for row in self.__board:
+            for location in row:
+                if location.get_colour() != player.get_colour() and self.is_legal_move(loc, end_loc, player, "capture"):
+                    legal_moves.append(Move(loc, end_loc, "capture"))
+
 
 
         return legal_moves
     
 
-    def get_legal_moves(self, player):
+    def get_legal_moves(self, player_colour):
 
         """Returns a list of legal moves that can be made by player"""
 
         legal_moves = []
+
+        player = self.__player_colour_map[player_colour]
 
         for row in self.__board:
             for loc in row:
@@ -574,7 +589,7 @@ class Board:
 
 
     def get_piece_count(self, player_number):
-        return self.__player_lst[player_number + 1].get_piece_count()
+        return self.__player_lst[player_number - 1].get_piece_count()
 
         
 

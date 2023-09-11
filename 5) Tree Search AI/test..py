@@ -1,23 +1,18 @@
+import copy
+
 class Test:
+    def __init__(self, name):
+        self.name = name
+
+
+
+class Test2:
 
     def __init__(self, name):
-        self.__name = name
+        self.test_obj = Test(name)
 
-    
-    def do_something(self, word):
-        raise NotImplementedError("Subclass must implement abstract method")
-    
-
-class Test2(Test):
-
-    def __init__(self, name):
-        super().__init__(name)
-
-    def do_something(self):
-        print("do something")
+        self.test_copy = copy.deepcopy(self.test_obj)
 
 
 
 x = Test2("test")
-
-x.do_something()
