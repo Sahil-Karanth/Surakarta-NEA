@@ -6,7 +6,7 @@ from copy import deepcopy
 
 class Node:
 
-    def __init__(self, board, move_obj=None):
+    def __init__(self, board, move_obj=None, is_hint=False):
         self.__board = board
         self.__move_obj = move_obj # the move that led to this node
         # self.__player_turn_colour = player_turn_colour
@@ -14,7 +14,12 @@ class Node:
         self.__visited_count = 0
         self.__children = []
         self.__parent = None
-        self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
+
+        if is_hint:
+            self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_1_COLOUR)
+
+        else:
+            self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
 
     def get_board(self):
         return deepcopy(self.__board) # copy is used to prevent the original board from being changed
