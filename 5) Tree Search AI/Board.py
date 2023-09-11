@@ -16,7 +16,7 @@ class Board:
         self.__game_over = False # used by the MCTS AI opponent
 
         self.__build_board()
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
         # self.__num_player1_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
         # self.__num_player2_pieces = BoardConstants.NUM_STARTING_PIECES_EACH

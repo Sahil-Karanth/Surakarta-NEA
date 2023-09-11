@@ -104,6 +104,8 @@ class GameTree:
 
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
 
+        curr_node_testing = max(ucb1_scores, key=lambda x: x[1])[0] # ! DELETE ME
+
     def node_expansion(self):
 
         """expands the current node"""
@@ -123,6 +125,9 @@ class GameTree:
 
             if simulated_move.get_move_type() == "move":
                 moves_without_capture += 1
+
+            # elif simulated_move.get_move_type() == "capture": # ! FOR TESTING
+            #     print("CAPTURE IN ROLLOUT")
 
             self.__rollout_board.move_piece(simulated_move)
 
@@ -147,11 +152,13 @@ class GameTree:
             node = node.get_parent()
 
     def run_MCTS_iteration(self):
+        global curr_node_testing
+        curr_node_testing = self.__current_node
 
-        if not self.current_is_leaf():
+        while not self.current_is_leaf():
             self.select_new_current()
 
-        elif self.__current_node.get_visited_count() == 0:
+        if self.__current_node.get_visited_count() == 0:
             result = self.rollout()
             self.backpropagate(result)
 
@@ -170,9 +177,23 @@ class GameTree:
 
         start_time = time.time()
 
+        self.node_expansion()
+
+        num_iterations = 0
+
+        print(f"{len(self.__current_node.get_children())} POSSIBLE MOVES FIRST MOVE")
+
+        for i in self.__current_node.get_children():
+            if i.get_move_obj().get_move_type() == "capture":
+                print("POSSIBLE CAPTURE FOR AI")
+
         while time.time() - start_time < GameTree.TIME_FOR_MOVE:
             self.run_MCTS_iteration()
+            num_iterations += 1
 
         best_node = max(self.__root.get_children(), key=lambda node: node.get_value())
         
+        print(f"BEST NODE'S VALUE = {best_node.get_value()}")
+        print("NUM ITERATIONS = ", num_iterations)
+
         return best_node.get_move_obj()
