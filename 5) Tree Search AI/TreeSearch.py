@@ -6,7 +6,7 @@ from copy import deepcopy
 
 class Node:
 
-    def __init__(self, board, move_obj=None, is_hint=False):
+    def __init__(self, board, current_player_colour, move_obj=None, is_hint=False):
         self.__board = board
         self.__move_obj = move_obj # the move that led to this node
         # self.__player_turn_colour = player_turn_colour
@@ -15,11 +15,14 @@ class Node:
         self.__children = []
         self.__parent = None
 
-        if is_hint:
-            self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_1_COLOUR)
+        self.__next_legal_states = self.__board.get_legal_moves(current_player_colour)
 
-        else:
-            self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
+
+        # if is_hint:
+        #     self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_1_COLOUR)
+
+        # else:
+        #     self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
 
     def get_board(self):
         return deepcopy(self.__board) # copy is used to prevent the original board from being changed
@@ -64,17 +67,23 @@ class GameTree:
     TIME_FOR_MOVE = 1 # seconds
 
     def __init__(self, root_board):
-        self.__root = Node(root_board)
+        self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
+        self.__root = Node(root_board, self.__current_player_colour)
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
+
+        self.__switch_player_colour_map = {
+            BoardConstants.PLAYER_1_COLOUR: BoardConstants.PLAYER_2_COLOUR,
+            BoardConstants.PLAYER_2_COLOUR: BoardConstants.PLAYER_1_COLOUR
+        }
 
     def __str__(self):
         """returns each node and it's children on a new line"""
 
 
-    def add_node(self, child_val, move_obj):
+    def add_node(self, child_board, move_obj):
         """adds a node to the tree"""
-        child = Node(child_val, move_obj)
+        child = Node(child_board, self.__current_player_colour, move_obj)
         self.__current_node.add_child(child)
         # self.__current_node = child
 
@@ -96,6 +105,10 @@ class GameTree:
 
         return len(self.__current_node.get_children()) == 0
     
+    def switch_current_player_colour(self):
+            
+            self.__current_player_colour = self.__switch_player_colour_map[self.__current_player_colour]
+    
     def select_new_current(self):
 
         """sets the current node to the best child of the current node"""
@@ -114,6 +127,8 @@ class GameTree:
             board = self.__current_node.get_board()
             board.move_piece(move_obj)
             self.add_node(board, move_obj)
+
+        self.switch_current_player_colour()
     
     def rollout(self):
 
@@ -126,8 +141,8 @@ class GameTree:
             if simulated_move.get_move_type() == "move":
                 moves_without_capture += 1
 
-            elif simulated_move.get_move_type() == "capture": # ! FOR TESTING
-                print(f"CAPTURE MADE IN ROLLOUT USING {simulated_move.get_start_colour()}")
+            # elif simulated_move.get_move_type() == "capture": # ! FOR TESTING
+            #     print(f"CAPTURE MADE IN ROLLOUT USING {simulated_move.get_start_colour()}")
 
             self.__rollout_board.move_piece(simulated_move)
 
@@ -137,6 +152,9 @@ class GameTree:
             
             elif self.__rollout_board.get_piece_count(2) == 0:
                 return GameTree.LOSS
+            
+
+            self.__current_node.switch_current_player_colour()
             
             # elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
             #     return GameTree.DRAW
