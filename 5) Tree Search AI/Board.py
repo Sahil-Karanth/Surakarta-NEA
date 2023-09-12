@@ -492,8 +492,8 @@ class Board:
 
 
         for row in self.__board:
-            for location in row:
-                if location.get_colour() != player.get_colour() and self.is_legal_move(loc, end_loc, player, "capture"):
+            for end_loc in row:
+                if end_loc.get_colour() != player.get_colour() and self.is_legal_move(loc, end_loc, player, "capture"):
                     legal_moves.append(Move(loc, end_loc, "capture"))
 
 

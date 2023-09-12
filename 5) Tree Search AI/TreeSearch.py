@@ -138,8 +138,8 @@ class GameTree:
             elif self.__rollout_board.get_piece_count(2) == 0:
                 return GameTree.LOSS
             
-            elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
-                return GameTree.DRAW
+            # elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
+            #     return GameTree.DRAW
             
     
     def backpropagate(self, result):
@@ -161,12 +161,15 @@ class GameTree:
         if self.__current_node.get_visited_count() == 0:
             result = self.rollout()
             self.backpropagate(result)
+            print("rollout complete with result: ", result)
 
         else:
             self.node_expansion()
             self.__current_node = self.__current_node.get_children()[0]
             result = self.rollout()
             self.backpropagate(result)
+            print("rollout complete with result: ", result)
+
 
         self.__current_node = self.__root
 
