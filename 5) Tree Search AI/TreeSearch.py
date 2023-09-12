@@ -126,8 +126,8 @@ class GameTree:
             if simulated_move.get_move_type() == "move":
                 moves_without_capture += 1
 
-            # elif simulated_move.get_move_type() == "capture": # ! FOR TESTING
-            #     print("CAPTURE IN ROLLOUT")
+            elif simulated_move.get_move_type() == "capture": # ! FOR TESTING
+                print(f"CAPTURE MADE IN ROLLOUT USING {simulated_move.get_start_colour()}")
 
             self.__rollout_board.move_piece(simulated_move)
 
@@ -186,9 +186,9 @@ class GameTree:
 
         print(f"{len(self.__current_node.get_children())} POSSIBLE MOVES FIRST MOVE")
 
-        for i in self.__current_node.get_children():
-            if i.get_move_obj().get_move_type() == "capture":
-                print("POSSIBLE CAPTURE FOR AI")
+        # for i in self.__current_node.get_children():
+        #     if i.get_move_obj().get_move_type() == "capture":
+        #         print("POSSIBLE CAPTURE FOR AI")
 
         while time.time() - start_time < GameTree.TIME_FOR_MOVE:
             self.run_MCTS_iteration()
