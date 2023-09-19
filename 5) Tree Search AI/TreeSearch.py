@@ -67,6 +67,7 @@ class GameTree:
         self.__root = Node(root_board)
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
+        self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
 
     def __str__(self):
         """returns each node and it's children on a new line"""
@@ -77,6 +78,12 @@ class GameTree:
         child = Node(child_val, move_obj)
         self.__current_node.add_child(child)
         # self.__current_node = child
+
+    def __update_current_player_colour(self):
+        if self.__current_player_colour == BoardConstants.PLAYER_1_COLOUR:
+            self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
+        else:
+            self.__current_player_colour = BoardConstants.PLAYER_1_COLOUR
 
     def UCB1(self, node):
         
@@ -118,10 +125,12 @@ class GameTree:
     def rollout(self):
 
         moves_without_capture = 0
-        self.__rollout_board = self.__current_node.get_board()
+        self.__rollout_board = deepcopy(self.__current_node.get_board())
 
+        self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
+
+        simulated_move = random.choice(self.__current_node.get_next_legal_states())
         while True:
-            simulated_move = random.choice(self.__current_node.get_next_legal_states())
 
             if simulated_move.get_move_type() == "move":
                 moves_without_capture += 1
@@ -131,12 +140,18 @@ class GameTree:
 
             self.__rollout_board.move_piece(simulated_move)
 
+            print(f"made move for {simulated_move.get_start_colour()}")
+
 
             if self.__rollout_board.get_piece_count(1) == 0:
                 return GameTree.WIN
             
             elif self.__rollout_board.get_piece_count(2) == 0:
                 return GameTree.LOSS
+            
+            simulated_move = random.choice(self.__rollout_board.get_legal_moves(self.__current_player_colour))
+
+            self.__update_current_player_colour()
             
             # elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
             #     return GameTree.DRAW
@@ -152,6 +167,7 @@ class GameTree:
             node = node.get_parent()
 
     def run_MCTS_iteration(self):
+        print("NEW ITERATION")
         global curr_node_testing
         curr_node_testing = self.__current_node
 
