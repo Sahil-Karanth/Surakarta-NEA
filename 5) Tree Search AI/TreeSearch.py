@@ -12,7 +12,7 @@ class Node:
         self.__move_obj = move_obj # the move that led to this node
         # self.__player_turn_colour = player_turn_colour
         self.__value = 0
-        self.__visited_count = 0
+        self.__visited_count = self.__set_initial_count()
         self.__children = []
         self.__parent = None
 
@@ -24,6 +24,13 @@ class Node:
 
         # else:
         #     self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
+
+    def __set_initial_count(self):
+        if self.__board.get_piece_count(1) == 0 or self.__board.get_piece_count(2) == 0: # prevents rollouts of terminal states
+            return math.inf
+        
+        else:
+            return 0
 
     def get_board(self):
         return deepcopy(self.__board) # copy is used to prevent the original board from being changed
@@ -97,6 +104,10 @@ class GameTree:
         
         if node.get_parent() == None:
             return 0
+        
+        elif node.get_visited_count() == math.inf:
+            return math.inf
+
         else:
 
             try:
@@ -147,13 +158,10 @@ class GameTree:
             if simulated_move.get_move_type() == "move":
                 moves_without_capture += 1
 
-            # elif simulated_move.get_move_type() == "capture": # ! FOR TESTING
-            #     print(f"CAPTURE MADE IN ROLLOUT USING {simulated_move.get_start_colour()}")
 
             self.__rollout_board.move_piece(simulated_move)
 
             print(f"made move for {simulated_move.get_start_colour()}")
-
 
             if self.__rollout_board.get_piece_count(1) == 0:
                 return GameTree.WIN
@@ -161,6 +169,8 @@ class GameTree:
             elif self.__rollout_board.get_piece_count(2) == 0:
                 return GameTree.LOSS
             
+            moves_lst_testing = self.__rollout_board.get_legal_moves(self.__current_player_colour)
+
             simulated_move = random.choice(self.__rollout_board.get_legal_moves(self.__current_player_colour))
 
             self.switch_current_player_colour()
@@ -178,10 +188,18 @@ class GameTree:
             node.increase_value(result)
             node = node.get_parent()
 
+
     def run_MCTS_iteration(self):
+
+        # TEST BOARD PRINT
+
+        for row in self.__current_node.get_board().get_board_state():
+            print([i.get_colour() for i in row])
+
         print("NEW ITERATION")
         global curr_node_testing
         curr_node_testing = self.__current_node
+
 
         while not self.current_is_leaf():
             self.select_new_current()
@@ -213,10 +231,6 @@ class GameTree:
         num_iterations = 0
 
         print(f"{len(self.__current_node.get_children())} POSSIBLE MOVES FIRST MOVE")
-
-        # for i in self.__current_node.get_children():
-        #     if i.get_move_obj().get_move_type() == "capture":
-        #         print("POSSIBLE CAPTURE FOR AI")
 
         while time.time() - start_time < GameTree.TIME_FOR_MOVE:
             self.run_MCTS_iteration()
