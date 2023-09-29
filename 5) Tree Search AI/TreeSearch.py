@@ -4,6 +4,7 @@ from BoardConstants import BoardConstants
 import time
 from copy import deepcopy
 
+# ! CHECK TO MAKE SURE THE TREE IS TRYING TO MAKE THE BEST MOVE FOR THE OPPONENT AS MOVES ALTERNATE
 
 class Node:
 
@@ -15,15 +16,7 @@ class Node:
         self.__visited_count = self.__set_initial_count()
         self.__children = []
         self.__parent = None
-
         self.__next_legal_states = self.__board.get_legal_moves(current_player_colour)
-
-
-        # if is_hint:
-        #     self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_1_COLOUR)
-
-        # else:
-        #     self.__next_legal_states = self.__board.get_legal_moves(BoardConstants.PLAYER_2_COLOUR)
 
     def __set_initial_count(self):
         if self.__board.get_piece_count(1) == 0 or self.__board.get_piece_count(2) == 0: # prevents rollouts of terminal states
@@ -128,11 +121,11 @@ class GameTree:
 
         """sets the current node to the best child of the current node"""
 
-        ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
+        # if condition is to prevent the AI from selecting a terminal state as the current node
+        ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children() if node.get_visited_count() != math.inf]
 
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
 
-        curr_node_testing = max(ucb1_scores, key=lambda x: x[1])[0] # ! DELETE ME
 
     def node_expansion(self):
 
@@ -187,6 +180,8 @@ class GameTree:
             node.increment_visited_count()
             node.increase_value(result)
             node = node.get_parent()
+
+        # ! DO I NEED TO GO BACK TO THE ROOT NODE?
 
 
     def run_MCTS_iteration(self):
