@@ -2,13 +2,18 @@ import math
 import random
 from BoardConstants import BoardConstants
 import time
+import sys
 from copy import deepcopy
 
 # ! CHECK TO MAKE SURE THE TREE IS TRYING TO MAKE THE BEST MOVE FOR THE OPPONENT AS MOVES ALTERNATE
 
+# ! A fix for only moving one piece might be that it's too inefficient so I need to not rollout to the end but call a static evaluation function after a certain number of moves
+
+# ! Currently MCTS is not going deep enough in the tree
+
 class Node:
 
-    def __init__(self, board, current_player_colour, move_obj=None, is_hint=False):
+    def __init__(self, board, current_player_colour, depth, move_obj=None, is_hint=False):
         self.__board = board
         self.__move_obj = move_obj # the move that led to this node
         # self.__player_turn_colour = player_turn_colour
@@ -17,6 +22,7 @@ class Node:
         self.__children = []
         self.__parent = None
         self.__next_legal_states = self.__board.get_legal_moves(current_player_colour)
+        self.__depth = depth
 
     def __set_initial_count(self):
         if self.__board.get_piece_count(1) == 0 or self.__board.get_piece_count(2) == 0: # prevents rollouts of terminal states
@@ -37,6 +43,9 @@ class Node:
 
     def get_parent(self):
         return self.__parent
+    
+    def get_depth(self):
+        return self.__depth
     
     def get_move_obj(self):
         return self.__move_obj
@@ -65,11 +74,12 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
-    TIME_FOR_MOVE = 2 # seconds
+    TIME_FOR_MOVE = 5 # seconds
 
     def __init__(self, root_board):
         self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
-        self.__root = Node(root_board, self.__current_player_colour)
+        self.__root = Node(root_board, self.__current_player_colour, depth=0)
+        self.__current_tree_depth = 0 # the maximum depth of a node in the tree
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
         self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
@@ -79,6 +89,8 @@ class GameTree:
             BoardConstants.PLAYER_2_COLOUR: BoardConstants.PLAYER_1_COLOUR
         }
 
+
+
     def __str__(self):
         """returns each node and it's children on a new line"""
 
@@ -87,9 +99,12 @@ class GameTree:
 
     def add_node(self, child_board, move_obj):
         """adds a node to the tree"""
-        child = Node(child_board, self.__current_player_colour, move_obj)
+        new_depth = self.__current_node.get_depth() + 1
+        child = Node(child_board, self.__current_player_colour, move_obj=move_obj, depth=new_depth)
         self.__current_node.add_child(child)
-        # self.__current_node = child
+
+        print("added child node with depth: ", child.get_depth())
+
 
     def UCB1(self, node):
         
@@ -98,7 +113,7 @@ class GameTree:
         if node.get_parent() == None:
             return 0
         
-        elif node.get_visited_count() == math.inf:
+        elif node.get_visited_count() == math.inf: # ! DELETE THIS IF STATEMENT NOT NEEDED
             return math.inf
 
         else:
@@ -126,6 +141,9 @@ class GameTree:
 
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
 
+        if self.__current_node.get_depth() < max(ucb1_scores, key=lambda x: x[1])[0].get_depth():
+            self.__current_tree_depth = max(ucb1_scores, key=lambda x: x[1])[0].get_depth()
+
 
     def node_expansion(self):
 
@@ -140,17 +158,12 @@ class GameTree:
     
     def rollout(self):
 
-        moves_without_capture = 0
         self.__rollout_board = deepcopy(self.__current_node.get_board())
 
         self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
 
         simulated_move = random.choice(self.__current_node.get_next_legal_states())
         while True:
-
-            if simulated_move.get_move_type() == "move":
-                moves_without_capture += 1
-
 
             self.__rollout_board.move_piece(simulated_move)
 
@@ -162,8 +175,6 @@ class GameTree:
             elif self.__rollout_board.get_piece_count(2) == 0:
                 return GameTree.LOSS
             
-            moves_lst_testing = self.__rollout_board.get_legal_moves(self.__current_player_colour)
-
             simulated_move = random.choice(self.__rollout_board.get_legal_moves(self.__current_player_colour))
 
             self.switch_current_player_colour()
@@ -180,9 +191,6 @@ class GameTree:
             node.increment_visited_count()
             node.increase_value(result)
             node = node.get_parent()
-
-        # ! DO I NEED TO GO BACK TO THE ROOT NODE?
-
 
     def run_MCTS_iteration(self):
 
@@ -215,6 +223,7 @@ class GameTree:
         self.__current_node = self.__root
 
 
+
     def get_next_move(self): # main method to call
 
         """returns the next move to make"""
@@ -235,6 +244,7 @@ class GameTree:
         
         print(f"BEST NODE'S VALUE = {best_node.get_value()}")
         print("NUM ITERATIONS = ", num_iterations)
+        print("TREE DEPTH = ", self.__current_tree_depth)
 
         return best_node.get_move_obj()
 
