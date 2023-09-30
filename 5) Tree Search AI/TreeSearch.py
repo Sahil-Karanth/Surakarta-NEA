@@ -25,11 +25,13 @@ class Node:
         self.__depth = depth
 
     def __set_initial_count(self):
-        if self.__board.get_piece_count(1) == 0 or self.__board.get_piece_count(2) == 0: # prevents rollouts of terminal states
-            return math.inf
+        # if self.__board.get_piece_count(1) == 0 or self.__board.get_piece_count(2) == 0: # prevents rollouts of terminal states
+        #     return math.inf
         
-        else:
-            return 0
+        # else:
+        #     return 0
+
+        return 0
 
     def get_board(self):
         return deepcopy(self.__board) # copy is used to prevent the original board from being changed
@@ -74,7 +76,9 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
-    TIME_FOR_MOVE = 5 # seconds
+    TIME_FOR_MOVE = 10 # seconds
+    MOVES_PER_ROLLOUT = 50
+    EXPLORATION_CONSTANT = 2
 
     def __init__(self, root_board):
         self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
@@ -113,13 +117,13 @@ class GameTree:
         if node.get_parent() == None:
             return 0
         
-        elif node.get_visited_count() == math.inf: # ! DELETE THIS IF STATEMENT NOT NEEDED
-            return math.inf
+        # elif node.get_visited_count() == math.inf: # ! DELETE THIS IF STATEMENT NOT NEEDED
+        #     return math.inf
 
         else:
 
             try:
-                return (node.get_value() / node.get_visited_count()) + math.sqrt(2 * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
+                return (node.get_value() / node.get_visited_count()) + math.sqrt(GameTree.EXPLORATION_CONSTANT * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
         
             except ZeroDivisionError:
                 return math.inf
@@ -137,11 +141,13 @@ class GameTree:
         """sets the current node to the best child of the current node"""
 
         # if condition is to prevent the AI from selecting a terminal state as the current node
-        ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children() if node.get_visited_count() != math.inf]
+        # ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children() if node.get_visited_count() != math.inf]
+        ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
+
 
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
 
-        if self.__current_node.get_depth() < max(ucb1_scores, key=lambda x: x[1])[0].get_depth():
+        if self.__current_tree_depth < max(ucb1_scores, key=lambda x: x[1])[0].get_depth():
             self.__current_tree_depth = max(ucb1_scores, key=lambda x: x[1])[0].get_depth()
 
 
@@ -162,17 +168,32 @@ class GameTree:
 
         self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
 
+
+        if self.__rollout_board.get_piece_count(1) == 0:
+            return GameTree.LOSS
+        
+        elif self.__rollout_board.get_piece_count(2) == 0:
+            return GameTree.WIN
+
+
         simulated_move = random.choice(self.__current_node.get_next_legal_states())
-        while True:
+
+        num_moves = 0
+
+        while num_moves < GameTree.MOVES_PER_ROLLOUT:
+
+            num_moves += 1
 
             self.__rollout_board.move_piece(simulated_move)
 
             print(f"made move for {simulated_move.get_start_colour()}")
 
             if self.__rollout_board.get_piece_count(1) == 0:
+                print("num moves = ", num_moves)
                 return GameTree.WIN
             
             elif self.__rollout_board.get_piece_count(2) == 0:
+                print("num moves = ", num_moves)
                 return GameTree.LOSS
             
             simulated_move = random.choice(self.__rollout_board.get_legal_moves(self.__current_player_colour))
@@ -181,7 +202,20 @@ class GameTree:
             
             # elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
             #     return GameTree.DRAW
+
+        if self.__rollout_board.get_piece_count(1) > self.__rollout_board.get_piece_count(2):
+            print("num moves = ", num_moves)
+            return GameTree.LOSS
+        
+        elif self.__rollout_board.get_piece_count(1) < self.__rollout_board.get_piece_count(2):
+            print("num moves = ", num_moves)
+            return GameTree.WIN
+        
+        else:
+            print("num moves = ", num_moves)
+            return GameTree.DRAW
             
+
     
     def backpropagate(self, result):
 
@@ -214,7 +248,8 @@ class GameTree:
 
         else:
             self.node_expansion()
-            self.__current_node = self.__current_node.get_children()[0]
+            if len(self.__current_node.get_children()) != 0:
+                self.__current_node = self.__current_node.get_children()[0]
             result = self.rollout()
             self.backpropagate(result)
             print("rollout complete with result: ", result)
@@ -245,6 +280,10 @@ class GameTree:
         print(f"BEST NODE'S VALUE = {best_node.get_value()}")
         print("NUM ITERATIONS = ", num_iterations)
         print("TREE DEPTH = ", self.__current_tree_depth)
+
+        print("ALL IMMEDIATE CHILDREN VALUES")
+        print([node.get_value() for node in self.__root.get_children()])
+        [print(node.get_move_obj()) for node in self.__root.get_children()]
 
         return best_node.get_move_obj()
 
