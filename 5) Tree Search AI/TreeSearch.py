@@ -6,10 +6,9 @@ import sys
 from copy import deepcopy
 
 # ! CHECK TO MAKE SURE THE TREE IS TRYING TO MAKE THE BEST MOVE FOR THE OPPONENT AS MOVES ALTERNATE
+# ! prevent the double g move each rollout
+# ! do some debugging to check why some obvious captures aren't being made
 
-# ! A fix for only moving one piece might be that it's too inefficient so I need to not rollout to the end but call a static evaluation function after a certain number of moves
-
-# ! Currently MCTS is not going deep enough in the tree
 
 class Node:
 
@@ -64,7 +63,7 @@ class Node:
     def get_value(self):
         return self.__value
     
-    def increase_value(self, value):
+    def update_value(self, value):
         self.__value += value
     
     def get_next_legal_states(self):
@@ -134,7 +133,7 @@ class GameTree:
     
     def switch_current_player_colour(self):
             
-            self.__current_player_colour = self.__switch_player_colour_map[self.__current_player_colour]
+        self.__current_player_colour = self.__switch_player_colour_map[self.__current_player_colour]
     
     def select_new_current(self):
 
@@ -143,8 +142,6 @@ class GameTree:
         # if condition is to prevent the AI from selecting a terminal state as the current node
         # ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children() if node.get_visited_count() != math.inf]
         ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
-
-        print(ucb1_scores)
 
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
 
@@ -159,13 +156,14 @@ class GameTree:
     def node_expansion(self):
 
         """expands the current node"""
+        self.switch_current_player_colour()
+
 
         for move_obj in self.__current_node.get_next_legal_states():
             board = self.__current_node.get_board()
             board.move_piece(move_obj)
             self.add_node(board, move_obj)
 
-        self.switch_current_player_colour()
     
     def rollout(self):
 
@@ -228,20 +226,12 @@ class GameTree:
 
         while node != None:
             node.increment_visited_count()
-            node.increase_value(result)
+            node.update_value(result)
             node = node.get_parent()
 
     def run_MCTS_iteration(self):
 
-        # TEST BOARD PRINT
-
-        for row in self.__current_node.get_board().get_board_state():
-            print([i.get_colour() for i in row])
-
         print("NEW ITERATION")
-        global curr_node_testing
-        curr_node_testing = self.__current_node
-
 
         while not self.current_is_leaf():
             self.select_new_current()
@@ -277,6 +267,7 @@ class GameTree:
         print(f"{len(self.__current_node.get_children())} POSSIBLE MOVES FIRST MOVE")
 
         while time.time() - start_time < GameTree.TIME_FOR_MOVE:
+        # while True: # ! DELETE THIS WHILE LOOP CONDITION
             self.run_MCTS_iteration()
             num_iterations += 1
 
