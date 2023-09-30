@@ -6,8 +6,9 @@ import sys
 from copy import deepcopy
 
 # ! CHECK TO MAKE SURE THE TREE IS TRYING TO MAKE THE BEST MOVE FOR THE OPPONENT AS MOVES ALTERNATE
-# ! prevent the double g move each rollout
 # ! do some debugging to check why some obvious captures aren't being made
+
+# ! make sure player turns are being switched correctly
 
 
 class Node:
@@ -80,12 +81,11 @@ class GameTree:
     EXPLORATION_CONSTANT = 2
 
     def __init__(self, root_board):
-        self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
-        self.__root = Node(root_board, self.__current_player_colour, depth=0)
+        self.__root = Node(root_board, BoardConstants.PLAYER_2_COLOUR, depth=0)
         self.__current_tree_depth = 0 # the maximum depth of a node in the tree
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
-        self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
+        # self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
 
         self.__switch_player_colour_map = {
             BoardConstants.PLAYER_1_COLOUR: BoardConstants.PLAYER_2_COLOUR,
@@ -93,17 +93,22 @@ class GameTree:
         }
 
 
+    def __get_current_player_colour(self, depth):
 
-    def __str__(self):
-        """returns each node and it's children on a new line"""
-
-    def get_root_TEST(self):
-        return self.__root
+        if depth % 2 == 0: # if the depth is even, it's player 2's turn
+            return BoardConstants.PLAYER_2_COLOUR
+        
+        elif depth % 2 == 1:
+            return BoardConstants.PLAYER_1_COLOUR
 
     def add_node(self, child_board, move_obj):
         """adds a node to the tree"""
+
         new_depth = self.__current_node.get_depth() + 1
-        child = Node(child_board, self.__current_player_colour, move_obj=move_obj, depth=new_depth)
+        current_player_colour = self.__get_current_player_colour(new_depth)
+
+        child = Node(child_board, current_player_colour, move_obj=move_obj, depth=new_depth)
+
         self.__current_node.add_child(child)
 
         print("added child node with depth: ", child.get_depth())
@@ -115,9 +120,6 @@ class GameTree:
         
         if node.get_parent() == None:
             return 0
-        
-        # elif node.get_visited_count() == math.inf: # ! DELETE THIS IF STATEMENT NOT NEEDED
-        #     return math.inf
 
         else:
 
@@ -139,14 +141,9 @@ class GameTree:
 
         """sets the current node to the best child of the current node"""
 
-        # if condition is to prevent the AI from selecting a terminal state as the current node
-        # ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children() if node.get_visited_count() != math.inf]
         ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
 
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
-
-        # # ! TESTING LINE
-        # self.__current_node = ucb1_scores[-1][0]
 
 
         if self.__current_tree_depth < max(ucb1_scores, key=lambda x: x[1])[0].get_depth():
@@ -156,8 +153,6 @@ class GameTree:
     def node_expansion(self):
 
         """expands the current node"""
-        self.switch_current_player_colour()
-
 
         for move_obj in self.__current_node.get_next_legal_states():
             board = self.__current_node.get_board()
@@ -169,9 +164,6 @@ class GameTree:
 
         self.__rollout_board = deepcopy(self.__current_node.get_board())
 
-        self.__current_player_colour = BoardConstants.PLAYER_2_COLOUR
-
-
         if self.__rollout_board.get_piece_count(1) == 0:
             return GameTree.WIN
         
@@ -179,7 +171,10 @@ class GameTree:
             return GameTree.LOSS
 
 
+        rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth())
+
         simulated_move = random.choice(self.__current_node.get_next_legal_states())
+
 
         num_moves = 0
 
@@ -199,12 +194,11 @@ class GameTree:
                 print("num moves = ", num_moves)
                 return GameTree.LOSS
             
-            simulated_move = random.choice(self.__rollout_board.get_legal_moves(self.__current_player_colour))
+            rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
 
-            self.switch_current_player_colour()
-            
-            # elif moves_without_capture == BoardConstants.DRAW_THRESHOLD:
-            #     return GameTree.DRAW
+            move_options = self.__rollout_board.get_legal_moves(rollout_colour)
+            simulated_move = random.choice(move_options)
+
 
         if self.__rollout_board.get_piece_count(1) > self.__rollout_board.get_piece_count(2):
             print("num moves = ", num_moves)
