@@ -76,8 +76,8 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
-    TIME_FOR_MOVE = 10 # seconds
-    MOVES_PER_ROLLOUT = 50
+    TIME_FOR_MOVE = 15 # seconds
+    MOVES_PER_ROLLOUT = 100
     EXPLORATION_CONSTANT = 2
 
     def __init__(self, root_board):
@@ -144,8 +144,13 @@ class GameTree:
         # ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children() if node.get_visited_count() != math.inf]
         ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
 
+        print(ucb1_scores)
 
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
+
+        # # ! TESTING LINE
+        # self.__current_node = ucb1_scores[-1][0]
+
 
         if self.__current_tree_depth < max(ucb1_scores, key=lambda x: x[1])[0].get_depth():
             self.__current_tree_depth = max(ucb1_scores, key=lambda x: x[1])[0].get_depth()
@@ -170,10 +175,10 @@ class GameTree:
 
 
         if self.__rollout_board.get_piece_count(1) == 0:
-            return GameTree.LOSS
+            return GameTree.WIN
         
         elif self.__rollout_board.get_piece_count(2) == 0:
-            return GameTree.WIN
+            return GameTree.LOSS
 
 
         simulated_move = random.choice(self.__current_node.get_next_legal_states())
