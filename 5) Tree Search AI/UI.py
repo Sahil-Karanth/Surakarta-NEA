@@ -5,6 +5,7 @@ from BoardConstants import BoardConstants
 import PySimpleGUI as sg
 import textwrap
 import time
+from PIL import ImageTk, Image
 
 # ! todo: change uses of class attributes to use self instead of class name
 
@@ -253,6 +254,7 @@ class Graphical_UI(UI):
             [player_turn_frame],
             [undo_move_button, move_option, capture_option, submit_move_button],
             [sg.Column(player1_captured_layout), sg.Column(board_layout), sg.Column(player2_captured_layout)],
+            # [sg.Canvas(size=(200, 200), key='-CANVAS-'), sg.Column(board_layout)] # ! SUPER EXPERIMENTAL CHANGE
         ]
 
         self.__window.close()
