@@ -7,7 +7,7 @@ class BoardConstants:
     EDGE_LOCATION_CORDS = ((0, 0), (0, 5), (5, 0), (5, 5))
     PLAYER_1_COLOUR = "y"
     PLAYER_2_COLOUR = "g"
-    NUM_STARTING_PIECES_EACH = 12
+    NUM_STARTING_PIECES_EACH = 2
     ADJACENT_CORD_DIFFS = (1, 2)
     NUM_BOARD_LOOPS = 4
     DRAW_THRESHOLD = 50

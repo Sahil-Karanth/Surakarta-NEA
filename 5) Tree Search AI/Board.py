@@ -16,7 +16,7 @@ class Board:
         self.__game_over = False # used by the MCTS AI opponent
 
         self.__build_board()
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
         # self.__num_player1_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
         # self.__num_player2_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
@@ -58,9 +58,9 @@ class Board:
         inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
 
         YELLOW_TEST_OUTER_LOOP = [(1,3)]
-        GREEN_TEST_OUTER_LOOP = []
+        GREEN_TEST_OUTER_LOOP = [(2,0)]
 
-        YELLOW_TEST_INNER_LOOP = [(1,3)]
+        YELLOW_TEST_INNER_LOOP = [(1,3), (4,4)]
         GREEN_TEST_INNER_LOOP = [(1,5)]
 
 
@@ -86,6 +86,9 @@ class Board:
 
         self.__board[1][3].set_piece(Piece("y"))
         self.__board[1][5].set_piece(Piece("g"))
+
+        self.__board[4][4].set_piece(Piece("y"))
+        self.__board[2][0].set_piece(Piece("g"))
 
 
         # self.__board[0][0].set_piece(Piece("y"))
