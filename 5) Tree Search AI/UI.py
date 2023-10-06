@@ -59,7 +59,7 @@ class Graphical_UI(UI):
         self.capture_count_test = 0
 
 
-    def __create_window(self, title, layout, justification, maximise=True, size=(700, 700)):
+    def __create_window(self, title, layout, justification, maximise=True, size=(700, 700), modal=False):
 
         """Creates a window with the given title, layout and justification"""
 
@@ -69,6 +69,7 @@ class Graphical_UI(UI):
             size=size,
             resizable=False,
             keep_on_top=True,
+            modal=modal,
             # margins=(20,20),
             element_justification=justification,
             text_justification=justification # ! when writing help page check if I need this
@@ -211,7 +212,7 @@ class Graphical_UI(UI):
             [sg.Canvas(size=(500, 500), key='-CANVAS-')],
         ]
 
-        self.__display_board_window = self.__create_window("Display Board", layout, "center", size=(300, 300), maximise=False)
+        self.__display_board_window = self.__create_window("Display Board", layout, "center", size=(300, 300), maximise=False, modal=False)
         # self.__display_board_window = sg.Window('Circle Drawing', layout, keep_on_top=True, finalize=True)
 
         canvas = self.__display_board_window['-CANVAS-'].TKCanvas
@@ -221,10 +222,16 @@ class Graphical_UI(UI):
         background_img = ImageTk.PhotoImage(image)
         canvas.create_image(0, 0, image=background_img, anchor='nw')
 
+
         while True:
             event, values = self.__display_board_window.read()
             if event == sg.WINDOW_CLOSED:
                 break
+
+
+        self.__display_board_window.close()
+
+        return True
 
 
     def __setup_match_page(self, player1name, player2name, ai_level=None):
@@ -284,7 +291,7 @@ class Graphical_UI(UI):
         self.__current_page = "match_page"
         self.__create_window("Match", layout, "center")
 
-        self.__make_display_board_window()
+        # self.__make_display_board_window()
 
 
     def __update_display_number_captured_pieces(self):
@@ -496,12 +503,15 @@ class Graphical_UI(UI):
 
             elif event == "submit_local_play_button":
                 self.__setup_match_page(values["player_1_name_input"], values["player_2_name_input"])
+                self.__make_display_board_window()
 
             elif event == "submit_AI_play_button":
                 difficulty_level = int(values['difficulty_slider'])
                 ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
                 self.__ai_mode = True
                 self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
+                self.__make_display_board_window()
+
 
             elif event == "undo_move_button":
                 self.__undo_move(self.__ai_mode)
