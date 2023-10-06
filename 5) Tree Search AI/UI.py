@@ -9,7 +9,6 @@ from PIL import ImageTk, Image
 
 # ! todo: change uses of class attributes to use self instead of class name
 
-
 class UI:
 
     def __init__(self):
@@ -48,6 +47,8 @@ class Graphical_UI(UI):
         self.__highlighted_board_positions = []
 
         self.__window = None
+        self.__display_board_window = None
+
         self.__current_page = None
         self.__setup_home_page()
 
@@ -58,22 +59,23 @@ class Graphical_UI(UI):
         self.capture_count_test = 0
 
 
-    def __create_window(self, title, layout, justification):
+    def __create_window(self, title, layout, justification, maximise=True, size=(700, 700)):
 
         """Creates a window with the given title, layout and justification"""
 
         self.__window = sg.Window(
             title=title,
             layout=layout,
-            size=(700, 700),
-            resizable=True,
+            size=size,
+            resizable=False,
             keep_on_top=True,
-            margins=(20,20),
+            # margins=(20,20),
             element_justification=justification,
             text_justification=justification # ! when writing help page check if I need this
         ).finalize()
 
-        self.__maximise_window()
+        if maximise:
+            self.__maximise_window()
 
         return self.__window
 
@@ -203,6 +205,28 @@ class Graphical_UI(UI):
     def __make_piece_button(self, piece_type, key, visible=False):
         return sg.Button("", image_filename=f"{piece_type}_counter.png", pad=(30,30), visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
+    def __make_display_board_window(self):
+
+        layout = [
+            [sg.Canvas(size=(500, 500), key='-CANVAS-')],
+        ]
+
+        self.__display_board_window = self.__create_window("Display Board", layout, "center", size=(300, 300), maximise=False)
+        # self.__display_board_window = sg.Window('Circle Drawing', layout, keep_on_top=True, finalize=True)
+
+        canvas = self.__display_board_window['-CANVAS-'].TKCanvas
+        image_path = 'blank_board.png'
+        image = Image.open(image_path)
+        image.thumbnail((300, 300))  # Resize the image to fit the canvas
+        background_img = ImageTk.PhotoImage(image)
+        canvas.create_image(0, 0, image=background_img, anchor='nw')
+
+        while True:
+            event, values = self.__display_board_window.read()
+            if event == sg.WINDOW_CLOSED:
+                break
+
+
     def __setup_match_page(self, player1name, player2name, ai_level=None):
 
         """Creates the match page window where the game is played"""
@@ -254,12 +278,13 @@ class Graphical_UI(UI):
             [player_turn_frame],
             [undo_move_button, move_option, capture_option, submit_move_button],
             [sg.Column(player1_captured_layout), sg.Column(board_layout), sg.Column(player2_captured_layout)],
-            # [sg.Canvas(size=(200, 200), key='-CANVAS-'), sg.Column(board_layout)] # ! SUPER EXPERIMENTAL CHANGE
         ]
 
         self.__window.close()
         self.__current_page = "match_page"
         self.__create_window("Match", layout, "center")
+
+        self.__make_display_board_window()
 
 
     def __update_display_number_captured_pieces(self):
