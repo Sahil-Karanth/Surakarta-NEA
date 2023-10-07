@@ -59,35 +59,36 @@ class Graphical_UI(UI):
         self.capture_count_test = 0
 
 
-    def __create_window(self, title, layout, justification, maximise=True, size=(700, 700), modal=False):
+    def __create_window(self, title, layout, justification, maximise=True, size=(700, 700), modal=False, disable_close=False):
 
         """Creates a window with the given title, layout and justification"""
 
-        self.__window = sg.Window(
+        window = sg.Window(
             title=title,
             layout=layout,
             size=size,
             resizable=False,
             keep_on_top=True,
             modal=modal,
+            disable_close=disable_close,
             # margins=(20,20),
             element_justification=justification,
             text_justification=justification # ! when writing help page check if I need this
         ).finalize()
 
         if maximise:
-            self.__maximise_window()
+            self.__maximise_window(window)
 
-        return self.__window
+        return window
 
     def get_UI_type(self):
         return self.__UI_type
     
-    def __maximise_window(self):
+    def __maximise_window(self, window):
 
         """Maximises the window without an animation"""
 
-        self.__window.TKroot.geometry("{0}x{1}+0+0".format(self.__window.TKroot.winfo_screenwidth(), self.__window.TKroot.winfo_screenheight()))
+        window.TKroot.geometry("{0}x{1}+0+0".format(window.TKroot.winfo_screenwidth(), window.TKroot.winfo_screenheight()))
     
     def __setup_home_page(self):
 
@@ -115,7 +116,7 @@ class Graphical_UI(UI):
 
         self.__current_page = "home_page"
 
-        self.__create_window("Surakarta", layout, "center")
+        self.__window = self.__create_window("Surakarta", layout, "center")
     
     def __create_menu(self):
 
@@ -209,13 +210,14 @@ class Graphical_UI(UI):
     def __make_display_board_window(self):
 
         layout = [
+            [sg.Button("close", key="close_display_board_button")],
             [sg.Canvas(size=(500, 500), key='-CANVAS-')],
         ]
 
-        self.__display_board_window = self.__create_window("Display Board", layout, "center", size=(300, 300), maximise=False, modal=False)
+        display_board_window = self.__create_window("Display Board", layout, "center", size=(300, 300), maximise=False, modal=True, disable_close=True)
         # self.__display_board_window = sg.Window('Circle Drawing', layout, keep_on_top=True, finalize=True)
 
-        canvas = self.__display_board_window['-CANVAS-'].TKCanvas
+        canvas = display_board_window['-CANVAS-'].TKCanvas
         image_path = 'blank_board.png'
         image = Image.open(image_path)
         image.thumbnail((300, 300))  # Resize the image to fit the canvas
@@ -224,14 +226,11 @@ class Graphical_UI(UI):
 
 
         while True:
-            event, values = self.__display_board_window.read()
-            if event == sg.WINDOW_CLOSED:
+            event, values = display_board_window.read()
+            if event == "close_display_board_button":
                 break
 
-
-        self.__display_board_window.close()
-
-        return True
+        display_board_window.close()
 
 
     def __setup_match_page(self, player1name, player2name, ai_level=None):
@@ -282,6 +281,7 @@ class Graphical_UI(UI):
         
         layout = [
             [self.__create_menu()],
+            [sg.Button("show board", key="show_board_button")], # ! TESTING
             [player_turn_frame],
             [undo_move_button, move_option, capture_option, submit_move_button],
             [sg.Column(player1_captured_layout), sg.Column(board_layout), sg.Column(player2_captured_layout)],
@@ -289,7 +289,7 @@ class Graphical_UI(UI):
 
         self.__window.close()
         self.__current_page = "match_page"
-        self.__create_window("Match", layout, "center")
+        self.__window = self.__create_window("Match", layout, "center")
 
         # self.__make_display_board_window()
 
@@ -412,6 +412,9 @@ class Graphical_UI(UI):
 
         """checks if the key of a GUI element i a board position meaning it is a tuple containing two elements where each element is a digit from 0 to 5 inclusive""" 
 
+        if not key: # makes sure a key of None doesn't cause an error
+            return False
+
         pattern = r'^[0-5],[0-5]$'
         if bool(re.match(pattern, key)):
             return True
@@ -470,7 +473,6 @@ class Graphical_UI(UI):
             self.__undo_move()
 
 
-
     def __difficulty_level_to_ai_name(self, difficulty_level):
         name_level_dict = {
             1: "Easy AI",
@@ -484,8 +486,10 @@ class Graphical_UI(UI):
         self.__game = Game(name1, name2, ai_level=ai_level)
 
     def play_game(self):
+
         while True:
             event, values = self.__window.read()
+
             if event == sg.WIN_CLOSED or event == 'Quit':
                 break
 
@@ -503,15 +507,15 @@ class Graphical_UI(UI):
 
             elif event == "submit_local_play_button":
                 self.__setup_match_page(values["player_1_name_input"], values["player_2_name_input"])
-                self.__make_display_board_window()
 
             elif event == "submit_AI_play_button":
                 difficulty_level = int(values['difficulty_slider'])
                 ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
                 self.__ai_mode = True
                 self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
-                self.__make_display_board_window()
 
+            elif event == "show_board_button":
+                self.__make_display_board_window()
 
             elif event == "undo_move_button":
                 self.__undo_move(self.__ai_mode)
