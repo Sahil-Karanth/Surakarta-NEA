@@ -35,6 +35,8 @@ class Graphical_UI(UI):
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold", "underline")
     PARAGRAPH_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE)
 
+    DISPLAY_BOARD_PIECE_SPACINGF = 43
+
 
     def __init__(self):
         super().__init__()
@@ -226,7 +228,12 @@ class Graphical_UI(UI):
 
         # ! draw the pieces on the board --> separate into function later
         
-        create_circle(canvas, 100, 100, 20, "yellow")
+        create_circle(canvas, 128, 109, 15, None)
+
+        create_circle(canvas, 171, 109, 15, None)
+
+        create_circle(canvas, 171, 109+43, 15, None)
+
 
 
 
