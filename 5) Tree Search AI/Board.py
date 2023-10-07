@@ -16,7 +16,7 @@ class Board:
         self.__game_over = False # used by the MCTS AI opponent
 
         self.__build_board()
-        self.__edit_board_for_testing()
+        # self.__edit_board_for_testing()
 
         # self.__num_player1_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
         # self.__num_player2_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
@@ -171,9 +171,9 @@ class Board:
         x_diff = abs(start_cord[0] - end_cord[0])
         y_diff = abs(start_cord[1] - end_cord[1])
 
-        total_diff = x_diff + y_diff
-        
-        if total_diff in BoardConstants.ADJACENT_CORD_DIFFS:
+
+        # ! MAKE THESE CONSTANTS
+        if x_diff == 1 or y_diff == 1:
             return True
         
     

@@ -1,5 +1,5 @@
 from Game import Game
-from utility_functions import oneD_to_twoD_array
+from utility_functions import oneD_to_twoD_array, create_circle
 import re
 from BoardConstants import BoardConstants
 import PySimpleGUI as sg
@@ -71,7 +71,7 @@ class Graphical_UI(UI):
             resizable=False,
             keep_on_top=True,
             modal=modal,
-            disable_close=disable_close,            
+            disable_close=disable_close,          
             # margins=(20,20),
             element_justification=justification,
             text_justification=justification # ! when writing help page check if I need this
@@ -224,6 +224,13 @@ class Graphical_UI(UI):
         background_img = ImageTk.PhotoImage(image)
         canvas.create_image(235, 215, image=background_img , anchor="center")
 
+        # ! draw the pieces on the board --> separate into function later
+        
+        create_circle(canvas, 100, 100, 20, "yellow")
+
+
+
+    
 
         while True:
             event, values = display_board_window.read()
