@@ -273,6 +273,8 @@ class Graphical_UI(UI):
 
         undo_move_button = sg.Button("Undo Move", font=(self.FONT, 15), key="undo_move_button")
 
+        show_display_board_button = sg.Button("show board", key="show_board_button", font=(self.FONT, 15))
+
         player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
         player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
 
@@ -281,8 +283,8 @@ class Graphical_UI(UI):
         
         layout = [
             [self.__create_menu()],
-            [sg.Button("show board", key="show_board_button")], # ! TESTING
             [player_turn_frame],
+            [show_display_board_button],
             [undo_move_button, move_option, capture_option, submit_move_button],
             [sg.Column(player1_captured_layout), sg.Column(board_layout), sg.Column(player2_captured_layout)],
         ]
@@ -290,8 +292,6 @@ class Graphical_UI(UI):
         self.__window.close()
         self.__current_page = "match_page"
         self.__window = self.__create_window("Match", layout, "center")
-
-        # self.__make_display_board_window()
 
 
     def __update_display_number_captured_pieces(self):
@@ -306,9 +306,6 @@ class Graphical_UI(UI):
 
         move_obj = self.__game.move_piece(start_loc, end_loc, move_type)
         self.__update_board_display(move_obj.get_start_cords(), move_obj.get_end_cords(), move_obj.get_start_colour())
-
-        # for row in self.__game.get_board_state():
-        #     print([i.get_colour() for i in row])
 
         self.__update_current_player_display()
         self.__game.switch_current_player()
