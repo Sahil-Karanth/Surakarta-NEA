@@ -6,6 +6,7 @@ import PySimpleGUI as sg
 import textwrap
 import time
 from PIL import ImageTk, Image
+import tkinter as tk
 
 # ! todo: change uses of class attributes to use self instead of class name
 
@@ -70,7 +71,7 @@ class Graphical_UI(UI):
             resizable=False,
             keep_on_top=True,
             modal=modal,
-            disable_close=disable_close,
+            disable_close=disable_close,            
             # margins=(20,20),
             element_justification=justification,
             text_justification=justification # ! when writing help page check if I need this
@@ -210,19 +211,18 @@ class Graphical_UI(UI):
     def __make_display_board_window(self):
 
         layout = [
-            [sg.Button("close", key="close_display_board_button")],
+            [sg.Button("close", key="close_display_board_button", font=(self.FONT, 15))],
             [sg.Canvas(size=(500, 500), key='-CANVAS-')],
         ]
 
-        display_board_window = self.__create_window("Display Board", layout, "center", size=(300, 300), maximise=False, modal=True, disable_close=True)
-        # self.__display_board_window = sg.Window('Circle Drawing', layout, keep_on_top=True, finalize=True)
+        display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 500), maximise=False, modal=True, disable_close=True)
 
         canvas = display_board_window['-CANVAS-'].TKCanvas
         image_path = 'blank_board.png'
         image = Image.open(image_path)
-        image.thumbnail((300, 300))  # Resize the image to fit the canvas
+        image.thumbnail((400, 400))  # Resize the image to fit the canvas
         background_img = ImageTk.PhotoImage(image)
-        canvas.create_image(0, 0, image=background_img, anchor='nw')
+        canvas.create_image(235, 215, image=background_img , anchor="center")
 
 
         while True:
