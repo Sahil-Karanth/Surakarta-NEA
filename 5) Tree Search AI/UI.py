@@ -55,7 +55,7 @@ class Graphical_UI(UI):
 
         self.__highlighted_board_positions = []
 
-        self.__window = None
+        self.__main_window = None
         self.__display_board_window = None
 
         self.__current_page = None
@@ -119,13 +119,13 @@ class Graphical_UI(UI):
         ]
 
 
-        # if returning to the home page (self.__window is not None), close the current window
-        if self.__window:
-            self.__window.close()
+        # if returning to the home page (self.__main_window is not None), close the current window
+        if self.__main_window:
+            self.__main_window.close()
 
         self.__current_page = "home_page"
 
-        self.__window = self.__create_window("Surakarta", layout, "center")
+        self.__main_window = self.__create_window("Surakarta", layout, "center")
     
     def __create_menu(self):
 
@@ -167,9 +167,9 @@ class Graphical_UI(UI):
             [sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_local_play_button", visible=False), sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_AI_play_button", visible=False)],
         ]
 
-        self.__window.close()
+        self.__main_window.close()
         self.__current_page = "new_game_page"
-        self.__window = self.__create_window("New Game", layout, "center")
+        self.__main_window = self.__create_window("New Game", layout, "center")
 
     def __setup_help_page(self):
 
@@ -191,9 +191,9 @@ class Graphical_UI(UI):
             [sg.Image("board_img.png", expand_x=True, expand_y=True)],
         ]
 
-        self.__window.close()
+        self.__main_window.close()
         self.__current_page = "help_page"
-        self.__window = self.__create_window("Help Page", layout, "center")
+        self.__main_window = self.__create_window("Help Page", layout, "center")
 
     def __toggle_play_inputs(self, key_to_make_visible):
 
@@ -202,16 +202,16 @@ class Graphical_UI(UI):
         # ! haven't grouped the submit buttons into their respective frames because of formatting issues that come with this
 
         if key_to_make_visible == "AI_play_inputs":
-            self.__window["local_play_inputs"].update(visible=False)
-            self.__window["AI_play_inputs"].update(visible=True)
-            self.__window["submit_AI_play_button"].update(visible=True)
-            self.__window["submit_local_play_button"].update(visible=False)
+            self.__main_window["local_play_inputs"].update(visible=False)
+            self.__main_window["AI_play_inputs"].update(visible=True)
+            self.__main_window["submit_AI_play_button"].update(visible=True)
+            self.__main_window["submit_local_play_button"].update(visible=False)
         
         elif key_to_make_visible == "local_play_inputs":
-            self.__window["local_play_inputs"].update(visible=True)
-            self.__window["AI_play_inputs"].update(visible=False)
-            self.__window["submit_AI_play_button"].update(visible=False)
-            self.__window["submit_local_play_button"].update(visible=True)
+            self.__main_window["local_play_inputs"].update(visible=True)
+            self.__main_window["AI_play_inputs"].update(visible=False)
+            self.__main_window["submit_AI_play_button"].update(visible=False)
+            self.__main_window["submit_local_play_button"].update(visible=True)
 
     def __make_piece_button(self, piece_type, key, visible=False):
         return sg.Button("", image_filename=f"{piece_type}_counter.png", pad=(30,30), visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
@@ -307,17 +307,17 @@ class Graphical_UI(UI):
             [sg.Column(player1_captured_layout), sg.Column(board_layout), sg.Column(player2_captured_layout)],
         ]
 
-        self.__window.close()
+        self.__main_window.close()
         self.__current_page = "match_page"
-        self.__window = self.__create_window("Match", layout, "center")
+        self.__main_window = self.__create_window("Match", layout, "center")
 
 
     def __update_display_number_captured_pieces(self):
         player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
         player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
 
-        self.__window["player1_captured_text"].update(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}")
-        self.__window["player2_captured_text"].update(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}")
+        self.__main_window["player1_captured_text"].update(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}")
+        self.__main_window["player2_captured_text"].update(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}")
 
 
     def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
@@ -406,15 +406,15 @@ class Graphical_UI(UI):
         start_cords_str = f"{start_cords[0]},{start_cords[1]}"
         end_cords_str = f"{end_cords[0]},{end_cords[1]}"
 
-        self.__window[f"{start_cords_str}"].update(image_filename=f"blank_counter.png")   
+        self.__main_window[f"{start_cords_str}"].update(image_filename=f"blank_counter.png")   
 
-        self.__window[f"{end_cords_str}"].update(image_filename=f"{start_colour}_counter.png")
+        self.__main_window[f"{end_cords_str}"].update(image_filename=f"{start_colour}_counter.png")
 
     def __update_current_player_display(self):
 
         """updates the onscreen current player display"""
 
-        current_text = self.__window["player1_turn_text"]
+        current_text = self.__main_window["player1_turn_text"]
 
         if self.__game.get_current_player_name() == self.__game.get_player_name(1):
             current_text.update(f"{self.__game.get_player_name(2)}'s Turn")
@@ -452,7 +452,7 @@ class Graphical_UI(UI):
         """toggles the background colour of a board position between white and pink.
         No more than two board positions can be highlighted at once."""
             
-        button = self.__window[key]
+        button = self.__main_window[key]
 
         if key in self.__highlighted_board_positions:
             button.update(button_color=('pink', sg.theme_background_color()))
@@ -477,7 +477,7 @@ class Graphical_UI(UI):
 
         if move_obj.get_move_type() == "capture":            
             cords = self.__tuple_key_cords_str(move_obj.get_end_loc().get_cords())
-            self.__window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
+            self.__main_window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
 
 
         self.__update_display_number_captured_pieces()
@@ -509,11 +509,11 @@ class Graphical_UI(UI):
             window, event, values = sg.read_all_windows()
 
             if event == sg.WIN_CLOSED or event == 'Quit':
-                if window == disp_win:
+                if window == self.__display_board_window:
                     disp_win_open = False
-                    disp_win.close()
+                    self.__display_board_window.close()
 
-                elif window == self.__window:
+                elif window == self.__main_window:
                     window.close()
                     break
 
@@ -539,7 +539,7 @@ class Graphical_UI(UI):
                 self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
 
             elif event == "show_board_button":
-                disp_win = self.__make_display_board_window()
+                self.__display_board_window = self.__make_display_board_window()
 
                 disp_win_open = True
                 
@@ -549,24 +549,24 @@ class Graphical_UI(UI):
                 image.thumbnail((400, 400))  # Resize the image to fit the canvas
                 background_img = ImageTk.PhotoImage(image)
                 
-                canvas = disp_win['-CANVAS-']
+                canvas = self.__display_board_window['-CANVAS-']
                 
                 canvas.TKCanvas.create_image(235, 215, image=background_img , anchor="center")
                 
-                self.__draw_pieces_on_disp_board(disp_win)
+                self.__draw_pieces_on_disp_board(self.__display_board_window)
 
 
             elif event == "undo_move_button":
                 self.__undo_move(self.__ai_mode)
 
                 if disp_win_open:
-                    self.__draw_pieces_on_disp_board(disp_win)
+                    self.__draw_pieces_on_disp_board(self.__display_board_window)
 
             elif self.__is_board_position(event):
                 self.__toggle_highlight_board_position(event)
 
             elif event == "Home":
-                self.__window.close()
+                self.__main_window.close()
                 self.__setup_home_page()
 
             elif event == "Restart Match":
@@ -579,13 +579,10 @@ class Graphical_UI(UI):
                     sg.popup("You can only restart a match from the match page", title="Error Restarting Match", keep_on_top=True)
 
 
-
-
-
             elif event == "submit_move_button":
                 self.__make_move_on_display(values, self.__ai_mode)
 
                 if disp_win_open:
-                    self.__draw_pieces_on_disp_board(disp_win)
+                    self.__draw_pieces_on_disp_board(self.__display_board_window)
 
-        self.__window.close()
+        self.__main_window.close()
