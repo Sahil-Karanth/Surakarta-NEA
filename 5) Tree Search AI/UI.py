@@ -9,6 +9,7 @@ from PIL import ImageTk, Image
 import tkinter as tk
 
 # ! todo: change uses of class attributes to use self instead of class name
+# ! KNOWN ISSUE: the game crashes when you enter your name instead of using the default name (player 1 etc)
 
 class UI:
 
@@ -65,7 +66,7 @@ class Graphical_UI(UI):
         self.capture_count_test = 0
 
 
-    def __create_window(self, title, layout, justification, maximise=True, size=(700, 700), modal=False, disable_close=False):
+    def __create_window(self, title, layout, justification, maximise=True, size=(700, 700), modal=False, disable_close=False, keep_on_top=False):
 
         """Creates a window with the given title, layout and justification"""
 
@@ -74,7 +75,7 @@ class Graphical_UI(UI):
             layout=layout,
             size=size,
             resizable=False,
-            keep_on_top=True,
+            keep_on_top=keep_on_top,
             modal=modal,
             disable_close=disable_close,          
             # margins=(20,20),
@@ -213,6 +214,39 @@ class Graphical_UI(UI):
     def __make_piece_button(self, piece_type, key, visible=False):
         return sg.Button("", image_filename=f"{piece_type}_counter.png", pad=(30,30), visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
+
+    def __draw_pieces_on_disp_board(self, window):
+
+        canvas = window['-CANVAS-'].TKCanvas
+
+        # ! draw the pieces on the board --> separate into function later
+
+        
+        # display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
+
+        # for i, row in enumerate(display_board):
+
+        #     for j, counter in enumerate(row):
+
+        #         if counter == None:
+        #             continue
+
+        #         elif counter == "y":
+        #             create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "yellow")
+
+        #         elif counter == "g":
+        #             create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "green")
+
+        image_path = 'blank_board.png'
+        image = Image.open(image_path)
+        image.thumbnail((400, 400))  # Resize the image to fit the canvas
+        background_img = ImageTk.PhotoImage(image)
+        canvas.create_image(235, 215, image=background_img , anchor="center")
+
+
+
+        
+
     def __make_display_board_window(self):
 
         layout = [
@@ -220,39 +254,18 @@ class Graphical_UI(UI):
             [sg.Canvas(size=(500, 500), key='-CANVAS-')],
         ]
 
-        display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 500), maximise=False, modal=True, disable_close=True)
-
-        canvas = display_board_window['-CANVAS-'].TKCanvas
-        image_path = 'blank_board.png'
-        image = Image.open(image_path)
-        image.thumbnail((400, 400))  # Resize the image to fit the canvas
-        background_img = ImageTk.PhotoImage(image)
-        canvas.create_image(235, 215, image=background_img , anchor="center")
-
-        # ! draw the pieces on the board --> separate into function later
+        display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 500), maximise=False, modal=False, disable_close=False, keep_on_top=True)
 
         
-        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
+        # while True:
+        #     event, values = display_board_window.read()
+        #     if event == "close_display_board_button":
+        #         break
 
-        for i, row in enumerate(display_board):
 
-            for j, counter in enumerate(row):
+        return display_board_window
 
-                if counter == None:
-                    continue
-
-                elif counter == "y":
-                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "yellow")
-
-                elif counter == "g":
-                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "green")
-
-        while True:
-            event, values = display_board_window.read()
-            if event == "close_display_board_button":
-                break
-
-        display_board_window.close()
+        # display_board_window.close()
 
 
     def __setup_match_page(self, player1name, player2name, ai_level=None):
@@ -507,10 +520,10 @@ class Graphical_UI(UI):
     def play_game(self):
 
         while True:
-            event, values = self.__window.read()
+            window, event, values = sg.read_all_windows()
 
             if event == sg.WIN_CLOSED or event == 'Quit':
-                break
+                window.close()
 
             if event == "new_game_button":
                 self.__setup_new_game_page()                
@@ -534,7 +547,8 @@ class Graphical_UI(UI):
                 self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
 
             elif event == "show_board_button":
-                self.__make_display_board_window()
+                new_win = self.__make_display_board_window()
+                self.__draw_pieces_on_disp_board(new_win)
 
             elif event == "undo_move_button":
                 self.__undo_move(self.__ai_mode)
@@ -554,6 +568,9 @@ class Graphical_UI(UI):
 
                 else:
                     sg.popup("You can only restart a match from the match page", title="Error Restarting Match", keep_on_top=True)
+
+
+
 
 
             elif event == "submit_move_button":
