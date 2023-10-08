@@ -35,7 +35,10 @@ class Graphical_UI(UI):
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold", "underline")
     PARAGRAPH_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE)
 
-    DISPLAY_BOARD_PIECE_SPACINGF = 43
+    DISP_BOARD_PIECE_SPACING = 43
+    DISP_BOARD_INITAL_X = 128
+    DISP_BOARD_INITAL_Y = 109
+    DISP_BOARD_PIECE_RADIUS = 15
 
 
     def __init__(self):
@@ -227,17 +230,22 @@ class Graphical_UI(UI):
         canvas.create_image(235, 215, image=background_img , anchor="center")
 
         # ! draw the pieces on the board --> separate into function later
+
         
-        create_circle(canvas, 128, 109, 15, None)
+        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
 
-        create_circle(canvas, 171, 109, 15, None)
+        for i, row in enumerate(display_board):
 
-        create_circle(canvas, 171, 109+43, 15, None)
+            for j, counter in enumerate(row):
 
+                if counter == None:
+                    continue
 
+                elif counter == "y":
+                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "yellow")
 
-
-    
+                elif counter == "g":
+                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "green")
 
         while True:
             event, values = display_board_window.read()
@@ -253,7 +261,7 @@ class Graphical_UI(UI):
 
         self.__create_game_object(player1name, player2name, ai_level)
 
-        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
+        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()] # ! change name now that I have an actual display board
         board_layout = []
 
         for i, row in enumerate(display_board):
