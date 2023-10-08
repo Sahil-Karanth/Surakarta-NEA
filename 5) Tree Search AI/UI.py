@@ -9,7 +9,9 @@ from PIL import ImageTk, Image
 import tkinter as tk
 
 # ! todo: change uses of class attributes to use self instead of class name
+# ! todo: rename self.__window to be main window now that I have 2 windows
 # ! KNOWN ISSUE: the game crashes when you enter your name instead of using the default name (player 1 etc)
+
 
 class UI:
 
@@ -501,11 +503,19 @@ class Graphical_UI(UI):
 
     def play_game(self):
 
+        disp_win_open = False
+
         while True:
             window, event, values = sg.read_all_windows()
 
             if event == sg.WIN_CLOSED or event == 'Quit':
-                window.close()
+                if window == disp_win:
+                    disp_win_open = False
+                    disp_win.close()
+
+                elif window == self.__window:
+                    window.close()
+                    break
 
             if event == "new_game_button":
                 self.__setup_new_game_page()                
@@ -529,16 +539,21 @@ class Graphical_UI(UI):
                 self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
 
             elif event == "show_board_button":
-                new_win = self.__make_display_board_window()
+                disp_win = self.__make_display_board_window()
+
+                disp_win_open = True
                 
                 # thie needs to be here directly and not in a method for pysimplegui to display the image
                 image_path = 'blank_board.png'
                 image = Image.open(image_path)
                 image.thumbnail((400, 400))  # Resize the image to fit the canvas
                 background_img = ImageTk.PhotoImage(image)
-                new_win['-CANVAS-'].TKCanvas.create_image(235, 215, image=background_img , anchor="center")
                 
-                self.__draw_pieces_on_disp_board(new_win)
+                canvas = disp_win['-CANVAS-']
+                
+                canvas.TKCanvas.create_image(235, 215, image=background_img , anchor="center")
+                
+                self.__draw_pieces_on_disp_board(disp_win)
 
 
             elif event == "undo_move_button":
@@ -566,6 +581,8 @@ class Graphical_UI(UI):
 
             elif event == "submit_move_button":
                 self.__make_move_on_display(values, self.__ai_mode)
-                self.__draw_pieces_on_disp_board(new_win)
+
+                if disp_win_open:
+                    self.__draw_pieces_on_disp_board(disp_win)
 
         self.__window.close()
