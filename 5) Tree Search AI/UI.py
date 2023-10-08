@@ -219,53 +219,34 @@ class Graphical_UI(UI):
 
         canvas = window['-CANVAS-'].TKCanvas
 
-        # ! draw the pieces on the board --> separate into function later
+        canvas.delete("counter")
 
-        
-        # display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
+        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
 
-        # for i, row in enumerate(display_board):
+        for i, row in enumerate(display_board):
 
-        #     for j, counter in enumerate(row):
+            for j, counter in enumerate(row):
 
-        #         if counter == None:
-        #             continue
+                if counter == None:
+                    continue
 
-        #         elif counter == "y":
-        #             create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "yellow")
+                elif counter == "y":
+                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "yellow")
 
-        #         elif counter == "g":
-        #             create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "green")
-
-        image_path = 'blank_board.png'
-        image = Image.open(image_path)
-        image.thumbnail((400, 400))  # Resize the image to fit the canvas
-        background_img = ImageTk.PhotoImage(image)
-        canvas.create_image(235, 215, image=background_img , anchor="center")
+                elif counter == "g":
+                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "green")
 
 
-
-        
 
     def __make_display_board_window(self):
 
         layout = [
-            [sg.Button("close", key="close_display_board_button", font=(self.FONT, 15))],
             [sg.Canvas(size=(500, 500), key='-CANVAS-')],
         ]
 
         display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 500), maximise=False, modal=False, disable_close=False, keep_on_top=True)
 
-        
-        # while True:
-        #     event, values = display_board_window.read()
-        #     if event == "close_display_board_button":
-        #         break
-
-
         return display_board_window
-
-        # display_board_window.close()
 
 
     def __setup_match_page(self, player1name, player2name, ai_level=None):
@@ -517,6 +498,7 @@ class Graphical_UI(UI):
     def __create_game_object(self, name1, name2, ai_level):
         self.__game = Game(name1, name2, ai_level=ai_level)
 
+
     def play_game(self):
 
         while True:
@@ -548,7 +530,16 @@ class Graphical_UI(UI):
 
             elif event == "show_board_button":
                 new_win = self.__make_display_board_window()
+                
+                # thie needs to be here directly and not in a method for pysimplegui to display the image
+                image_path = 'blank_board.png'
+                image = Image.open(image_path)
+                image.thumbnail((400, 400))  # Resize the image to fit the canvas
+                background_img = ImageTk.PhotoImage(image)
+                new_win['-CANVAS-'].TKCanvas.create_image(235, 215, image=background_img , anchor="center")
+                
                 self.__draw_pieces_on_disp_board(new_win)
+
 
             elif event == "undo_move_button":
                 self.__undo_move(self.__ai_mode)
@@ -575,5 +566,6 @@ class Graphical_UI(UI):
 
             elif event == "submit_move_button":
                 self.__make_move_on_display(values, self.__ai_mode)
+                self.__draw_pieces_on_disp_board(new_win)
 
         self.__window.close()
