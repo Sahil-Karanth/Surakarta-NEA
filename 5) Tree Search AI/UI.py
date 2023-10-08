@@ -559,6 +559,9 @@ class Graphical_UI(UI):
             elif event == "undo_move_button":
                 self.__undo_move(self.__ai_mode)
 
+                if disp_win_open:
+                    self.__draw_pieces_on_disp_board(disp_win)
+
             elif self.__is_board_position(event):
                 self.__toggle_highlight_board_position(event)
 
