@@ -9,9 +9,6 @@ from PIL import ImageTk, Image
 import tkinter as tk
 
 # ! todo: change uses of class attributes to use self instead of class name
-# ! todo: rename self.__window to be main window now that I have 2 windows
-# ! KNOWN ISSUE: the game crashes when you enter your name instead of using the default name (player 1 etc)
-
 
 class UI:
 
@@ -146,7 +143,7 @@ class Graphical_UI(UI):
             [sg.Text("Difficulty", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Slider(range=(1, 3), default_value=1, orientation="h", size=(40, 15), pad=(0, self.COLUMN_PAD), key="difficulty_slider")],
             [sg.Text("Player Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.InputText("Player 1", pad=(0, self.COLUMN_PAD), key="player_name_input")],
+            [sg.InputText("Player 1", pad=(0, self.COLUMN_PAD), key="player_vs_ai_name_input")],
         ]
 
         AI_input_col = sg.Column(key="AI_play_inputs", layout=AI_input_layout, pad=(0, self.COLUMN_PAD), visible=False)
@@ -536,7 +533,7 @@ class Graphical_UI(UI):
                 difficulty_level = int(values['difficulty_slider'])
                 ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
                 self.__ai_mode = True
-                self.__setup_match_page(values["player_1_name_input"], ai_name, ai_level=difficulty_level)
+                self.__setup_match_page(values["player_vs_ai_name_input"], ai_name, ai_level=difficulty_level)
 
             elif event == "show_board_button":
                 self.__display_board_window = self.__make_display_board_window()
