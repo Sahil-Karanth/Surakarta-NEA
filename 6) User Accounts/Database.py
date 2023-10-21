@@ -1,4 +1,5 @@
 import sqlite3
+import hashlib
 
 
 class Database:
@@ -102,6 +103,16 @@ class Database:
         return self.__cursor.fetchone() != None
     
     def add_user(self, username, password, global_rank, account_creation_date, preferred_piece_colour, saved_game):
+
+        # hash and salt the password
+
+        hash_function = hashlib.sha256()
+        hash_function.update(password.encode())
+        hashed_password = hash_function.hexdigest()
+
+        
+
+
         self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?);", (username, password, global_rank, account_creation_date, preferred_piece_colour, saved_game))
         self.__conn.commit()
 
@@ -113,8 +124,6 @@ class Database:
 
 
 db = Database("database.db")
-
-db.add_user("test3", "test", 0, "2021,0101", "white", "test")
 
 
 
