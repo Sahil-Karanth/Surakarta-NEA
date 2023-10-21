@@ -1,5 +1,7 @@
 import sqlite3
 import hashlib
+import os
+import binascii
 
 
 class Database:
@@ -9,7 +11,7 @@ class Database:
         self.__cursor = self.__conn.cursor()
         
 
-    def create_user_table(self):
+    def create_users_table(self):
         self.__cursor.execute(
 
             """
@@ -106,15 +108,30 @@ class Database:
 
         # hash and salt the password
 
-        hash_function = hashlib.sha256()
-        hash_function.update(password.encode())
-        hashed_password = hash_function.hexdigest()
+        salt = os.urandom(16)
+        hashed_password = hashlib.pbkdf2_hmac('sha512', password.encode(), salt, 100000)
+
+        hashed_password = salt.hex() + hashed_password.hex()
+
+        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?);", (username, hashed_password, global_rank, account_creation_date, preferred_piece_colour, saved_game))
+        self.__conn.commit()
+
+
+    def login(self, username, password):
+
+        stored_password = self.__cursor.execute("SELECT password FROM users WHERE username = ?;", (username,)).fetchone()[0]
+
+        salt = stored_password[:32]
+        stored_password = stored_password[32:]
+
+        hashed_password = hashlib.pbkdf2_hmac('sha512', password.encode(), bytes.fromhex(salt), 100000)
+        hashed_password = hashed_password.hex()
+
+        return stored_password == hashed_password
+
 
         
 
-
-        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?);", (username, password, global_rank, account_creation_date, preferred_piece_colour, saved_game))
-        self.__conn.commit()
 
     def delete_table(self, table_name):
         self.__cursor.execute(f"DROP TABLE {table_name};")
@@ -126,10 +143,13 @@ class Database:
 db = Database("database.db")
 
 
+print(db.login("test2", "amazing_pwd&"))
 
-# db.create_user_table()
+# db.add_user("test3", "amazing_pwd&", 0, "2021-01-01", "white", "test")
+
+# db.create_users_table()
 # db.create_game_history_table()
 # db.create_AI_game_stats_table()
 # db.create_friends_table()
 
-# db.delete_table("game_history")
+# db.delete_table("users")
