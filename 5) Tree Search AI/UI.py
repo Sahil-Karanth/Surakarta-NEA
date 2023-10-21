@@ -529,6 +529,10 @@ class Graphical_UI(UI):
             elif event == "help_button":
                 self.__setup_help_page()
 
+            elif event == "exit_button":
+                self.__main_window.close()
+                break
+
             elif event == "AI_play_button":
                 self.__toggle_play_inputs("AI_play_inputs")
 
