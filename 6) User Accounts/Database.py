@@ -97,6 +97,13 @@ class Database:
         self.__conn.commit()
 
 
+    def check_if_username_exists(self, username):
+        self.__cursor.execute("SELECT username FROM users WHERE username = ?;", (username,))
+        return self.__cursor.fetchone() != None
+    
+    def add_user(self, username, password, global_rank, account_creation_date, preferred_piece_colour, saved_game):
+        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?);", (username, password, global_rank, account_creation_date, preferred_piece_colour, saved_game))
+        self.__conn.commit()
 
     def delete_table(self, table_name):
         self.__cursor.execute(f"DROP TABLE {table_name};")
@@ -107,6 +114,13 @@ class Database:
 
 db = Database("database.db")
 
-db.create_game_history_table()
+db.add_user("test3", "test", 0, "2021,0101", "white", "test")
 
-# db.delete_table("users")
+
+
+# db.create_user_table()
+# db.create_game_history_table()
+# db.create_AI_game_stats_table()
+# db.create_friends_table()
+
+# db.delete_table("game_history")

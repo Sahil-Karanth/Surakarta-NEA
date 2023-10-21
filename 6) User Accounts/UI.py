@@ -6,7 +6,7 @@ import PySimpleGUI as sg
 import textwrap
 import time
 from PIL import ImageTk, Image
-import tkinter as tk
+from Database import Database
 
 # ! todo: change uses of class attributes to use self instead of class name
 
@@ -61,8 +61,9 @@ class Graphical_UI(UI):
         self.__setup_home_page()
 
         self.__game = None
-
         self.__ai_mode = False
+
+        self.__db = Database("database.db")
 
         self.capture_count_test = 0
 
@@ -146,20 +147,21 @@ class Graphical_UI(UI):
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
         
 
-    def __make_login_window(self):
+    def __make_login_or_signup_window(self, login_or_signup):
             
-            """Creates the login page window"""
-    
+            if login_or_signup not in ["login", "signup"]:
+                raise ValueError("login_or_signup parameter of the __make_login_or_signup_window method must be either 'login' or 'signup'")
+                
             layout = [
                 [sg.Text("Username", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-                [sg.InputText("", pad=(0, self.LOGIN_PAD), key="login_username_input")],
+                [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_username_input")],
                 [sg.Text("Password", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-                [sg.InputText("", pad=(0, self.LOGIN_PAD), key="login_password_input", password_char="*")],
-                [sg.Button("Login", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key="login_submit_button")]
+                [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_password_input", password_char="*")],
+                [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key=f"{login_or_signup}_submit_button")]
 
             ]
 
-            return self.__create_window("Login", layout, "center", modal=True, keep_on_top=True, size=(300, 270), maximise=False, disable_close=False)
+            return self.__create_window(login_or_signup.title(), layout, "center", modal=True, keep_on_top=True, size=(300, 270), maximise=False, disable_close=False)
 
 
     def __setup_new_game_page(self):
@@ -541,7 +543,7 @@ class Graphical_UI(UI):
                     window.close()
                     break
 
-                elif window == self.__login_window:
+                else:
                     window.close()
 
             if event == "new_game_button":
@@ -551,7 +553,21 @@ class Graphical_UI(UI):
                 self.__setup_help_page()
 
             elif event == "login_button":
-                self.__login_window = self.__make_login_window()
+                self.__login_window = self.__make_login_or_signup_window("login")
+
+            elif event == "signup_button":
+                self.__signup_window = self.__make_login_or_signup_window("signup")
+
+            elif event == "signup_submit_button":
+                username, password = values["signup_username_input"], values["signup_password_input"]
+
+                if self.__db.check_if_username_exists(username):
+                    sg.popup("Username already exists", title="Error Signing Up", keep_on_top=True)
+                    
+                else:
+                    self.__db.add_user(username, password)
+                    sg.popup("Account created", title="Account Created", keep_on_top=True)
+                    self.__signup_window.close()
 
             elif event == "AI_play_button":
                 self.__toggle_play_inputs("AI_play_inputs")
