@@ -29,7 +29,7 @@ class Graphical_UI(UI):
     FONT = "Helvetica"
     TITLE_FONT_SIZE = 40
     BUTTON_DIMENSIONS = (10, 1)
-    COLUMN_PAD = 20
+    COLUMN_PAD = 10
     PARAGRAPH_FONT_SIZE = 15
 
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold", "underline")
@@ -54,6 +54,7 @@ class Graphical_UI(UI):
 
         self.__main_window = None
         self.__display_board_window = None
+        self.__login_window = None
 
         self.__current_page = None
         self.__setup_home_page()
@@ -143,6 +144,21 @@ class Graphical_UI(UI):
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
         
+
+    def __make_login_window(self):
+            
+            """Creates the login page window"""
+    
+            layout = [
+                [sg.Text("Username", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+                [sg.InputText("", pad=(0, self.COLUMN_PAD), key="username_input")],
+                [sg.Text("Password", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+                [sg.InputText("", pad=(0, self.COLUMN_PAD), key="password_input", password_char="*")],
+
+            ]
+
+            return self.__create_window("Login", layout, "center", modal=True, keep_on_top=True, size=(300, 300), maximise=False, disable_close=False)
+
 
     def __setup_new_game_page(self):
         
@@ -514,7 +530,7 @@ class Graphical_UI(UI):
         while True:
             window, event, values = sg.read_all_windows()
 
-            if event == sg.WIN_CLOSED or event == 'Quit':
+            if event == sg.WIN_CLOSED or event == 'Quit' or event == "exit_button":
                 if window == self.__display_board_window:
                     disp_win_open = False
                     self.__display_board_window.close()
@@ -523,15 +539,18 @@ class Graphical_UI(UI):
                     window.close()
                     break
 
+                elif window == self.__login_window:
+                    window.close()
+
             if event == "new_game_button":
                 self.__setup_new_game_page()                
 
             elif event == "help_button":
                 self.__setup_help_page()
 
-            elif event == "exit_button":
-                self.__main_window.close()
-                break
+            elif event == "login_button":
+                self.__login_window = self.__make_login_window()
+                
 
             elif event == "AI_play_button":
                 self.__toggle_play_inputs("AI_play_inputs")
