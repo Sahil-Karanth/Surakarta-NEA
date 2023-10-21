@@ -29,7 +29,8 @@ class Graphical_UI(UI):
     FONT = "Helvetica"
     TITLE_FONT_SIZE = 40
     BUTTON_DIMENSIONS = (10, 1)
-    COLUMN_PAD = 10
+    COLUMN_PAD = 20
+    LOGIN_PAD = 10
     PARAGRAPH_FONT_SIZE = 15
 
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold", "underline")
@@ -150,14 +151,15 @@ class Graphical_UI(UI):
             """Creates the login page window"""
     
             layout = [
-                [sg.Text("Username", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-                [sg.InputText("", pad=(0, self.COLUMN_PAD), key="username_input")],
-                [sg.Text("Password", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-                [sg.InputText("", pad=(0, self.COLUMN_PAD), key="password_input", password_char="*")],
+                [sg.Text("Username", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+                [sg.InputText("", pad=(0, self.LOGIN_PAD), key="login_username_input")],
+                [sg.Text("Password", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+                [sg.InputText("", pad=(0, self.LOGIN_PAD), key="login_password_input", password_char="*")],
+                [sg.Button("Login", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key="login_submit_button")]
 
             ]
 
-            return self.__create_window("Login", layout, "center", modal=True, keep_on_top=True, size=(300, 300), maximise=False, disable_close=False)
+            return self.__create_window("Login", layout, "center", modal=True, keep_on_top=True, size=(300, 270), maximise=False, disable_close=False)
 
 
     def __setup_new_game_page(self):
@@ -550,7 +552,6 @@ class Graphical_UI(UI):
 
             elif event == "login_button":
                 self.__login_window = self.__make_login_window()
-                
 
             elif event == "AI_play_button":
                 self.__toggle_play_inputs("AI_play_inputs")
