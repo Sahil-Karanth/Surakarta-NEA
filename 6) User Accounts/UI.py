@@ -74,6 +74,7 @@ class Graphical_UI(UI):
 
         self.__game = None
         self.__ai_mode = False
+        self.__ai_name = None
 
         self.__db = Database("database.db")
 
@@ -475,10 +476,17 @@ class Graphical_UI(UI):
 
         if self.__game.is_game_over():
             winning_player = self.__game.get_winner()
+
             sg.popup(f"{winning_player.get_name()} has won the game!", title="Game Over", keep_on_top=True)
 
-            # if self.__logged_in_username:
-            #     self.__db.update_user_stats(self.__logged_in_username, winning_player.get_name())
+            if self.__logged_in and self.__ai_mode:
+
+                human_won = False
+
+                if winning_player.get_name() == self.__logged_in_username:
+                    human_won = True
+
+                self.__db.update_user_stats(self.__logged_in_username, human_won, self.__ai_name)
 
             self.__setup_home_page()
   
@@ -686,12 +694,12 @@ class Graphical_UI(UI):
 
             elif event == "submit_AI_play_button":
                 difficulty_level = int(values['difficulty_slider'])
-                ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
+                self.__ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
                 self.__ai_mode = True
 
                 player_1_name = self.__get_player1_name()
 
-                self.__setup_match_page(player_1_name, ai_name, ai_level=difficulty_level)
+                self.__setup_match_page(player_1_name, self.__ai_name, ai_level=difficulty_level)
 
             elif event == "show_board_button":
                 self.__display_board_window = self.__make_display_board_window()

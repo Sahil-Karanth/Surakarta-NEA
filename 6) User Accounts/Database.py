@@ -141,6 +141,27 @@ class Database:
     def get_user_stats(self, username):
         self.__cursor.execute("SELECT ai_difficulty, wins, losses FROM AI_game_stats WHERE username = ?;", (username,))
         return self.__cursor.fetchall()
+    
+    def __increment_win_stat(self, username, ai_difficulty):
+        self.__cursor.execute("UPDATE AI_game_stats SET wins = wins + 1 WHERE username = ? AND ai_difficulty = ?;", (username, ai_difficulty))
+        self.__conn.commit()
+
+    def __increment_loss_stat(self, username, ai_difficulty):
+        self.__cursor.execute("UPDATE AI_game_stats SET losses = losses + 1 WHERE username = ? AND ai_difficulty = ?;", (username, ai_difficulty))
+        self.__conn.commit()
+    
+
+    def update_user_stats(self, username, human_won, ai_difficulty):
+
+        if human_won:
+            self.__increment_win_stat(username, ai_difficulty)
+
+        else:
+            self.__increment_loss_stat(username, ai_difficulty)
+
+        
+
+        self.__conn.commit()
 
 
     def delete_table(self, table_name):
