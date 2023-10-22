@@ -56,10 +56,8 @@ class Graphical_UI(UI):
         with open("dummy_text", "r") as f:
             self.__dummy_text = textwrap.fill(f.read(), 140)
 
-        # sg.theme('DarkBlue14')
-        sg.theme('DarkTeal10')
-
-
+        # sg.theme('DarkTeal10')
+        sg.theme('Dark')
 
         self.__highlighted_board_positions = []
 
