@@ -118,12 +118,17 @@ class Database:
 
     def login(self, username, password):
 
-        stored_password = self.__cursor.execute("SELECT password FROM users WHERE username = ?;", (username,)).fetchone()[0]
+        stored_password = self.__cursor.execute("SELECT password FROM users WHERE username = ?;", (username,)).fetchone()
 
-        salt = stored_password[:32]
+        if stored_password == None:
+            return False
+        
+        stored_password = stored_password[0]
+
+        stored_salt = stored_password[:32]
         stored_password = stored_password[32:]
 
-        hashed_password = hashlib.pbkdf2_hmac('sha512', password.encode(), bytes.fromhex(salt), 100000)
+        hashed_password = hashlib.pbkdf2_hmac('sha512', password.encode(), bytes.fromhex(stored_salt), 100000)
         hashed_password = hashed_password.hex()
 
         return stored_password == hashed_password

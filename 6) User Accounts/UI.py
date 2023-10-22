@@ -62,6 +62,9 @@ class Graphical_UI(UI):
         self.__display_board_window = None
         self.__login_window = None
 
+        self.__logged_in = False
+        self.__logged_in_username = None
+
         self.__current_page = None
         self.__setup_home_page()
 
@@ -146,7 +149,7 @@ class Graphical_UI(UI):
         """Creates the menu which is displayed on every page"""
 
         menu_layout = [
-            ["Utilities", ["Home", "Restart Match", "Quit"]],
+            ["Utilities", ["Home", "Restart Match", "Show Login Status", "Quit"]],
         ]
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
@@ -569,8 +572,29 @@ class Graphical_UI(UI):
             elif event == "help_button":
                 self.__setup_help_page()
 
+            elif event == "Show Login Status":
+                if self.__logged_in_username:
+                    sg.popup(f"Logged in as '{self.__logged_in_username}'", title="Logged In", keep_on_top=True)
+                else:
+                    sg.popup("Not logged in", title="Not Logged In", keep_on_top=True)
+
             elif event == "login_button":
                 self.__login_window = self.__make_login_or_signup_window("login")
+
+            elif event == "login_submit_button":
+                username, password = values["login_username_input"], values["login_password_input"]
+
+                if self.__db.login(username, password):
+                    sg.popup("Logged in", title="Logged In", keep_on_top=True)
+
+                    self.__logged_in_username = username
+
+                    self.__login_window.close()
+
+                else:
+                    sg.popup("Incorrect username or password", title="Error Logging In", keep_on_top=True)
+
+
 
             elif event == "signup_button":
                 self.__signup_window = self.__make_login_or_signup_window("signup")

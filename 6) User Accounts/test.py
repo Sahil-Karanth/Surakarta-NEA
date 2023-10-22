@@ -1,32 +1,27 @@
-import PySimpleGUI as psg
-names = []
-lst = psg.Combo(names, font=('Arial Bold', 14),  expand_x=True, enable_events=True,  readonly=False, key='-COMBO-')
-layout = [[lst,
-   psg.Button('Add', ),
-   psg.Button('Remove'),
-   psg.Button('Exit')],
-   [psg.Text("", key='-MSG-',
-      font=('Arial Bold', 14),
-      justification='center')]
-   ]
-window = psg.Window('Combobox Example', layout, size=(715, 200))
+import PySimpleGUI as sg
+
+# Layout for main window content
+layout = [
+    [sg.Text("Main Window Content")],
+    [sg.Button("Ok")]    
+]
+
+# Layout for top message 
+top_layout = [
+    [sg.Text("This is a short message at the top")]
+]
+
+# Full layout
+full_layout = [
+    [sg.Column(top_layout, size=(500,30), pad=(0,0), background_color='blue')], 
+    [sg.Column(layout)]
+]
+
+window = sg.Window("Window Title", full_layout)
+
 while True:
-   event, values = window.read()
-   print(event, values)
-   if event in (psg.WIN_CLOSED, 'Exit'):
-      break
-   if event == 'Add':
-      names.append(values['-COMBO-'])
-      print(names)
-      window['-COMBO-'].update(values=names, value=values['-COMBO-'])
-      msg = "A new item added : {}".format(values['-COMBO-'])
-      window['-MSG-'].update(msg)
-   if event == '-COMBO-':
-      ch = psg.popup_yes_no("Do you want to Continue?", title="YesNo")
-   if ch == 'Yes':
-      val = values['-COMBO-']
-      names.remove(val)
-   window['-COMBO-'].update(values=names, value=' ')
-   msg = "A new item removed : {}".format(val)
-   window['-MSG-'].update(msg)
+    event, values = window.read()
+    if event == sg.WIN_CLOSED:
+        break
+        
 window.close()
