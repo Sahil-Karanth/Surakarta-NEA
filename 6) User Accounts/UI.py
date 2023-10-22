@@ -177,9 +177,9 @@ class Graphical_UI(UI):
             
             layout = [
                 [sg.Text("Username", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-                [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_username_input")],
+                [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_username_input", font=self.PARAGRAPH_FONT_PARAMS)],
                 [sg.Text("Password", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-                [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_password_input", password_char="*")],
+                [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_password_input", password_char="*", font=self.PARAGRAPH_FONT_PARAMS)],
                 [drop_down_menu_layout],
                 [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key=f"{login_or_signup}_submit_button")]
             ]
@@ -187,25 +187,41 @@ class Graphical_UI(UI):
 
             return self.__create_window(login_or_signup.title(), layout, "center", modal=True, keep_on_top=True, size=(300, modal_height), maximise=False, disable_close=False)
 
+    def __get_text_and_input_layout(self, disp_text, inp_default_text, inp_key):
+
+        layout = [
+            [sg.Text(disp_text, pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.InputText(inp_default_text, pad=(0, self.COLUMN_PAD), key=inp_key, font=self.PARAGRAPH_FONT_PARAMS)],
+        ]
+
+        return layout
+
 
     def __setup_new_game_page(self):
         
         """Creates the new game page window"""
         
+        player_1_input_visible = not self.__logged_in
+
+        player_1_input_ai_layout = self.__get_text_and_input_layout("Player 1 Name", "Player 1", "player_1_ai_input")
+        player_1_ai_input_col = sg.Column(player_1_input_ai_layout, visible=player_1_input_visible)
+
+
         AI_input_layout = [
             [sg.Text("Difficulty", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Slider(range=(1, 3), default_value=1, orientation="h", size=(40, 15), pad=(0, self.COLUMN_PAD), key="difficulty_slider")],
-            [sg.Text("Player Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.InputText("Player 1", pad=(0, self.COLUMN_PAD), key="player_vs_ai_name_input")],
+            [player_1_ai_input_col],
         ]
 
         AI_input_col = sg.Column(key="AI_play_inputs", layout=AI_input_layout, pad=(0, self.COLUMN_PAD), visible=False)
 
+        player_1_input_local_layout = self.__get_text_and_input_layout("Player 1 Name", "Player 1", "player_1_local_input")
+        player_1_local_input_col = sg.Column(player_1_input_local_layout, visible=player_1_input_visible)
+
         Local_input_layout = [
-            [sg.Text("Player 1 Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.InputText("Player 1", pad=(0, self.COLUMN_PAD), key="player_1_name_input")],
+            [player_1_local_input_col],
             [sg.Text("Player 2 Name", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.InputText("Player 2", pad=(0, self.COLUMN_PAD), key="player_2_name_input")],
+            [sg.InputText("Player 2", pad=(0, self.COLUMN_PAD), key="player_2_local_input", font=self.PARAGRAPH_FONT_PARAMS)],
         ]
 
         Local_input_col = sg.Column(key="local_play_inputs", layout=Local_input_layout, pad=(0, self.COLUMN_PAD), visible=False)
@@ -330,8 +346,6 @@ class Graphical_UI(UI):
             for j, counter in enumerate(row):
                 
                 key = f"{i},{j}"
-
-                print(counter)
 
                 if counter == None:
                     button = self.__make_piece_button("blank", key, visible=True)
@@ -462,6 +476,10 @@ class Graphical_UI(UI):
         if self.__game.is_game_over():
             winning_player = self.__game.get_winner()
             sg.popup(f"{winning_player.get_name()} has won the game!", title="Game Over", keep_on_top=True)
+
+            # if self.__logged_in_username:
+            #     self.__db.update_user_stats(self.__logged_in_username, winning_player.get_name())
+
             self.__setup_home_page()
   
     def __update_board_display(self, start_cords, end_cords, start_colour):
@@ -510,6 +528,14 @@ class Graphical_UI(UI):
         """converts a tuple key of the form (x,y) to a string of the form 'x,y' where x and y are integers"""
 
         return f"{tuple_key[0]},{tuple_key[1]}"
+    
+    def __get_player1_name(self):
+
+        if self.__logged_in:
+            return self.__logged_in_username
+        
+        else:
+            return self.__main_window["player_1_local_input"].get()
     
 
     def __toggle_highlight_board_position(self, key):
@@ -617,6 +643,7 @@ class Graphical_UI(UI):
                     sg.popup("Logged in", title="Logged In", keep_on_top=True)
 
                     self.__logged_in_username = username
+                    self.__logged_in = True
 
                     self.__preferred_piece_colour = self.__db.get_preferred_piece_colour(username)
 
@@ -653,13 +680,18 @@ class Graphical_UI(UI):
                 self.__toggle_play_inputs("local_play_inputs")
 
             elif event == "submit_local_play_button":
-                self.__setup_match_page(values["player_1_name_input"], values["player_2_name_input"])
+
+                player_1_name = self.__get_player1_name()
+                self.__setup_match_page(player_1_name, values["player_2_local_input"])
 
             elif event == "submit_AI_play_button":
                 difficulty_level = int(values['difficulty_slider'])
                 ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
                 self.__ai_mode = True
-                self.__setup_match_page(values["player_vs_ai_name_input"], ai_name, ai_level=difficulty_level)
+
+                player_1_name = self.__get_player1_name()
+
+                self.__setup_match_page(player_1_name, ai_name, ai_level=difficulty_level)
 
             elif event == "show_board_button":
                 self.__display_board_window = self.__make_display_board_window()
