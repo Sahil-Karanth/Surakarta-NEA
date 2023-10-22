@@ -6,12 +6,12 @@ from Move import Move
 class Game:
 
     def __init__(self, player1name, player2name, ai_level=None):
-        self.__player1 = HumanPlayer(player1name, BoardConstants.PLAYER_1_COLOUR)
+        self.__player1 = HumanPlayer(player1name, BoardConstants.player_1_colour)
 
         if ai_level:
             self.__player2 = self.__make_ai_player(player2name)
         else:
-            self.__player2 = HumanPlayer(player2name, BoardConstants.PLAYER_2_COLOUR)
+            self.__player2 = HumanPlayer(player2name, BoardConstants.player_2_colour)
 
         self.__player_lst = [self.__player1, self.__player2]
 
@@ -30,7 +30,7 @@ class Game:
             "Hard AI": HardAIPlayer,
         }
 
-        return difficulty_dict[player2name](BoardConstants.PLAYER_2_COLOUR)
+        return difficulty_dict[player2name](BoardConstants.player_2_colour)
 
     
     def get_ai_move(self):

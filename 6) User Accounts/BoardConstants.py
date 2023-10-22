@@ -1,12 +1,13 @@
-class BoardConstants:
+class BoardConstants: # ! rename to BoardValues
+
+    player_1_colour = "yellow"
+    player_2_colour = "green"
 
     MIN_ROW_INDEX = 0
     MAX_ROW_INDEX = 5
     PLAYER_1_ROWS = (0, 1)
     PLAYER_2_ROWS = (4, 5)
     EDGE_LOCATION_CORDS = ((0, 0), (0, 5), (5, 0), (5, 5))
-    PLAYER_1_COLOUR = "yellow"
-    PLAYER_2_COLOUR = "green"
     NUM_STARTING_PIECES_EACH = 12
     ADJACENT_CORD_DIFFS = (1, 2)
     NUM_BOARD_LOOPS = 4
@@ -25,3 +26,11 @@ class BoardConstants:
         (1,5), (1,4), (1,3), (1,2), (1,1), (1,0),
         (0,1), (1,1), (2,1), (3,1), (4,1), (5,1),
     ]
+
+
+    @staticmethod
+    def set_player_colour(player_num, colour):
+        if player_num == 1:
+            BoardConstants.player_1_colour = colour
+        elif player_num == 2:
+            BoardConstants.player_2_colour = colour

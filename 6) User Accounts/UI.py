@@ -13,6 +13,8 @@ import datetime
 # ! todo: change uses of class attributes to use self instead of class name
 # ! todo: add validation for all ways a user could make the game crash
 
+# ! plan for new colours is to make the colour constants in Board constants variables and then have static methods to update them
+
 class UI:
 
     def __init__(self):

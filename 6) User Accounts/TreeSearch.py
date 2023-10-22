@@ -68,7 +68,7 @@ class GameTree:
     EXPLORATION_CONSTANT = 2
 
     def __init__(self, root_board):
-        self.__root = Node(root_board, BoardConstants.PLAYER_2_COLOUR, depth=0)
+        self.__root = Node(root_board, BoardConstants.player_2_colour, depth=0)
         self.__current_tree_depth = 0 # the maximum depth of a node in the tree
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
@@ -76,10 +76,10 @@ class GameTree:
     def __get_current_player_colour(self, depth):
 
         if depth % 2 == 0: # if the depth is even, it's player 2's turn
-            return BoardConstants.PLAYER_2_COLOUR
+            return BoardConstants.player_2_colour
         
         elif depth % 2 == 1:
-            return BoardConstants.PLAYER_1_COLOUR
+            return BoardConstants.player_1_colour
 
     def add_node(self, child_board, move_obj):
         """adds a node to the tree"""

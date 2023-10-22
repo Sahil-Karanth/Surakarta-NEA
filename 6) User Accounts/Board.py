@@ -29,8 +29,8 @@ class Board:
 
 
         self.__player_colour_map = {
-            BoardConstants.PLAYER_1_COLOUR: player1,
-            BoardConstants.PLAYER_2_COLOUR: player2
+            BoardConstants.player_1_colour: player1,
+            BoardConstants.player_2_colour: player2
         }
 
 
@@ -54,17 +54,17 @@ class Board:
 
         for i in outer_lst:
             if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
-                i.set_piece(Piece(BoardConstants.PLAYER_1_COLOUR))
+                i.set_piece(Piece(BoardConstants.player_1_colour))
             elif i.get_cords() in GREEN_TEST_OUTER_LOOP:
-                i.set_piece(Piece(BoardConstants.PLAYER_2_COLOUR))
+                i.set_piece(Piece(BoardConstants.player_2_colour))
             else:
                 i.set_piece(None)
 
         for i in inner_lst:
             if i.get_cords() in YELLOW_TEST_INNER_LOOP:
-                i.set_piece(Piece(BoardConstants.PLAYER_1_COLOUR))
+                i.set_piece(Piece(BoardConstants.player_1_colour))
             elif i.get_cords() in GREEN_TEST_INNER_LOOP:
-                i.set_piece(Piece(BoardConstants.PLAYER_2_COLOUR))
+                i.set_piece(Piece(BoardConstants.player_2_colour))
             else:
                 i.set_piece(None)
 
@@ -391,10 +391,10 @@ class Board:
                 self.__outer_loop.remove_piece(move_obj.get_start_cords())
     
     def __update_piece_counts(self, end_colour):
-        if end_colour == BoardConstants.PLAYER_1_COLOUR:
+        if end_colour == BoardConstants.player_1_colour:
             self.__player_lst[0].remove_piece()
 
-        elif end_colour == BoardConstants.PLAYER_2_COLOUR:
+        elif end_colour == BoardConstants.player_2_colour:
             self.__player_lst[1].remove_piece()
 
     def undo_move(self, move_obj):
@@ -549,7 +549,7 @@ class Board:
 
         for row in shuffled_board:
             for loc in row:
-                if loc.get_colour() == BoardConstants.PLAYER_2_COLOUR:
+                if loc.get_colour() == BoardConstants.player_2_colour:
                     move = self.__get_adjacent_move(loc)
                     if move:
                         return move
