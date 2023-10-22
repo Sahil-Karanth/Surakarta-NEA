@@ -442,6 +442,7 @@ class Graphical_UI(UI):
                 self.capture_count_test += 1
                 self.__update_display_number_captured_pieces()
                 self.__end_if_game_over()
+                return
             
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)

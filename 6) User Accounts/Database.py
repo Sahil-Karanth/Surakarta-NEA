@@ -114,6 +114,10 @@ class Database:
         saved_game = ""
 
         self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?);", (username, hashed_password, account_creation_date, preferred_piece_colour, saved_game))
+
+        for difficulty in ["Easy AI", "Medium AI", "Hard AI"]:
+            self.__cursor.execute("INSERT INTO AI_game_stats VALUES (?, ?, ?, ?);", (difficulty, username, 0, 0))
+        
         self.__conn.commit()
 
     def login(self, username, password):
@@ -168,10 +172,12 @@ class Database:
         self.__cursor.execute(f"DROP TABLE {table_name};")
         self.__conn.commit()
 
+
     
 
 
 db = Database("database.db")
+
 
 
 # print(db.login("test2", "amazing_pwd&"))
