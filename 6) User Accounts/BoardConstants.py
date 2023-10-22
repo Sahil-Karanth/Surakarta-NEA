@@ -5,9 +5,9 @@ class BoardConstants:
     PLAYER_1_ROWS = (0, 1)
     PLAYER_2_ROWS = (4, 5)
     EDGE_LOCATION_CORDS = ((0, 0), (0, 5), (5, 0), (5, 5))
-    PLAYER_1_COLOUR = "y"
-    PLAYER_2_COLOUR = "g"
-    NUM_STARTING_PIECES_EACH = 2
+    PLAYER_1_COLOUR = "yellow"
+    PLAYER_2_COLOUR = "green"
+    NUM_STARTING_PIECES_EACH = 12
     ADJACENT_CORD_DIFFS = (1, 2)
     NUM_BOARD_LOOPS = 4
     DRAW_THRESHOLD = 50

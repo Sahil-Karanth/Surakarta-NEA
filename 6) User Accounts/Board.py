@@ -16,18 +16,6 @@ class Board:
         self.__game_over = False # used by the MCTS AI opponent
 
         self.__build_board()
-        self.__edit_board_for_testing()
-
-        # self.__num_player1_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
-        # self.__num_player2_pieces = BoardConstants.NUM_STARTING_PIECES_EACH
-
-        # # TEST CODE
-        # self.__num_player1_pieces = 1
-        # self.__num_player2_pieces = 2
-        # # END TEST CODE
-
-        # self.__player1 = player1
-        # self.__player2 = player2
 
         self.__player_lst = [player1, player2]
 
@@ -66,17 +54,17 @@ class Board:
 
         for i in outer_lst:
             if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
-                i.set_piece(Piece("y"))
+                i.set_piece(Piece(BoardConstants.PLAYER_1_COLOUR))
             elif i.get_cords() in GREEN_TEST_OUTER_LOOP:
-                i.set_piece(Piece("g"))
+                i.set_piece(Piece(BoardConstants.PLAYER_2_COLOUR))
             else:
                 i.set_piece(None)
 
         for i in inner_lst:
             if i.get_cords() in YELLOW_TEST_INNER_LOOP:
-                i.set_piece(Piece("y"))
+                i.set_piece(Piece(BoardConstants.PLAYER_1_COLOUR))
             elif i.get_cords() in GREEN_TEST_INNER_LOOP:
-                i.set_piece(Piece("g"))
+                i.set_piece(Piece(BoardConstants.PLAYER_2_COLOUR))
             else:
                 i.set_piece(None)
 
@@ -91,31 +79,6 @@ class Board:
         # self.__board[2][0].set_piece(Piece("g"))
 
 
-        self.__board[0][0].set_piece(Piece("y"))
-        self.__board[0][1].set_piece(Piece("y"))
-        self.__board[0][3].set_piece(Piece("y"))
-        self.__board[0][4].set_piece(Piece("y"))
-        self.__board[0][5].set_piece(Piece("y"))
-
-        self.__board[1][1].set_piece(Piece("y"))
-        self.__board[1][2].set_piece(Piece("y"))
-        self.__board[1][3].set_piece(Piece("y"))
-        self.__board[1][5].set_piece(Piece("y"))
-
-        self.__board[2][4].set_piece(Piece("g"))
-        self.__board[2][5].set_piece(Piece("y"))
-
-        self.__board[4][0].set_piece(Piece("g"))
-        self.__board[4][1].set_piece(Piece("g"))
-        self.__board[4][3].set_piece(Piece("g"))
-        self.__board[4][4].set_piece(Piece("g"))
-        self.__board[4][5].set_piece(Piece("g"))
-
-        self.__board[5][0].set_piece(Piece("g"))
-        self.__board[5][1].set_piece(Piece("g"))
-        self.__board[5][3].set_piece(Piece("g"))
-        self.__board[5][4].set_piece(Piece("g"))
-        self.__board[5][5].set_piece(Piece("g"))
 
 
 

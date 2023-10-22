@@ -44,7 +44,7 @@ class Graphical_UI(UI):
     DISP_BOARD_INITAL_Y = 109
     DISP_BOARD_PIECE_RADIUS = 15
 
-    AVAILABLE_PIECE_COLOURS = ["yellow", "green"]
+    AVAILABLE_PIECE_COLOURS = ["yellow", "green", "red", "lightblue", "orange", "black"]
 
 
     def __init__(self):
@@ -277,12 +277,9 @@ class Graphical_UI(UI):
 
                 if counter == None:
                     continue
-
-                elif counter == "y":
-                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "yellow")
-
-                elif counter == "g":
-                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, "green")
+                
+                else:
+                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, counter)
 
 
 
@@ -311,14 +308,13 @@ class Graphical_UI(UI):
                 
                 key = f"{i},{j}"
 
+                print(counter)
+
                 if counter == None:
                     button = self.__make_piece_button("blank", key, visible=True)
 
-                elif counter == "y":
-                    button = self.__make_piece_button(BoardConstants.PLAYER_1_COLOUR, key, visible=True)
-
-                elif counter == "g":
-                    button = self.__make_piece_button(BoardConstants.PLAYER_2_COLOUR, key, visible=True)
+                else:
+                    button = self.__make_piece_button(counter, key, visible=True)
 
                 board_layout.append(button)
 
