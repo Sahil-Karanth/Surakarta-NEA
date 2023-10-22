@@ -56,7 +56,10 @@ class Graphical_UI(UI):
         with open("dummy_text", "r") as f:
             self.__dummy_text = textwrap.fill(f.read(), 140)
 
-        sg.theme('DarkTanBlue')
+        # sg.theme('DarkBlue14')
+        sg.theme('DarkTeal10')
+
+
 
         self.__highlighted_board_positions = []
 
@@ -118,7 +121,7 @@ class Graphical_UI(UI):
 
         new_game_button = sg.Button("New Game", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="new_game_button")
         help_button = sg.Button("Help", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="help_button",)
-        exit_button = sg.Button("Exit", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="exit_button")
+        show_stats_button = sg.Button("Show Stats", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="show_stats_button")
         login_button = sg.Button("Login", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="login_button")
         signup_button = sg.Button("Sign Up", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="signup_button")
         settings_button = sg.Button("Settings", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="signup_button")
@@ -127,7 +130,7 @@ class Graphical_UI(UI):
         buttons_layout = [
             [new_game_button, login_button],
             [help_button, signup_button],
-            [exit_button, settings_button],
+            [show_stats_button, settings_button],
         ]
 
         buttons_frame = sg.Frame(title="", layout=buttons_layout, border_width=3, pad=(0, self.COLUMN_PAD))
@@ -295,6 +298,25 @@ class Graphical_UI(UI):
         display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 500), maximise=False, modal=False, disable_close=False, keep_on_top=True)
 
         return display_board_window
+
+    
+    def __make_stats_window(self, username):
+
+        stats = self.__db.get_user_stats(username)
+
+        table_headers = ["AI Difficulty", "Wins", "Losses"]
+
+        rows = [[element for element in row] for row in stats]
+
+        table = sg.Table(rows, table_headers, expand_x=True, background_color="light gray", text_color="black")
+
+        layout = [
+            [table],
+        ]
+
+        stats_window = self.__create_window("Stats", layout, "center", size=(500, 500), maximise=False, modal=False, disable_close=False, keep_on_top=True)
+
+        return stats_window
 
 
     def __setup_match_page(self, player1name, player2name, ai_level=None):
@@ -553,7 +575,7 @@ class Graphical_UI(UI):
         while True:
             window, event, values = sg.read_all_windows()
 
-            if event == sg.WIN_CLOSED or event == 'Quit' or event == "exit_button":
+            if event == sg.WIN_CLOSED or event == 'Quit':
                 if window == self.__display_board_window:
                     disp_win_open = False
                     self.__display_board_window.close()
@@ -570,6 +592,16 @@ class Graphical_UI(UI):
 
             elif event == "help_button":
                 self.__setup_help_page()
+
+            elif event == "show_stats_button":
+                if self.__logged_in_username:
+                    self.__make_stats_window(self.__logged_in_username)
+
+                else:
+                    sg.popup("You must be logged in to view your stats", title="Error Showing Stats", keep_on_top=True)
+                    
+
+                # ! FINISH THIS
 
             elif event == "Show Login Status":
                 if self.__logged_in_username:

@@ -138,6 +138,10 @@ class Database:
         return self.__cursor.fetchone()[0]
         
 
+    def get_user_stats(self, username):
+        self.__cursor.execute("SELECT ai_difficulty, wins, losses FROM AI_game_stats WHERE username = ?;", (username,))
+        return self.__cursor.fetchall()
+
 
     def delete_table(self, table_name):
         self.__cursor.execute(f"DROP TABLE {table_name};")
