@@ -66,6 +66,7 @@ class Graphical_UI(UI):
 
         self.__logged_in = False
         self.__logged_in_username = None
+        self.__preferred_piece_colour = None
 
         self.__current_page = None
         self.__setup_home_page()
@@ -586,6 +587,13 @@ class Graphical_UI(UI):
                     sg.popup("Logged in", title="Logged In", keep_on_top=True)
 
                     self.__logged_in_username = username
+
+                    self.__preferred_piece_colour = self.__db.get_preferred_piece_colour(username)
+
+                    BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
+
+                    if self.__preferred_piece_colour == "green":
+                        BoardConstants.set_player_colour("yellow", 2)
 
                     self.__login_window.close()
 

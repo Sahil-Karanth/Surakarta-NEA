@@ -29,7 +29,7 @@ class BoardConstants: # ! rename to BoardValues
 
 
     @staticmethod
-    def set_player_colour(player_num, colour):
+    def set_player_colour(colour, player_num):
         if player_num == 1:
             BoardConstants.player_1_colour = colour
         elif player_num == 2:

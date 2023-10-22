@@ -133,7 +133,9 @@ class Database:
 
         return stored_password == hashed_password
 
-
+    def get_preferred_piece_colour(self, username):
+        self.__cursor.execute("SELECT preferred_piece_colour FROM users WHERE username = ?;", (username,))
+        return self.__cursor.fetchone()[0]
         
 
 
