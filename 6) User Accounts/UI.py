@@ -7,8 +7,11 @@ import textwrap
 import time
 from PIL import ImageTk, Image
 from Database import Database
+import datetime
+
 
 # ! todo: change uses of class attributes to use self instead of class name
+# ! todo: add validation for all ways a user could make the game crash
 
 class UI:
 
@@ -40,6 +43,8 @@ class Graphical_UI(UI):
     DISP_BOARD_INITAL_X = 128
     DISP_BOARD_INITAL_Y = 109
     DISP_BOARD_PIECE_RADIUS = 15
+
+    AVAILABLE_PIECE_COLOURS = ["yellow", "green"]
 
 
     def __init__(self):
@@ -152,16 +157,28 @@ class Graphical_UI(UI):
             if login_or_signup not in ["login", "signup"]:
                 raise ValueError("login_or_signup parameter of the __make_login_or_signup_window method must be either 'login' or 'signup'")
                 
+            drop_down_menu_layout = []
+            modal_height = 270
+
+            if login_or_signup == "signup":
+                drop_down_menu_layout = [
+                    [sg.Text("Preferred Piece Colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+                    [sg.Combo(self.AVAILABLE_PIECE_COLOURS, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")]
+                ]
+
+                modal_height = 350
+            
             layout = [
                 [sg.Text("Username", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
                 [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_username_input")],
                 [sg.Text("Password", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
                 [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_password_input", password_char="*")],
+                [drop_down_menu_layout],
                 [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key=f"{login_or_signup}_submit_button")]
-
             ]
 
-            return self.__create_window(login_or_signup.title(), layout, "center", modal=True, keep_on_top=True, size=(300, 270), maximise=False, disable_close=False)
+
+            return self.__create_window(login_or_signup.title(), layout, "center", modal=True, keep_on_top=True, size=(300, modal_height), maximise=False, disable_close=False)
 
 
     def __setup_new_game_page(self):
@@ -565,7 +582,7 @@ class Graphical_UI(UI):
                     sg.popup("Username already exists", title="Error Signing Up", keep_on_top=True)
                     
                 else:
-                    self.__db.add_user(username, password)
+                    self.__db.add_user(username, password, values["piece_colour_choice"])
                     sg.popup("Account created", title="Account Created", keep_on_top=True)
                     self.__signup_window.close()
 

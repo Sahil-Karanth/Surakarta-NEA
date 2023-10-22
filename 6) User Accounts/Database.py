@@ -2,7 +2,7 @@ import sqlite3
 import hashlib
 import os
 import binascii
-
+from datetime import datetime
 
 class Database:
 
@@ -19,8 +19,7 @@ class Database:
             CREATE TABLE IF NOT EXISTS users (
                 username TEXT,
                 password TEXT,
-                global_rank INTEGER,
-                account_creation_date TEXT,
+                account_creation_date DATE,
                 preferred_piece_colour TEXT,
                 saved_game TEXT,
                 PRIMARY KEY (username)
@@ -99,23 +98,23 @@ class Database:
 
         self.__conn.commit()
 
-
     def check_if_username_exists(self, username):
         self.__cursor.execute("SELECT username FROM users WHERE username = ?;", (username,))
         return self.__cursor.fetchone() != None
     
-    def add_user(self, username, password, global_rank, account_creation_date, preferred_piece_colour, saved_game):
-
-        # hash and salt the password
+    def add_user(self, username, password, preferred_piece_colour):
 
         salt = os.urandom(16)
         hashed_password = hashlib.pbkdf2_hmac('sha512', password.encode(), salt, 100000)
 
         hashed_password = salt.hex() + hashed_password.hex()
 
-        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?);", (username, hashed_password, global_rank, account_creation_date, preferred_piece_colour, saved_game))
-        self.__conn.commit()
+        account_creation_date = datetime.now().strftime("%Y-%m-%d")
 
+        saved_game = ""
+
+        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?);", (username, hashed_password, account_creation_date, preferred_piece_colour, saved_game))
+        self.__conn.commit()
 
     def login(self, username, password):
 
@@ -143,9 +142,9 @@ class Database:
 db = Database("database.db")
 
 
-print(db.login("test2", "amazing_pwd&"))
+# print(db.login("test2", "amazing_pwd&"))
 
-# db.add_user("test3", "amazing_pwd&", 0, "2021-01-01", "white", "test")
+# db.add_user("valid_user", "password", "white")
 
 # db.create_users_table()
 # db.create_game_history_table()
@@ -153,3 +152,6 @@ print(db.login("test2", "amazing_pwd&"))
 # db.create_friends_table()
 
 # db.delete_table("users")
+# db.delete_table("game_history")
+# db.delete_table("AI_game_stats")
+# db.delete_table("friends")
