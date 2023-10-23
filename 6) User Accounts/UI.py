@@ -81,10 +81,16 @@ class Graphical_UI(UI):
 
         self.capture_count_test = 0
 
-        self.__name_level_dict = {
+        self.__ai_name_to_level_num_map = {
             1: "Easy AI",
             2: "Medium AI",
             3: "Hard AI"
+        }
+
+        self.__ai_level_num_to_name_map = {
+            "Easy AI": 1,
+            "Medium AI": 2,
+            "Hard AI": 3
         }
 
 
@@ -596,7 +602,7 @@ class Graphical_UI(UI):
 
 
     def __difficulty_level_to_ai_name(self, difficulty_level):
-        return self.__name_level_dict[difficulty_level]
+        return self.__ai_name_to_level_num_map[difficulty_level]
 
     def __create_game_object(self, name1, name2, ai_level, game_state_string):
         self.__game = Game(name1, name2, ai_level=ai_level, game_state_string=game_state_string)
@@ -646,17 +652,17 @@ class Graphical_UI(UI):
 
 
 
-            elif event == "Load Game":
+            elif event == "load_game_button":
                 if self.__logged_in:
                     game_state_string, player2_name = self.__db.load_game_state(self.__logged_in_username)
 
-                    if player2_name in self.__name_level_dict.values(): # if the player 2 name is an AI name
+                    if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
                         self.__ai_mode = True
                         self.__ai_name = player2_name
 
 
                     if game_state_string and player2_name and self.__ai_mode:
-                        ai_level = self.__name_level_dict[self.__ai_name]
+                        ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
                         self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string)
 
                     elif game_state_string and player2_name:

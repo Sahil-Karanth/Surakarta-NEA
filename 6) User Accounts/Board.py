@@ -38,6 +38,7 @@ class Board:
             BoardConstants.player_2_colour: player2
         }
 
+        # ! MIGRATE THESE TO BOARD CONTSTANTS
         self.SAVED_GAME_STATE_SEPARATOR = "$"
         self.SAVED_GAME_STATE_EMPTY_CHAR = "."
 
@@ -93,13 +94,11 @@ class Board:
         game_state_lst = game_state_lst[1:-1] # remove first and last elements as they are empty
         game_state_lst = oneD_to_twoD_array(game_state_lst, BoardConstants.MAX_ROW_INDEX + 1)
 
-
-        # editing the board to the state specified by game_state_lst
-
         for i in range(BoardConstants.MAX_ROW_INDEX + 1):
             for j in range(BoardConstants.MAX_ROW_INDEX + 1):
 
                 curr_piece_str = game_state_lst[i][j]
+                curr_cords = (i, j)
 
                 if curr_piece_str == self.SAVED_GAME_STATE_EMPTY_CHAR:
                     self.__board[i][j].set_piece(None)
@@ -107,11 +106,11 @@ class Board:
                 else:
                     self.__board[i][j].set_piece(Piece(curr_piece_str))
 
+                if curr_cords in BoardConstants.OUTER_LOOP_CORDS:
+                    self.__outer_loop.update_piece(curr_cords, curr_piece_str)
 
-        # editing the inner and outer loops to the state specified by game_state_lst
-
-        # ! TODO
-
+                elif curr_cords in BoardConstants.INNER_LOOP_CORDS:
+                    self.__inner_loop.update_piece(curr_cords, curr_piece_str)
 
 
     def __get_common_loops(self, text_loop_1, text_loop_2):
@@ -598,15 +597,15 @@ class Board:
 
         flat_board = twoD_to_oneD_array(self.__board)
 
-        game_state_string = f"{self.SAVED_GAME_STATE_SEPARATOR}"
+        game_state_string = f"{BoardConstants.SAVED_GAME_STATE_SEPARATOR}"
 
         for loc in flat_board:
             if loc.is_empty():
-                game_state_string += self.SAVED_GAME_STATE_EMPTY_CHAR
+                game_state_string += BoardConstants.SAVED_GAME_STATE_EMPTY_CHAR
             else:
                 game_state_string += loc.get_colour()
 
-            game_state_string += self.SAVED_GAME_STATE_SEPARATOR
+            game_state_string += BoardConstants.SAVED_GAME_STATE_SEPARATOR
         
 
         return game_state_string

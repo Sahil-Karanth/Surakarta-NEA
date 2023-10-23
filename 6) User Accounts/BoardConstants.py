@@ -12,6 +12,8 @@ class BoardConstants: # ! rename to BoardValues
     ADJACENT_CORD_DIFFS = (1, 2)
     NUM_BOARD_LOOPS = 4
     DRAW_THRESHOLD = 50
+    SAVED_GAME_STATE_SEPARATOR = "$"
+    SAVED_GAME_STATE_EMPTY_CHAR = "."
 
     OUTER_LOOP_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
