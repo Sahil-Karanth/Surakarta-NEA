@@ -39,8 +39,8 @@ class Board:
         }
 
         # ! MIGRATE THESE TO BOARD CONTSTANTS
-        self.SAVED_GAME_STATE_SEPARATOR = "$"
-        self.SAVED_GAME_STATE_EMPTY_CHAR = "."
+        BoardConstants.SAVED_GAME_STATE_SEPARATOR = "$"
+        BoardConstants.SAVED_GAME_STATE_EMPTY_CHAR = "."
 
 
     def get_board_state(self):
@@ -90,7 +90,7 @@ class Board:
 
     def __load_game_state(self, game_state_string):
         
-        game_state_lst = game_state_string.split(self.SAVED_GAME_STATE_SEPARATOR)
+        game_state_lst = game_state_string.split(BoardConstants.SAVED_GAME_STATE_SEPARATOR)
         game_state_lst = game_state_lst[1:-1] # remove first and last elements as they are empty
         game_state_lst = oneD_to_twoD_array(game_state_lst, BoardConstants.MAX_ROW_INDEX + 1)
 
@@ -100,7 +100,7 @@ class Board:
                 curr_piece_str = game_state_lst[i][j]
                 curr_cords = (i, j)
 
-                if curr_piece_str == self.SAVED_GAME_STATE_EMPTY_CHAR:
+                if curr_piece_str == BoardConstants.SAVED_GAME_STATE_EMPTY_CHAR:
                     self.__board[i][j].set_piece(None)
 
                 else:
