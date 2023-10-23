@@ -200,14 +200,19 @@ class Database:
         self.__cursor.execute("INSERT INTO saved_games VALUES (?, ?, ?, ?);", (game_id, username, game_state_string, opponent_name))
         self.__conn.commit()
 
-    def load_game_state(self, username):
+    def load_game_states(self, username):
 
         self.__cursor.execute("SELECT game_state_string, opponent_name FROM saved_games WHERE username = ?;", (username,))
-        return self.__cursor.fetchone()
+        return self.__cursor.fetchall()
+    
+    def load_game_game_data_for_table(self, username):
+
+        self.__cursor.execute("SELECT game_id, opponent_name FROM saved_games WHERE username = ?;", (username,))
+        return self.__cursor.fetchall()
 
 
 
-db = Database("database.db")
+# db = Database("database.db")
 
 
 

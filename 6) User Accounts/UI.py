@@ -171,6 +171,22 @@ class Graphical_UI(UI):
         ]
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
+    
+    def __make_load_game_window(self):
+
+        """Creates the load game window"""
+
+        saved_games = self.__db.load_game_game_data_for_table(self.__logged_in_username)
+        table_headers = ["Game ID", "Opponent Name"] # ! add date
+        rows = [[element for element in row] for row in saved_games]
+
+        table = sg.Table(rows, table_headers, expand_x=True, background_color="light gray", text_color="black", key="saved_games_table")
+
+        layout = [
+            [table]
+        ] 
+
+        return self.__create_window("Load Game", layout, "center", modal=True, keep_on_top=True, size=(500, 500), maximise=False, disable_close=False)
         
 
     def __make_login_or_signup_window(self, login_or_signup):
@@ -653,9 +669,13 @@ class Graphical_UI(UI):
 
 
             elif event == "load_game_button":
+                self.__make_load_game_window()
+
+
+            elif event == "load_game_button":
                 if self.__logged_in:
 
-                    loaded_game_data = self.__db.load_game_state(self.__logged_in_username)
+                    loaded_game_data = self.__db.load_game_states(self.__logged_in_username)
 
                     if not loaded_game_data:
                         sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
