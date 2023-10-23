@@ -1,7 +1,7 @@
 from CircularList import CircularList
 from GridLocation import GridLocation
 from BoardConstants import BoardConstants
-from utility_functions import oneD_to_twoD_array, shuffle_2D_array
+from utility_functions import oneD_to_twoD_array, shuffle_2D_array, twoD_to_oneD_array
 from Piece import Piece
 from Move import Move
 import random
@@ -33,6 +33,9 @@ class Board:
             BoardConstants.player_1_colour: player1,
             BoardConstants.player_2_colour: player2
         }
+
+        self.SAVED_GAME_STATE_SEPARATOR = "$"
+        self.SAVED_GAME_STATE_EMPTY_CHAR = "."
 
 
     def get_board_state(self):
@@ -562,7 +565,23 @@ class Board:
     def get_piece_count(self, player_number):
         return self.__player_lst[player_number - 1].get_piece_count()
 
+
+    def get_game_state_string(self):
+
+        flat_board = twoD_to_oneD_array(self.__board)
+
+        game_state_string = f"{self.SAVED_GAME_STATE_SEPARATOR}"
+
+        for loc in flat_board:
+            if loc.is_empty():
+                game_state_string += self.SAVED_GAME_STATE_EMPTY_CHAR
+            else:
+                game_state_string += loc.get_colour()
+
+            game_state_string += self.SAVED_GAME_STATE_SEPARATOR
         
+
+        return game_state_string
 
 
 

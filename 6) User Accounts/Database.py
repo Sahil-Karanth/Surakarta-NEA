@@ -21,7 +21,6 @@ class Database:
                 password TEXT,
                 account_creation_date DATE,
                 preferred_piece_colour TEXT,
-                saved_game TEXT,
                 PRIMARY KEY (username)
             );
 
@@ -30,6 +29,29 @@ class Database:
         )
         
         self.__conn.commit()
+
+
+    def create_saved_games_table(self):
+
+        self.__cursor.execute(
+
+            """
+
+            CREATE TABLE IF NOT EXISTS saved_games (
+                game_id INTEGER,
+                username TEXT,
+                game_state_string TEXT,
+                opponent_name TEXT,
+                PRIMARY KEY (game_id)
+                FOREIGN KEY (username) REFERENCES users(username)
+            );
+
+            """
+
+        )
+
+        self.__conn.commit()
+
 
 
     def create_game_history_table(self):
@@ -76,7 +98,6 @@ class Database:
 
         self.__conn.commit()
 
-
     def create_friends_table(self):
 
         self.__cursor.execute(
@@ -111,9 +132,7 @@ class Database:
 
         account_creation_date = datetime.now().strftime("%Y-%m-%d")
 
-        saved_game = ""
-
-        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?);", (username, hashed_password, account_creation_date, preferred_piece_colour, saved_game))
+        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?);", (username, hashed_password, account_creation_date, preferred_piece_colour))
 
         for difficulty in ["Easy AI", "Medium AI", "Hard AI"]:
             self.__cursor.execute("INSERT INTO AI_game_stats VALUES (?, ?, ?, ?);", (difficulty, username, 0, 0))
@@ -141,7 +160,6 @@ class Database:
         self.__cursor.execute("SELECT preferred_piece_colour FROM users WHERE username = ?;", (username,))
         return self.__cursor.fetchone()[0]
         
-
     def get_user_stats(self, username):
         self.__cursor.execute("SELECT ai_difficulty, wins, losses FROM AI_game_stats WHERE username = ?;", (username,))
         return self.__cursor.fetchall()
@@ -154,7 +172,6 @@ class Database:
         self.__cursor.execute("UPDATE AI_game_stats SET losses = losses + 1 WHERE username = ? AND ai_difficulty = ?;", (username, ai_difficulty))
         self.__conn.commit()
     
-
     def update_user_stats(self, username, human_won, ai_difficulty):
 
         if human_won:
@@ -167,13 +184,22 @@ class Database:
 
         self.__conn.commit()
 
-
     def delete_table(self, table_name):
         self.__cursor.execute(f"DROP TABLE {table_name};")
         self.__conn.commit()
 
+    def save_game_state(self, username, game_state_string, opponent_name):
 
-    
+        game_id = self.__cursor.execute("SELECT MAX(game_id) FROM saved_games;").fetchone()[0]
+
+        if game_id == None:
+            game_id = 0
+        else:
+            game_id += 1
+
+        self.__cursor.execute("INSERT INTO saved_games VALUES (?, ?, ?, ?);", (game_id, username, game_state_string, opponent_name))
+        self.__conn.commit()
+
 
 
 db = Database("database.db")
@@ -188,8 +214,10 @@ db = Database("database.db")
 # db.create_game_history_table()
 # db.create_AI_game_stats_table()
 # db.create_friends_table()
+# db.create_saved_games_table()
 
 # db.delete_table("users")
 # db.delete_table("game_history")
 # db.delete_table("AI_game_stats")
 # db.delete_table("friends")
+# db.delete_table("saved_games")

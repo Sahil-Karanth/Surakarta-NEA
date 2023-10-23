@@ -42,6 +42,9 @@ class Game:
 
     def is_legal_move(self, start_loc, end_loc, move_type):
         return self.__board.is_legal_move(start_loc, end_loc, self.__current_player, move_type)
+    
+    def get_game_state_string(self):
+        return self.__board.get_game_state_string()
 
     def set_game_status(self):
 
@@ -85,24 +88,10 @@ class Game:
         
         move_obj = self.__move_history_stack.pop()
 
-
-
         print(f"MOVE POPPED OFF STACK {(move_obj.get_start_loc().get_colour(), move_obj.get_start_loc().get_cords(), move_obj.get_move_type())}")
         print(f"TO {move_obj.get_end_loc().get_colour(), move_obj.get_end_loc().get_cords()}")
 
         self.__board.undo_move(move_obj)
-
-        # print("BOARD STATE BEFORE UNDO: ")
-
-        # for row in self.__board.get_board_state():
-        #     print([i.get_colour() for i in row])
-
-
-        # print("BOARD STATE AFTER UNDO: ")
-
-        # for row in self.__board.get_board_state():
-        #     print([i.get_colour() for i in row])
-
 
         if move_obj.get_move_type() == "capture":
             self.__current_player.add_piece()

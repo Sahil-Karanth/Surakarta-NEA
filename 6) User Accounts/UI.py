@@ -154,7 +154,8 @@ class Graphical_UI(UI):
         """Creates the menu which is displayed on every page"""
 
         menu_layout = [
-            ["Utilities", ["Home", "Restart Match", "Show Login Status", "Quit"]],
+            ["Utilities", ["Home", "Show Login Status", "Quit"]],
+            ["Match Options", ["Restart Match", "Save Game"]]
         ]
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
@@ -634,7 +635,15 @@ class Graphical_UI(UI):
                     sg.popup("You must be logged in to view your stats", title="Error Showing Stats", keep_on_top=True)
                     
 
-                # ! FINISH THIS
+            elif event == "Save Game":
+                if self.__current_page == "match_page":
+                    game_state_string = self.__game.get_game_state_string()
+                    self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2))
+                    sg.popup("Game saved", title="Game Saved", keep_on_top=True)
+
+                else:
+                    sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
+
 
             elif event == "Show Login Status":
                 if self.__logged_in_username:
