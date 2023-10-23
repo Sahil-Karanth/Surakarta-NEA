@@ -654,14 +654,21 @@ class Graphical_UI(UI):
 
             elif event == "load_game_button":
                 if self.__logged_in:
-                    game_state_string, player2_name = self.__db.load_game_state(self.__logged_in_username)
+
+                    loaded_game_data = self.__db.load_game_state(self.__logged_in_username)
+
+                    if not loaded_game_data:
+                        sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
+                        continue
+
+                    game_state_string, player2_name = loaded_game_data
 
                     if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
                         self.__ai_mode = True
                         self.__ai_name = player2_name
 
 
-                    if game_state_string and player2_name and self.__ai_mode:
+                    if self.__ai_mode:
                         ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
                         self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string)
 
