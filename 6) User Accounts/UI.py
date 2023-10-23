@@ -12,6 +12,7 @@ import datetime
 
 # ! todo: change uses of class attributes to use self instead of class name
 # ! todo: add validation for all ways a user could make the game crash
+# ! todo: reject usernames or entered names that are the AI names
 
 # ! plan for new colours is to make the colour constants in Board constants variables and then have static methods to update them
 
@@ -80,6 +81,12 @@ class Graphical_UI(UI):
 
         self.capture_count_test = 0
 
+        self.__name_level_dict = {
+            1: "Easy AI",
+            2: "Medium AI",
+            3: "Hard AI"
+        }
+
 
     def __create_window(self, title, layout, justification, maximise=True, size=(700, 700), modal=False, disable_close=False, keep_on_top=False):
 
@@ -119,17 +126,16 @@ class Graphical_UI(UI):
         button_pad = (15, 10)
 
         new_game_button = sg.Button("New Game", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="new_game_button")
-        help_button = sg.Button("Help", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="help_button",)
+        load_game_button = sg.Button("Load Game", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="load_game_button")
         show_stats_button = sg.Button("Show Stats", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="show_stats_button")
         login_button = sg.Button("Login", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="login_button")
         signup_button = sg.Button("Sign Up", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="signup_button")
-        settings_button = sg.Button("Settings", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="signup_button")
-
+        help_button = sg.Button("Help", pad=button_pad, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="help_button")
 
         buttons_layout = [
             [new_game_button, login_button],
-            [help_button, signup_button],
-            [show_stats_button, settings_button],
+            [load_game_button, signup_button],
+            [show_stats_button, help_button],
         ]
 
         buttons_frame = sg.Frame(title="", layout=buttons_layout, border_width=3, pad=(0, self.COLUMN_PAD))
@@ -335,11 +341,11 @@ class Graphical_UI(UI):
         return stats_window
 
 
-    def __setup_match_page(self, player1name, player2name, ai_level=None):
+    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None):
 
         """Creates the match page window where the game is played"""
 
-        self.__create_game_object(player1name, player2name, ai_level)
+        self.__create_game_object(player1name, player2name, ai_level, game_state_string)
 
         display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()] # ! change name now that I have an actual display board
         board_layout = []
@@ -590,16 +596,10 @@ class Graphical_UI(UI):
 
 
     def __difficulty_level_to_ai_name(self, difficulty_level):
-        name_level_dict = {
-            1: "Easy AI",
-            2: "Medium AI",
-            3: "Hard AI"
-        }
+        return self.__name_level_dict[difficulty_level]
 
-        return name_level_dict[difficulty_level]
-
-    def __create_game_object(self, name1, name2, ai_level):
-        self.__game = Game(name1, name2, ai_level=ai_level)
+    def __create_game_object(self, name1, name2, ai_level, game_state_string):
+        self.__game = Game(name1, name2, ai_level=ai_level, game_state_string=game_state_string)
 
 
     def play_game(self):
@@ -643,6 +643,31 @@ class Graphical_UI(UI):
 
                 else:
                     sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
+
+
+
+            elif event == "Load Game":
+                if self.__logged_in:
+                    game_state_string, player2_name = self.__db.load_game_state(self.__logged_in_username)
+
+                    if player2_name in self.__name_level_dict.values(): # if the player 2 name is an AI name
+                        self.__ai_mode = True
+                        self.__ai_name = player2_name
+
+
+                    if game_state_string and player2_name and self.__ai_mode:
+                        ai_level = self.__name_level_dict[self.__ai_name]
+                        self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string)
+
+                    elif game_state_string and player2_name:
+                        self.__setup_match_page(self.__logged_in_username, player2_name)
+
+                    else:
+                        sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
+
+                else:
+                    sg.popup("You must be logged in to load a game", title="Error Loading Game", keep_on_top=True)
+
 
 
             elif event == "Show Login Status":

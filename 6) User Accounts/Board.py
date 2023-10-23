@@ -8,7 +8,7 @@ import random
 
 class Board:
 
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2, game_state_string=None):
         self.__board = []
         self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
         self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
@@ -16,7 +16,11 @@ class Board:
         self.__game_over = False # used by the MCTS AI opponent
 
         self.__build_board()
-        self.__edit_board_for_testing()
+
+        if game_state_string:
+            self.__load_game_state(game_state_string)
+
+        # self.__edit_board_for_testing()
 
         self.__player_lst = [player1, player2]
 
@@ -83,6 +87,30 @@ class Board:
         # self.__board[2][0].set_piece(Piece("g"))
 
 
+    def __load_game_state(self, game_state_string):
+        
+        game_state_lst = game_state_string.split(self.SAVED_GAME_STATE_SEPARATOR)
+        game_state_lst = game_state_lst[1:-1] # remove first and last elements as they are empty
+        game_state_lst = oneD_to_twoD_array(game_state_lst, BoardConstants.MAX_ROW_INDEX + 1)
+
+
+        # editing the board to the state specified by game_state_lst
+
+        for i in range(BoardConstants.MAX_ROW_INDEX + 1):
+            for j in range(BoardConstants.MAX_ROW_INDEX + 1):
+
+                curr_piece_str = game_state_lst[i][j]
+
+                if curr_piece_str == self.SAVED_GAME_STATE_EMPTY_CHAR:
+                    self.__board[i][j].set_piece(None)
+
+                else:
+                    self.__board[i][j].set_piece(Piece(curr_piece_str))
+
+
+        # editing the inner and outer loops to the state specified by game_state_lst
+
+        # ! TODO
 
 
 

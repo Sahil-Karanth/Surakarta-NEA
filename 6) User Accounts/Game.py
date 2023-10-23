@@ -5,7 +5,7 @@ from Move import Move
 
 class Game:
 
-    def __init__(self, player1name, player2name, ai_level=None):
+    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None):
         self.__player1 = HumanPlayer(player1name, BoardConstants.player_1_colour)
 
         if ai_level:
@@ -16,7 +16,7 @@ class Game:
         self.__player_lst = [self.__player1, self.__player2]
 
         self.__game_over = False
-        self.__board = Board(self.__player1, self.__player2)
+        self.__board = Board(self.__player1, self.__player2, game_state_string)
 
         self.__move_history_stack = []
 

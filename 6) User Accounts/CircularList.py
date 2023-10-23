@@ -15,7 +15,7 @@ class CircularList:
     def __str__(self):
         return str(self.__lst)
     
-    def get_lst_TEST(self):
+    def get_lst_TEST(self): # ! DELETE ME
         return self.__lst
     
     def get_length(self):
