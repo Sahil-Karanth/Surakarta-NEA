@@ -13,9 +13,9 @@ import datetime
 # ! todo: change uses of class attributes to use self instead of class name
 # ! todo: add validation for all ways a user could make the game crash
 # ! todo: reject usernames or entered names that are the AI names
-# ! todo: make sure loaded games start on the correct player's turn
 # ! todo: make captured piece counters update when a game is loaded
 # ! todo: make sure the user can't spawn a bunch of display board windows
+# ! todo: FIX LOOP UPDATES when a game is loaded
 
 
 class UI:
@@ -350,11 +350,11 @@ class Graphical_UI(UI):
         return stats_window
 
 
-    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False):
+    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH, player2_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH):
 
         """Creates the match page window where the game is played"""
 
-        self.__create_game_object(player1name, player2name, ai_level, game_state_string, player2_starts)
+        self.__create_game_object(player1name, player2name, ai_level, game_state_string, player2_starts, player1_num_pieces, player2_num_pieces)
 
         if game_state_string:
             self.__game_is_loaded = True
@@ -412,6 +412,7 @@ class Graphical_UI(UI):
 
         if player2_starts:
             self.__update_current_player_display(self.__game_is_loaded)
+            self.__update_display_number_captured_pieces()
 
 
     def __update_display_number_captured_pieces(self):
@@ -638,8 +639,8 @@ class Graphical_UI(UI):
     def __difficulty_level_to_ai_name(self, difficulty_level):
         return self.__ai_name_to_level_num_map[difficulty_level]
 
-    def __create_game_object(self, name1, name2, ai_level, game_state_string, player2_starts):
-        self.__game = Game(name1, name2, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts)
+    def __create_game_object(self, name1, name2, ai_level, game_state_string, player2_starts, player1pieces, player2pieces):
+        self.__game = Game(name1, name2, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
 
 
     def play_game(self):
@@ -685,10 +686,9 @@ class Graphical_UI(UI):
                             continue
 
                     game_state_string = self.__game.get_game_state_string()
-
                     player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
 
-                    self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts)
+                    self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2))
                     sg.popup("Game saved", title="Game Saved", keep_on_top=True)
 
                 else:
@@ -703,7 +703,7 @@ class Graphical_UI(UI):
                         sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
                         continue
 
-                    game_state_string, player2_name, player2_starts = loaded_game_data
+                    game_state_string, player2_name, player2_starts, player1pieces, player2pieces = loaded_game_data
 
                     if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
                         self.__ai_mode = True
@@ -712,10 +712,10 @@ class Graphical_UI(UI):
 
                     if self.__ai_mode:
                         ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
-                        self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts)
+                        self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
 
                     elif game_state_string and player2_name:
-                        self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string, player2_starts=player2_starts)
+                        self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
 
                     else:
                         sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)

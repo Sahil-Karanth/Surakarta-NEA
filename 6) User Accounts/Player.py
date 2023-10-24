@@ -5,10 +5,10 @@ from TreeSearch import GameTree
 
 class Player:
 
-    def __init__(self, name, piece_colour):
+    def __init__(self, name, piece_colour, piece_count=BoardConstants.NUM_STARTING_PIECES_EACH):
         self.__name = name
         self.__piece_colour = piece_colour
-        self.__piece_count = BoardConstants.NUM_STARTING_PIECES_EACH
+        self.__piece_count = piece_count # parameterised so that a game can be loaded from a save
 
     def get_colour(self):
         return self.__piece_colour
@@ -24,6 +24,9 @@ class Player:
         if self.__piece_count < 0:
             raise ValueError("Player has no pieces left, cannot remove piece")
         
+    def set_piece_count(self, piece_count):
+        self.__piece_count = piece_count
+        
     def add_piece(self):
 
         """Adds a piece to the player's piece count. Only used to return a piece to a player after a move is undone."""
@@ -35,14 +38,14 @@ class Player:
 
 class HumanPlayer(Player):
 
-    def __init__(self, name, piece_colour):
-        super().__init__(name, piece_colour)
+    def __init__(self, name, piece_colour, piece_count):
+        super().__init__(name, piece_colour, piece_count)
     
 
 class AIPlayer(Player):
     
-    def __init__(self, name, piece_colour):
-        super().__init__(name, piece_colour)
+    def __init__(self, name, piece_colour, piece_count=BoardConstants.NUM_STARTING_PIECES_EACH):
+        super().__init__(name, piece_colour, piece_count)
 
     def get_move(self, board):
         raise NotImplementedError("AI opponent classes must have a get_move method")
@@ -50,8 +53,8 @@ class AIPlayer(Player):
 
 class EasyAIPlayer(AIPlayer):
 
-    def __init__(self, piece_colour):
-        super().__init__("Easy AI", piece_colour)
+    def __init__(self, piece_colour, piece_count):
+        super().__init__("Easy AI", piece_colour, piece_count)
     
     def get_move(self, board):
         
@@ -79,8 +82,8 @@ class EasyAIPlayer(AIPlayer):
 
 class MediumAIPlayer(AIPlayer):
     
-    def __init__(self, piece_colour):
-        super().__init__("Medium AI", piece_colour)
+    def __init__(self, piece_colour, piece_count):
+        super().__init__("Medium AI", piece_colour, piece_count)
 
     def get_move(self, board):
         
@@ -90,8 +93,8 @@ class MediumAIPlayer(AIPlayer):
     
 class HardAIPlayer(AIPlayer):
         
-    def __init__(self, piece_colour):
-        super().__init__("Hard AI", piece_colour)
+    def __init__(self, piece_colour, piece_count):
+        super().__init__("Hard AI", piece_colour, piece_count)
 
     def get_move(self, board):
         pass

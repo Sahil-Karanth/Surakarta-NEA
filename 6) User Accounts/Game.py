@@ -5,13 +5,13 @@ from Move import Move
 
 class Game:
 
-    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False):
-        self.__player1 = HumanPlayer(player1name, BoardConstants.player_1_colour)
+    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH, player2_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH):
+        self.__player1 = HumanPlayer(player1name, BoardConstants.player_1_colour, player1_num_pieces)
 
         if ai_level:
-            self.__player2 = self.__make_ai_player(player2name)
+            self.__player2 = self.__make_ai_player(player2name, player2_num_pieces)
         else:
-            self.__player2 = HumanPlayer(player2name, BoardConstants.player_2_colour)
+            self.__player2 = HumanPlayer(player2name, BoardConstants.player_2_colour, player2_num_pieces)
 
         self.__player_lst = [self.__player1, self.__player2]
 
@@ -26,14 +26,14 @@ class Game:
         if player2_starts: # if a game is loaded from a save it might be player 2's turn first
             self.switch_current_player()
 
-    def __make_ai_player(self, player2name):
+    def __make_ai_player(self, player2name, player2_num_pieces):
         difficulty_dict = {
             "Easy AI": EasyAIPlayer,
             "Medium AI": MediumAIPlayer,
             "Hard AI": HardAIPlayer,
         }
 
-        return difficulty_dict[player2name](BoardConstants.player_2_colour)
+        return difficulty_dict[player2name](BoardConstants.player_2_colour, player2_num_pieces)
 
     
     def get_ai_move(self):

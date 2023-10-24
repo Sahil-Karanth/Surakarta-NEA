@@ -113,6 +113,9 @@ class Board:
                     self.__inner_loop.update_piece(curr_cords, curr_piece_str)
 
 
+        # ! update player piece counts dependign on the game state string
+
+
     def __get_common_loops(self, text_loop_1, text_loop_2):
 
         """Returns a tuple in the form in the form (inner_loop, outer_loop) containing the common 
