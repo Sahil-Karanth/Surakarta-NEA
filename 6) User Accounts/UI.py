@@ -13,6 +13,7 @@ import datetime
 # ! todo: change uses of class attributes to use self instead of class name
 # ! todo: add validation for all ways a user could make the game crash
 # ! todo: reject usernames or entered names that are the AI names
+# ! todo: make sure loaded games start on the correct player's turn
 
 # ! plan for new colours is to make the colour constants in Board constants variables and then have static methods to update them
 
@@ -67,13 +68,14 @@ class Graphical_UI(UI):
         self.__login_window = None
 
         self.__logged_in = False
-        self.__logged_in_username = None
+        self.__logged_in_username = None 
         self.__preferred_piece_colour = None
 
         self.__current_page = None
         self.__setup_home_page()
 
         self.__game = None
+        self.__game_is_loaded = False
         self.__ai_mode = False
         self.__ai_name = None
 
@@ -171,22 +173,6 @@ class Graphical_UI(UI):
         ]
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
-    
-    def __make_load_game_window(self):
-
-        """Creates the load game window"""
-
-        saved_games = self.__db.load_game_game_data_for_table(self.__logged_in_username)
-        table_headers = ["Game ID", "Opponent Name"] # ! add date
-        rows = [[element for element in row] for row in saved_games]
-
-        table = sg.Table(rows, table_headers, expand_x=True, background_color="light gray", text_color="black", key="saved_games_table")
-
-        layout = [
-            [table]
-        ] 
-
-        return self.__create_window("Load Game", layout, "center", modal=True, keep_on_top=True, size=(500, 500), maximise=False, disable_close=False)
         
 
     def __make_login_or_signup_window(self, login_or_signup):
@@ -369,6 +355,9 @@ class Graphical_UI(UI):
 
         self.__create_game_object(player1name, player2name, ai_level, game_state_string)
 
+        if game_state_string:
+            self.__game_is_loaded = True
+
         display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()] # ! change name now that I have an actual display board
         board_layout = []
 
@@ -497,6 +486,16 @@ class Graphical_UI(UI):
                 self.__update_display_number_captured_pieces()
                 self.__end_if_game_over()
 
+    def __reset_game_variables(self):
+
+        """resets all game variables to their initial values"""
+
+        self.__game = None
+        self.__game_is_loaded = False
+        self.__ai_mode = False
+        self.__ai_name = None
+        self.__highlighted_board_positions = []
+
 
     def __end_if_game_over(self):
 
@@ -518,6 +517,15 @@ class Graphical_UI(UI):
 
                 self.__db.update_user_stats(self.__logged_in_username, human_won, self.__ai_name)
 
+            if self.__game_is_loaded:
+                self.__db.delete_saved_game(self.__logged_in_username)
+
+
+            # add game to game history
+
+            # ...
+
+            self.__reset_game_variables()
             self.__setup_home_page()
   
     def __update_board_display(self, start_cords, end_cords, start_colour):
@@ -658,7 +666,14 @@ class Graphical_UI(UI):
                     
 
             elif event == "Save Game":
-                if self.__current_page == "match_page":
+                if self.__current_page == "match_page" and self.__logged_in:
+
+                    if self.__db.game_already_saved(self.__logged_in_username):
+                        overwrite = sg.popup_yes_no("You already have a saved game. Do you want to overwrite it?", title="Game Already Saved", keep_on_top=True)
+                    
+                        if overwrite == "No":
+                            continue
+
                     game_state_string = self.__game.get_game_state_string()
                     self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2))
                     sg.popup("Game saved", title="Game Saved", keep_on_top=True)
@@ -666,16 +681,10 @@ class Graphical_UI(UI):
                 else:
                     sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
 
-
-
-            elif event == "load_game_button":
-                self.__make_load_game_window()
-
-
             elif event == "load_game_button":
                 if self.__logged_in:
 
-                    loaded_game_data = self.__db.load_game_states(self.__logged_in_username)
+                    loaded_game_data = self.__db.load_game_state(self.__logged_in_username)
 
                     if not loaded_game_data:
                         sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
@@ -693,7 +702,7 @@ class Graphical_UI(UI):
                         self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string)
 
                     elif game_state_string and player2_name:
-                        self.__setup_match_page(self.__logged_in_username, player2_name)
+                        self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string)
 
                     else:
                         sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)

@@ -38,11 +38,10 @@ class Database:
             """
 
             CREATE TABLE IF NOT EXISTS saved_games (
-                game_id INTEGER,
                 username TEXT,
                 game_state_string TEXT,
                 opponent_name TEXT,
-                PRIMARY KEY (game_id)
+                PRIMARY KEY (username)
                 FOREIGN KEY (username) REFERENCES users(username)
             );
 
@@ -188,31 +187,31 @@ class Database:
         self.__cursor.execute(f"DROP TABLE {table_name};")
         self.__conn.commit()
 
+    def game_already_saved(self, username):
+
+        self.__cursor.execute("SELECT username FROM saved_games WHERE username = ?;", (username,))
+        return self.__cursor.fetchone() != None
+
     def save_game_state(self, username, game_state_string, opponent_name):
 
-        game_id = self.__cursor.execute("SELECT MAX(game_id) FROM saved_games;").fetchone()[0]
+        if self.game_already_saved(username):
+            self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
+        
 
-        if game_id == None:
-            game_id = 0
-        else:
-            game_id += 1
-
-        self.__cursor.execute("INSERT INTO saved_games VALUES (?, ?, ?, ?);", (game_id, username, game_state_string, opponent_name))
+        self.__cursor.execute("INSERT INTO saved_games VALUES (?, ?, ?);", (username, game_state_string, opponent_name))
         self.__conn.commit()
 
-    def load_game_states(self, username):
+    def load_game_state(self, username):
 
         self.__cursor.execute("SELECT game_state_string, opponent_name FROM saved_games WHERE username = ?;", (username,))
-        return self.__cursor.fetchall()
+        return self.__cursor.fetchone()
     
-    def load_game_game_data_for_table(self, username):
-
-        self.__cursor.execute("SELECT game_id, opponent_name FROM saved_games WHERE username = ?;", (username,))
-        return self.__cursor.fetchall()
-
+    def delete_saved_game(self, username):
+        self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
+        self.__conn.commit()
 
 
-# db = Database("database.db")
+db = Database("database.db")
 
 
 
