@@ -64,10 +64,10 @@ class Database:
 
             CREATE TABLE IF NOT EXISTS game_history (
                 game_id INTEGER,
-                username TEXT ,
+                username TEXT,
+                opponent TEXT,
                 game_date DATE,
-                game_result TEXT,
-                ai_difficulty TEXT,
+                winner TEXT,
                 PRIMARY KEY (game_id)
                 FOREIGN KEY (username) REFERENCES users(username)
             );
@@ -213,8 +213,31 @@ class Database:
         self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
         self.__conn.commit()
 
+    def add_game_to_history(self, username, player2name, winner_name):
 
-db = Database("database.db")
+        game_date = datetime.now().strftime("%Y-%m-%d")
+
+        self.__cursor.execute("SELECT MAX(game_id) FROM game_history;")
+
+        max_id = self.__cursor.fetchone()[0]
+
+        if max_id == None:
+            game_id = 1
+
+        else:
+            game_id = max_id + 1
+
+        self.__cursor.execute("INSERT INTO game_history VALUES (?, ?, ?, ?, ?);", (game_id, username, player2name, game_date, winner_name))
+        self.__conn.commit()
+
+    def get_game_history(self, username):
+
+        self.__cursor.execute("SELECT game_id, game_date, opponent, winner FROM game_history WHERE username = ?;", (username,))
+        return self.__cursor.fetchall()
+
+
+
+# db = Database("database.db")
 
 
 

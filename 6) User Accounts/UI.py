@@ -13,7 +13,6 @@ import datetime
 # ! todo: change uses of class attributes to use self instead of class name
 # ! todo: add validation for all ways a user could make the game crash
 # ! todo: reject usernames or entered names that are the AI names
-# ! todo: make captured piece counters update when a game is loaded
 # ! todo: make sure the user can't spawn a bunch of display board windows
 # ! todo: FIX LOOP UPDATES when a game is loaded
 
@@ -333,16 +332,21 @@ class Graphical_UI(UI):
     
     def __make_stats_window(self, username):
 
-        stats = self.__db.get_user_stats(username)
+        ai_match_stats = self.__db.get_user_stats(username)
+        ai_stats_table_headers = ["AI Difficulty", "Wins", "Losses"]
+        ai_stats_rows = [[element for element in row] for row in ai_match_stats]
 
-        table_headers = ["AI Difficulty", "Wins", "Losses"]
+        ai_stats_table = sg.Table(ai_stats_rows, ai_stats_table_headers, expand_x=True, background_color="light gray", text_color="black")
 
-        rows = [[element for element in row] for row in stats]
+        game_history = self.__db.get_game_history(username)
+        game_history_table_headers = ["Game Number", "Date", "Opponent", "Winner"]
+        game_history_rows = [[element for element in row] for row in game_history]
 
-        table = sg.Table(rows, table_headers, expand_x=True, background_color="light gray", text_color="black")
+        game_history_table = sg.Table(game_history_rows, game_history_table_headers, expand_x=True, background_color="light gray", text_color="black")
 
         layout = [
-            [table],
+            [ai_stats_table],
+            [game_history_table],
         ]
 
         stats_window = self.__create_window("Stats", layout, "center", size=(500, 500), maximise=False, modal=False, disable_close=False, keep_on_top=True)
@@ -528,7 +532,7 @@ class Graphical_UI(UI):
 
             # add game to game history
 
-            # ...
+            self.__db.add_game_to_history(self.__logged_in_username, self.__game.get_player_name(2), self.__game.get_winner().get_name())
 
             self.__reset_game_variables()
             self.__setup_home_page()
