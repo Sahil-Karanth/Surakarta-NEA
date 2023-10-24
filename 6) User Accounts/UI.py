@@ -14,8 +14,9 @@ import datetime
 # ! todo: add validation for all ways a user could make the game crash
 # ! todo: reject usernames or entered names that are the AI names
 # ! todo: make sure loaded games start on the correct player's turn
+# ! todo: make captured piece counters update when a game is loaded
+# ! todo: make sure the user can't spawn a bunch of display board windows
 
-# ! plan for new colours is to make the colour constants in Board constants variables and then have static methods to update them
 
 class UI:
 
@@ -349,11 +350,11 @@ class Graphical_UI(UI):
         return stats_window
 
 
-    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None):
+    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False):
 
         """Creates the match page window where the game is played"""
 
-        self.__create_game_object(player1name, player2name, ai_level, game_state_string)
+        self.__create_game_object(player1name, player2name, ai_level, game_state_string, player2_starts)
 
         if game_state_string:
             self.__game_is_loaded = True
@@ -408,6 +409,9 @@ class Graphical_UI(UI):
         self.__main_window.close()
         self.__current_page = "match_page"
         self.__main_window = self.__create_window("Match", layout, "center")
+
+        if player2_starts:
+            self.__update_current_player_display(self.__game_is_loaded)
 
 
     def __update_display_number_captured_pieces(self):
@@ -539,11 +543,17 @@ class Graphical_UI(UI):
 
         self.__main_window[f"{end_cords_str}"].update(image_filename=f"{start_colour}_counter.png")
 
-    def __update_current_player_display(self):
+    def __update_current_player_display(self, game_is_loaded=False):
 
         """updates the onscreen current player display"""
 
         current_text = self.__main_window["player1_turn_text"]
+
+        # switches the current player display to player 2's name if the game is loaded and it is player 2's turn immediately
+        # parameter game_is_loaded is used to prevent this from happening every turn
+        if game_is_loaded and self.__game.get_current_player_name() == self.__game.get_player_name(2):
+            current_text.update(f"{self.__game.get_player_name(2)}'s Turn")
+            return
 
         if self.__game.get_current_player_name() == self.__game.get_player_name(1):
             current_text.update(f"{self.__game.get_player_name(2)}'s Turn")
@@ -628,8 +638,8 @@ class Graphical_UI(UI):
     def __difficulty_level_to_ai_name(self, difficulty_level):
         return self.__ai_name_to_level_num_map[difficulty_level]
 
-    def __create_game_object(self, name1, name2, ai_level, game_state_string):
-        self.__game = Game(name1, name2, ai_level=ai_level, game_state_string=game_state_string)
+    def __create_game_object(self, name1, name2, ai_level, game_state_string, player2_starts):
+        self.__game = Game(name1, name2, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts)
 
 
     def play_game(self):
@@ -675,7 +685,10 @@ class Graphical_UI(UI):
                             continue
 
                     game_state_string = self.__game.get_game_state_string()
-                    self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2))
+
+                    player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
+
+                    self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts)
                     sg.popup("Game saved", title="Game Saved", keep_on_top=True)
 
                 else:
@@ -690,7 +703,7 @@ class Graphical_UI(UI):
                         sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
                         continue
 
-                    game_state_string, player2_name = loaded_game_data
+                    game_state_string, player2_name, player2_starts = loaded_game_data
 
                     if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
                         self.__ai_mode = True
@@ -699,10 +712,10 @@ class Graphical_UI(UI):
 
                     if self.__ai_mode:
                         ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
-                        self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string)
+                        self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts)
 
                     elif game_state_string and player2_name:
-                        self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string)
+                        self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string, player2_starts=player2_starts)
 
                     else:
                         sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)

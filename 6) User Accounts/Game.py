@@ -5,7 +5,7 @@ from Move import Move
 
 class Game:
 
-    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None):
+    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False):
         self.__player1 = HumanPlayer(player1name, BoardConstants.player_1_colour)
 
         if ai_level:
@@ -22,6 +22,9 @@ class Game:
 
         self.__current_player = self.__player1
         self.__non_current_player = self.__player2
+
+        if player2_starts: # if a game is loaded from a save it might be player 2's turn first
+            self.switch_current_player()
 
     def __make_ai_player(self, player2name):
         difficulty_dict = {

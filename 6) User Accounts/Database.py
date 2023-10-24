@@ -41,6 +41,7 @@ class Database:
                 username TEXT,
                 game_state_string TEXT,
                 opponent_name TEXT,
+                player2_starts BOOLEAN,
                 PRIMARY KEY (username)
                 FOREIGN KEY (username) REFERENCES users(username)
             );
@@ -192,18 +193,18 @@ class Database:
         self.__cursor.execute("SELECT username FROM saved_games WHERE username = ?;", (username,))
         return self.__cursor.fetchone() != None
 
-    def save_game_state(self, username, game_state_string, opponent_name):
+    def save_game_state(self, username, game_state_string, opponent_name, player2_starts):
 
         if self.game_already_saved(username):
             self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
         
 
-        self.__cursor.execute("INSERT INTO saved_games VALUES (?, ?, ?);", (username, game_state_string, opponent_name))
+        self.__cursor.execute("INSERT INTO saved_games VALUES (?, ?, ?, ?);", (username, game_state_string, opponent_name, player2_starts))
         self.__conn.commit()
 
     def load_game_state(self, username):
 
-        self.__cursor.execute("SELECT game_state_string, opponent_name FROM saved_games WHERE username = ?;", (username,))
+        self.__cursor.execute("SELECT game_state_string, opponent_name, player2_starts FROM saved_games WHERE username = ?;", (username,))
         return self.__cursor.fetchone()
     
     def delete_saved_game(self, username):
