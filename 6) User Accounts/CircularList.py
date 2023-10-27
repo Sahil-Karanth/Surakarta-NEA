@@ -1,6 +1,10 @@
 from Piece import Piece
 from BoardConstants import BoardConstants
 
+# ! TODO: make another CircularList class that inherits from this one but is specifically for when every element is a GridLocation object
+    # would also migrate the methods that are specific to GridLocation objects to that class
+
+
 class CircularList:
 
     """The data structure used for the board's two loops.
@@ -36,7 +40,7 @@ class CircularList:
 
     def get_next_right(self):
 
-        """returns the next item in the list, starting from the right pointer."""
+        """returns the next item in the circular list, starting from the right pointer."""
 
         item = self.__lst[self.__right_pointer]
         self.__right_pointer = (self.__right_pointer + 1) % len(self.__lst)
@@ -44,13 +48,15 @@ class CircularList:
 
     def get_next_left(self):
 
-        """returns the next item in the list, starting from the left pointer."""
+        """returns the next item in the circular list, starting from the left pointer."""
 
         item = self.__lst[self.__left_pointer]
         self.__left_pointer = (self.__left_pointer - 1) % len(self.__lst)
         return item
     
     def __get_all_occurence_indexes(self, lst, cords):
+
+        # ! change to just use self.__lst instead of passing in lst
 
         """returns a list of all the indexes that a location with the specified cords is found in lst"""
 

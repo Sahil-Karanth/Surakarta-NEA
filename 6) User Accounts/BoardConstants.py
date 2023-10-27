@@ -8,7 +8,7 @@ class BoardConstants: # ! rename to BoardValues
     PLAYER_1_ROWS = (0, 1)
     PLAYER_2_ROWS = (4, 5)
     EDGE_LOCATION_CORDS = ((0, 0), (0, 5), (5, 0), (5, 5))
-    NUM_STARTING_PIECES_EACH = 1
+    NUM_STARTING_PIECES_EACH = 12
     ADJACENT_CORD_DIFFS = (1, 2)
     NUM_BOARD_LOOPS = 4
     DRAW_THRESHOLD = 50

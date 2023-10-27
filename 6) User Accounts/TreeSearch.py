@@ -5,9 +5,6 @@ import time
 import sys
 from copy import deepcopy
 
-# ! CHECK TO MAKE SURE THE TREE IS TRYING TO MAKE THE BEST MOVE FOR THE OPPONENT AS MOVES ALTERNATE
-# ! do some debugging to check why some obvious captures aren't being made
-
 class Node:
 
     def __init__(self, board, current_player_colour, depth, move_obj=None, is_hint=False):
@@ -17,7 +14,7 @@ class Node:
         self.__visited_count = 0
         self.__children = []
         self.__parent = None
-        self.__next_legal_states = self.__board.get_legal_moves(current_player_colour)
+        self.__next_legal_moves = self.__board.get_legal_moves(current_player_colour)
         self.__depth = depth
 
     def get_board(self):
@@ -54,8 +51,8 @@ class Node:
     def update_value(self, value):
         self.__value += value
     
-    def get_next_legal_states(self):
-        return self.__next_legal_states
+    def get_next_legal_moves(self):
+        return self.__next_legal_moves
     
 
 class GameTree:
@@ -155,7 +152,7 @@ class GameTree:
 
         """expands the current node"""
 
-        for move_obj in self.__current_node.get_next_legal_states():
+        for move_obj in self.__current_node.get_next_legal_moves():
             board = self.__current_node.get_board()
             board.move_piece(move_obj)
             self.add_node(board, move_obj)
@@ -170,7 +167,7 @@ class GameTree:
             return terminal_board_state
 
         rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth())
-        simulated_move = random.choice(self.__current_node.get_next_legal_states())
+        simulated_move = random.choice(self.__current_node.get_next_legal_moves())
 
         num_moves = 0
 

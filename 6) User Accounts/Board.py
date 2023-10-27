@@ -20,7 +20,7 @@ class Board:
         if game_state_string:
             self.__load_game_state(game_state_string)
 
-        self.__edit_board_for_testing()
+        # self.__edit_board_for_testing()
 
         self.__player_lst = [player1, player2]
 
@@ -210,6 +210,8 @@ class Board:
 
         moving_to_location = self.__board[end_cord[0]][end_cord[1]]
         
+        # ! change to just use end_loc instead of moving_to_location
+        # ! also reduce this code significatnly by just having if ... then return true else false
         if self.__is_adjacent(start_loc, end_loc) and moving_to_location.is_empty(): # ! potentially change to moving_to_location.get_colour() == None
             return True
         
@@ -263,11 +265,19 @@ class Board:
         for board_loop in board_loop_tuple:
             starting_indexes = self.__get_piece_indexes_at(board_loop, start_loc)
             for ind in starting_indexes:
-                move = self.__get_capture_either_direction(start_loc, ind, board_loop)
-                if move == False:
-                    continue
-                elif move.get_end_cords() == end_loc.get_cords():
+                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, board_loop)
+
+                if right_move and right_move.get_end_cords() == end_loc.get_cords():
                     return True
+                
+                elif left_move and left_move.get_end_cords() == end_loc.get_cords():
+                    return True
+            
+
+                # if move == False:
+                #     continue
+                # elif move.get_end_cords() == end_loc.get_cords():
+                #     return True
                 
         return False
     
@@ -332,15 +342,15 @@ class Board:
 
         right_search = self.__search_direction_for_capture(start_location, board_loop, "right")
 
-        if right_search:
-            return right_search
+        # if right_search and right_search.get_end_cords() == end_location.get_cords():
+        #     return right_search
         
         left_search = self.__search_direction_for_capture(start_location, board_loop, "left")
 
-        if left_search:
-            return left_search
+        # if left_search and left_search.get_end_cords() == end_location.get_cords():
+        #     return left_search
 
-        return False
+        return (right_search, left_search)
     
     def __search_direction_for_capture(self, start_location, board_loop, direction):
 
@@ -534,9 +544,12 @@ class Board:
             starting_indexes = self.__get_piece_indexes_at(loop, start_loc)
 
             for ind in starting_indexes:
-                capturing_move = self.__get_capture_either_direction(start_loc, ind, loop)
-                if capturing_move:
-                    return capturing_move
+                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, loop)
+                if right_move:
+                    return right_move
+                
+                elif left_move:
+                    return left_move
             
         return None
     

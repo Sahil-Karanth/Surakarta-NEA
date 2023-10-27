@@ -65,12 +65,12 @@ class Game:
         return self.__game_over
 
     def get_winner(self):
-        # if self.is_game_over() == True:
-        if self.__player1.get_piece_count() > self.__player2.get_piece_count():
-            return self.__player1
-        
-        elif self.__player2.get_piece_count() > self.__player1.get_piece_count():
-            return self.__player2
+        if self.is_game_over() == True: # ! RECENT CHANGE MADE
+            if self.__player1.get_piece_count() > self.__player2.get_piece_count():
+                return self.__player1
+            
+            elif self.__player2.get_piece_count() > self.__player1.get_piece_count():
+                return self.__player2
         
         else:
             raise Exception("Attempting to get winner when game is not over.")
@@ -88,7 +88,7 @@ class Game:
     def undo_move(self):
         if len(self.__move_history_stack) == 0:
             return None
-        
+
         move_obj = self.__move_history_stack.pop()
 
         print(f"MOVE POPPED OFF STACK {(move_obj.get_start_loc().get_colour(), move_obj.get_start_loc().get_cords(), move_obj.get_move_type())}")
@@ -96,7 +96,7 @@ class Game:
 
         self.__board.undo_move(move_obj)
 
-        if move_obj.get_move_type() == "capture":
+        if move_obj.get_move_type() == "capture": # ! try moving to before calling undo with the board because it matches my psuedocode
             self.__current_player.add_piece()
 
         return move_obj
