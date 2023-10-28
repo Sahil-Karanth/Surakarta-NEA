@@ -64,7 +64,7 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
-    TIME_FOR_MOVE = 40 # seconds
+    TIME_FOR_MOVE = 10 # seconds
     MOVES_PER_ROLLOUT = 200
     EXPLORATION_CONSTANT = 2
 
@@ -165,18 +165,16 @@ class GameTree:
     def rollout(self):
 
         self.__rollout_board = deepcopy(self.__current_node.get_board())
-        rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth())
-
         num_moves = 0
 
         while num_moves < GameTree.MOVES_PER_ROLLOUT:
-
-            num_moves += 1
 
             terminal_board_state = self.__check_terminal_board(self.__rollout_board)
             if terminal_board_state:
                 return terminal_board_state
             
+            rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
+
             move_options = self.__rollout_board.get_legal_moves(rollout_colour)
             simulated_move = random.choice(move_options)
 
@@ -184,8 +182,8 @@ class GameTree:
 
             print(f"made move for {simulated_move.get_start_colour()}")
             
-            rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
 
+            num_moves += 1
 
         return self.__get_early_stop_rollout_state(self.__rollout_board)
             
@@ -234,7 +232,7 @@ class GameTree:
         num_iterations = 0
 
         while time.time() - start_time < GameTree.TIME_FOR_MOVE:
-        # while True: # ! DELETE THIS WHILE LOOP CONDITION
+        # while True: # ! DELETE THIS WHILE LOOP CONDITION (FOR TESTING ONLY)
             self.run_MCTS_iteration()
             num_iterations += 1
 
