@@ -5,6 +5,10 @@ import time
 import sys
 from copy import deepcopy
 
+
+# ! change formula name to UCT because I'm not using UCB1
+
+
 class Node:
 
     def __init__(self, board, current_player_colour, depth, move_obj=None, is_hint=False):
@@ -108,14 +112,14 @@ class GameTree:
             
 
     def __check_terminal_board(self, board):
-            
-            """returns True if the board is terminal, False otherwise"""
-    
+                
             if board.get_piece_count(1) == 0:
                 return GameTree.WIN
             
             elif board.get_piece_count(2) == 0:
                 return GameTree.LOSS
+            
+            return False
             
 
     def __get_early_stop_rollout_state(self, board):
@@ -161,13 +165,7 @@ class GameTree:
     def rollout(self):
 
         self.__rollout_board = deepcopy(self.__current_node.get_board())
-
-        terminal_board_state = self.__check_terminal_board(self.__rollout_board)
-        if terminal_board_state != None:
-            return terminal_board_state
-
         rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth())
-        simulated_move = random.choice(self.__current_node.get_next_legal_moves())
 
         num_moves = 0
 
@@ -175,18 +173,19 @@ class GameTree:
 
             num_moves += 1
 
+            terminal_board_state = self.__check_terminal_board(self.__rollout_board)
+            if terminal_board_state:
+                return terminal_board_state
+            
+            move_options = self.__rollout_board.get_legal_moves(rollout_colour)
+            simulated_move = random.choice(move_options)
+
             self.__rollout_board.move_piece(simulated_move)
 
             print(f"made move for {simulated_move.get_start_colour()}")
-
-            terminal_board_state = self.__check_terminal_board(self.__rollout_board)
-            if terminal_board_state != None:
-                return terminal_board_state
             
             rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
 
-            move_options = self.__rollout_board.get_legal_moves(rollout_colour)
-            simulated_move = random.choice(move_options)
 
         return self.__get_early_stop_rollout_state(self.__rollout_board)
             
@@ -203,6 +202,8 @@ class GameTree:
     def run_MCTS_iteration(self):
 
         print("NEW ITERATION")
+
+        # ! move rollout and backprop to after the if else as it does the same thing in both cases
 
         while not self.current_is_leaf():
             self.select_new_current()

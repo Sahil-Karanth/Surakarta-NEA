@@ -20,7 +20,7 @@ class Board:
         if game_state_string:
             self.__load_game_state(game_state_string)
 
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
         self.__player_lst = [player1, player2]
 
@@ -280,7 +280,7 @@ class Board:
                 #     return True
                 
         return False
-    
+        
 
     def is_legal_move(self, start_loc, end_loc, player, move_type):
         if move_type == "move":
@@ -308,20 +308,20 @@ class Board:
         return False
 
 
-    def __check_direction_valid(self, start_location, end_location, loop_count):
+    def __check_direction_invalid(self, start_location, end_location, loop_count):
 
-        """Returns True if a capture could still potentially be made in the direction moving to end_location otherwise returns False"""
+        """Returns False if a capture could still potentially be made in the direction moving to end_location otherwise returns True"""
 
         if self.__loop_pieces_same_colour(start_location, end_location):
-            return False
+            return True
         
         if loop_count == 0 and not end_location.is_empty():
-            return False
+            return True
         
         if (loop_count == BoardConstants.NUM_BOARD_LOOPS) and (start_location.get_cords() == end_location.get_cords()):
-            return False
+            return True
         
-        return True
+        return False
     
 
     def __get_capture_either_direction(self, start_location, ind, board_loop):
@@ -375,7 +375,7 @@ class Board:
             if self.__is_valid_capture(start_location, curr_loc, loop_count):
                 return Move(start_location, curr_loc, "capture")
 
-            if not self.__check_direction_valid(start_location, curr_loc, loop_count):
+            if self.__check_direction_invalid(start_location, curr_loc, loop_count):
                 invalid = True
 
             prev_loc = curr_loc
@@ -409,10 +409,12 @@ class Board:
         
     def move_piece(self, move_obj, undo=False):
 
-        self.__update_loops_after_move(move_obj)
-
         if move_obj.get_move_type() == "capture":
             self.__update_piece_counts(move_obj.get_end_colour())
+
+
+        self.__update_loops_after_move(move_obj)
+
 
         if undo:
             self.__switch_piece_positions(move_obj.get_end_loc(), move_obj.get_start_loc())
