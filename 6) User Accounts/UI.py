@@ -15,6 +15,9 @@ import datetime
 # ! todo: reject usernames or entered names that are the AI names
 # ! todo: make sure the user can't spawn a bunch of display board windows
 # ! todo: FIX LOOP UPDATES when a game is loaded
+# ! todo: reduce time complexity of getting next legal moves
+# ! todo: combine children list and next legal moves list into one list as I only need to generate the legal moves when I need to expand the node
+# ! todo: fix game loading so the number of pieces each player has is loaded correctly (also split the constant into two for each player)
 
 
 class UI:

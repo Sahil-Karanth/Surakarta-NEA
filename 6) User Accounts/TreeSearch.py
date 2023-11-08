@@ -4,9 +4,15 @@ from BoardConstants import BoardConstants
 import time
 import sys
 from copy import deepcopy
+from multiprocessing.dummy import Pool
 
 
 # ! change formula name to UCT because I'm not using UCB1
+
+
+# ! 10 SECOND NUM ITERATION TESTS --> done first move of a fresh game
+    # before changes --> 18 iterations
+
 
 
 class Node:
@@ -18,6 +24,7 @@ class Node:
         self.__visited_count = 0
         self.__children = []
         self.__parent = None
+        # self.__next_legal_moves = self.__set_next_legal_moves()
         self.__next_legal_moves = self.__board.get_legal_moves(current_player_colour)
         self.__depth = depth
 
@@ -31,6 +38,10 @@ class Node:
     def set_parent(self, parent):
         self.__parent = parent
 
+    def __set_next_legal_moves(self):
+
+        cached_legal_moves = self.__board.get_legal_moves_cached()
+
     def get_parent(self):
         return self.__parent
     
@@ -43,8 +54,8 @@ class Node:
     def get_visited_count(self):
         return self.__visited_count
     
-    def increment_visited_count(self):
-        self.__visited_count += 1
+    def increase_visited_count(self, num_parallel_rollouts=1):
+        self.__visited_count += num_parallel_rollouts
     
     def get_children(self):
         return self.__children
@@ -73,6 +84,7 @@ class GameTree:
         self.__current_tree_depth = 0 # the maximum depth of a node in the tree
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
+        self.__num_rollouts = 0
 
     def __get_current_player_colour(self, depth):
 
@@ -161,6 +173,21 @@ class GameTree:
             board.move_piece(move_obj)
             self.add_node(board, move_obj)
 
+    def multiprocess_rollouts(self):
+
+        pool = Pool(processes=3)
+        
+        rollout_results_lst = []
+
+        with pool as p:
+            for _ in range(3):
+                rollout_result = p.apply_async(self.rollout)
+                rollout_results_lst.append(rollout_result)
+
+            p.close()
+            p.join()
+
+        return rollout_results_lst
     
     def rollout(self):
 
@@ -188,12 +215,14 @@ class GameTree:
         return self.__get_early_stop_rollout_state(self.__rollout_board)
             
 
-    def backpropagate(self, result):
+    def backpropagate(self, results):
+
+        result = sum([res.get() for res in results])
 
         node = self.__current_node
 
         while node != None:
-            node.increment_visited_count()
+            node.increase_visited_count(len(results))
             node.update_value(result)
             node = node.get_parent()
 
@@ -207,17 +236,19 @@ class GameTree:
             self.select_new_current()
 
         if self.__current_node.get_visited_count() == 0:
-            result = self.rollout()
-            self.backpropagate(result)
-            print("rollout complete with result: ", result)
+            results = self.multiprocess_rollouts()
+            self.backpropagate(results)
+            print("rollouts complete with result: ", [i.get() for i in results])
 
         else:
             self.node_expansion()
             if len(self.__current_node.get_children()) != 0:
                 self.__current_node = self.__current_node.get_children()[0]
-            result = self.rollout()
-            self.backpropagate(result)
-            print("rollout complete with result: ", result)
+            results = self.multiprocess_rollouts()
+            self.backpropagate(results)
+            print("rollout complete with result: ", [i.get() for i in results])
+
+        self.__num_rollouts += len(results)
 
         self.__current_node = self.__root
 
@@ -239,11 +270,12 @@ class GameTree:
         best_node = max(self.__root.get_children(), key=lambda node: node.get_value())
         
         print(f"BEST NODE'S VALUE = {best_node.get_value()}")
-        print("NUM ITERATIONS = ", num_iterations)
+        print("NUM MCTS ITERATIONS = ", num_iterations)
+        print("NUM ROLLOUTS = ", self.__num_rollouts)
         print("TREE DEPTH = ", self.__current_tree_depth)
 
-        print("ALL IMMEDIATE CHILDREN VALUES")
-        print([(node.get_value(), node.get_move_obj().__str__()) for node in self.__root.get_children()])
+        # print("ALL IMMEDIATE CHILDREN VALUES")
+        # print([(node.get_value(), node.get_move_obj().__str__()) for node in self.__root.get_children()])
 
         return best_node.get_move_obj()
 
