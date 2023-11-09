@@ -29,7 +29,6 @@ class Node:
         self.__children = []
         self.__parent = None
         # self.__next_legal_moves = self.__set_next_legal_moves()
-        self.__next_legal_moves = self.__board.get_legal_moves(current_player_colour)
         self.__depth = depth
 
     def get_board(self):
@@ -82,7 +81,7 @@ class GameTree:
     TIME_FOR_MOVE = 10 # seconds
     MOVES_PER_ROLLOUT = 200
     EXPLORATION_CONSTANT = 2
-    NUM_PARALLEL_ROLLOUTS = 3
+    NUM_PARALLEL_ROLLOUTS = 1
 
     def __init__(self, root_board):
         self.__root = Node(root_board, BoardConstants.player_2_colour, depth=0)
@@ -149,7 +148,11 @@ class GameTree:
         
         else:
             return GameTree.DRAW
-
+        
+    def __get_current_legal_moves(self):
+        board = self.__current_node.get_board()
+        current_player_colour = self.__get_current_player_colour(self.__current_node.get_depth())
+        return board.get_legal_moves(current_player_colour)
 
 
     def current_is_leaf(self):
@@ -173,10 +176,13 @@ class GameTree:
 
         """expands the current node"""
 
-        for move_obj in self.__current_node.get_next_legal_moves():
+        legal_moves = self.__get_current_legal_moves()
+
+        for move_obj in legal_moves:
             board = self.__current_node.get_board()
             board.move_piece(move_obj)
             self.add_node(board, move_obj)
+
 
     def multiprocess_rollouts(self):
 
@@ -255,6 +261,7 @@ class GameTree:
         self.__num_rollouts += len(results)
 
         self.__current_node = self.__root
+
 
     def get_next_move(self): # main method to call
 
