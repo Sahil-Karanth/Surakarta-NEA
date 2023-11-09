@@ -1,5 +1,7 @@
 from UI import Graphical_UI
 
-ui = Graphical_UI()
 
-ui.play_game()
+if __name__ == "__main__":
+    ui = Graphical_UI()
+
+    ui.play_game()

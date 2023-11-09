@@ -4,14 +4,18 @@ from BoardConstants import BoardConstants
 import time
 import sys
 from copy import deepcopy
-from multiprocessing.dummy import Pool
-
+from multiprocessing import cpu_count
+from multiprocessing import Pool
 
 # ! change formula name to UCT because I'm not using UCB1
 
 
 # ! 10 SECOND NUM ITERATION TESTS --> done first move of a fresh game
-    # before changes --> 18 iterations
+    # before changes --> 18 iterations, 18 rollouts
+    # 3 parallel rollouts --> 11 iterations, 33 rollouts
+    # 5 parallel rollouts --> 8 iterations, 40 rollouts
+
+
 
 
 
@@ -78,6 +82,7 @@ class GameTree:
     TIME_FOR_MOVE = 10 # seconds
     MOVES_PER_ROLLOUT = 200
     EXPLORATION_CONSTANT = 2
+    NUM_PARALLEL_ROLLOUTS = 3
 
     def __init__(self, root_board):
         self.__root = Node(root_board, BoardConstants.player_2_colour, depth=0)
@@ -136,10 +141,10 @@ class GameTree:
 
     def __get_early_stop_rollout_state(self, board):
 
-        if board.get_piece_count(1) > self.__rollout_board.get_piece_count(2):
+        if board.get_piece_count(1) > board.get_piece_count(2):
             return GameTree.LOSS
         
-        elif board.get_piece_count(1) < self.__rollout_board.get_piece_count(2):
+        elif board.get_piece_count(1) < board.get_piece_count(2):
             return GameTree.WIN
         
         else:
@@ -175,13 +180,12 @@ class GameTree:
 
     def multiprocess_rollouts(self):
 
-        pool = Pool(processes=3)
+        pool = Pool(processes=GameTree.NUM_PARALLEL_ROLLOUTS)
         
         rollout_results_lst = []
-
         with pool as p:
-            for _ in range(3):
-                rollout_result = p.apply_async(self.rollout)
+            for _ in range(GameTree.NUM_PARALLEL_ROLLOUTS):
+                rollout_result = p.apply_async(self.rollout, (deepcopy(self.__current_node.get_board()), ))
                 rollout_results_lst.append(rollout_result)
 
             p.close()
@@ -189,30 +193,30 @@ class GameTree:
 
         return rollout_results_lst
     
-    def rollout(self):
+    def rollout(self, rollout_board):
 
-        self.__rollout_board = deepcopy(self.__current_node.get_board())
+        # self.__rollout_board = deepcopy(self.__current_node.get_board())
         num_moves = 0
 
         while num_moves < GameTree.MOVES_PER_ROLLOUT:
 
-            terminal_board_state = self.__check_terminal_board(self.__rollout_board)
+            terminal_board_state = self.__check_terminal_board(rollout_board)
             if terminal_board_state:
                 return terminal_board_state
             
             rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
 
-            move_options = self.__rollout_board.get_legal_moves(rollout_colour)
+            move_options = rollout_board.get_legal_moves(rollout_colour)
             simulated_move = random.choice(move_options)
 
-            self.__rollout_board.move_piece(simulated_move)
+            rollout_board.move_piece(simulated_move)
 
-            print(f"made move for {simulated_move.get_start_colour()}")
+            # print(f"made move for {simulated_move.get_start_colour()}")
             
 
             num_moves += 1
 
-        return self.__get_early_stop_rollout_state(self.__rollout_board)
+        return self.__get_early_stop_rollout_state(rollout_board)
             
 
     def backpropagate(self, results):
@@ -274,8 +278,8 @@ class GameTree:
         print("NUM ROLLOUTS = ", self.__num_rollouts)
         print("TREE DEPTH = ", self.__current_tree_depth)
 
-        # print("ALL IMMEDIATE CHILDREN VALUES")
-        # print([(node.get_value(), node.get_move_obj().__str__()) for node in self.__root.get_children()])
+        print("ALL IMMEDIATE CHILDREN VALUES")
+        print([(node.get_value(), node.get_move_obj().__str__()) for node in self.__root.get_children()])
 
         return best_node.get_move_obj()
 
