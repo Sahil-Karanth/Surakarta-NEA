@@ -212,8 +212,10 @@ class GameTree:
             
             rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
 
-            move_options = rollout_board.get_legal_moves(rollout_colour)
-            simulated_move = random.choice(move_options)
+            # move_options = rollout_board.get_legal_moves(rollout_colour)
+            # simulated_move = random.choice(move_options)
+
+            simulated_move = rollout_board.get_single_legal_move(rollout_colour)
 
             rollout_board.move_piece(simulated_move)
 
@@ -227,6 +229,7 @@ class GameTree:
 
     def backpropagate(self, results):
 
+        print([i.get() for i in results])
         result = sum([res.get() for res in results])
 
         node = self.__current_node
