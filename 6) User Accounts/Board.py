@@ -531,6 +531,8 @@ class Board:
         #         legal_moves.append(Move(loc, end_loc, "capture"))
 
 
+        # ! ITERATE OVER ONLY THE LOOPS THAT IT SITS ON
+
         for row in self.__board:
             for end_loc in row:
                 if end_loc.get_colour() != player.get_colour() and self.is_legal_move(loc, end_loc, player, "capture"):
@@ -555,6 +557,20 @@ class Board:
                     legal_moves += self.__get_loc_legal_moves(loc, player)
 
         return legal_moves
+    
+
+    def get_single_legal_move(self, player_colour):
+
+        shuffled_board = shuffle_2D_array(self.__board)
+
+        for row in shuffled_board:
+            for loc in row:
+                if loc.get_colour() == player_colour:
+                    loc_legal_moves = self.__get_loc_legal_moves(loc, self.__player_colour_map[player_colour])
+                    move = random.choice(loc_legal_moves)
+
+                    return move
+
 
     
     def get_capture_with(self, start_loc):
@@ -616,7 +632,7 @@ class Board:
 
     def get_random_move(self):
 
-        """Returns a random move that can be made on the board for the Easy AI opponent"""
+        """Returns a random normal move that can be made on the board for the Easy AI opponent"""
 
         shuffled_board = shuffle_2D_array(self.__board)
 
