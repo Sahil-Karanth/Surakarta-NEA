@@ -1,5 +1,5 @@
 from Game import Game
-from utility_functions import oneD_to_twoD_array, create_circle
+from utility_functions import oneD_to_twoD_array
 import re
 from BoardConstants import BoardConstants
 import PySimpleGUI as sg
@@ -301,6 +301,13 @@ class Graphical_UI(UI):
     def __make_piece_button(self, piece_type, key, visible=False):
         return sg.Button("", image_filename=f"{piece_type}_counter.png", pad=(30,30), visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
+    @staticmethod
+    def __create_circle(canvas, x, y, r, fill): #center coordinates, radius
+        x0 = x - r
+        y0 = y - r
+        x1 = x + r
+        y1 = y + r
+        return canvas.create_oval(x0, y0, x1, y1, fill=fill, outline="black", tags="counter")
 
     def __draw_pieces_on_disp_board(self, window):
 
@@ -318,7 +325,7 @@ class Graphical_UI(UI):
                     continue
                 
                 else:
-                    create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, counter)
+                    self.__create_circle(canvas, self.DISP_BOARD_INITAL_X + (self.DISP_BOARD_PIECE_SPACING * j), self.DISP_BOARD_INITAL_Y + (self.DISP_BOARD_PIECE_SPACING * i), self.DISP_BOARD_PIECE_RADIUS, counter)
 
 
 

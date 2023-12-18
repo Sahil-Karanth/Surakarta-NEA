@@ -2,6 +2,7 @@ from Player import HumanPlayer, EasyAIPlayer, MediumAIPlayer, HardAIPlayer
 from Board import Board
 from BoardConstants import BoardConstants
 from Move import Move
+from Stack import Stack
 
 class Game:
 
@@ -18,7 +19,7 @@ class Game:
         self.__game_over = False
         self.__board = Board(self.__player1, self.__player2, game_state_string)
 
-        self.__move_history_stack = []
+        self.__move_history_stack = Stack()
 
         self.__current_player = self.__player1
         self.__non_current_player = self.__player2
@@ -78,7 +79,7 @@ class Game:
 
     def move_piece(self, start_location, end_location, move_type):
         move_obj = Move(start_location, end_location, move_type)
-        self.__move_history_stack.append(move_obj)
+        self.__move_history_stack.push(move_obj)
 
         self.__board.move_piece(move_obj)
 
@@ -86,7 +87,7 @@ class Game:
 
 
     def undo_move(self):
-        if len(self.__move_history_stack) == 0:
+        if self.__move_history_stack.is_empty():
             return None
 
         move_obj = self.__move_history_stack.pop()
