@@ -325,10 +325,10 @@ class Graphical_UI(UI):
     def __make_display_board_window(self):
 
         layout = [
-            [sg.Canvas(size=(500, 500), key='-CANVAS-')],
+            [sg.Canvas(size=(500, 400), key='-CANVAS-')],
         ]
 
-        display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 500), maximise=False, modal=False, disable_close=False, keep_on_top=True)
+        display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 400), maximise=False, modal=False, disable_close=False, keep_on_top=True)
 
         return display_board_window
 
@@ -667,7 +667,7 @@ class Graphical_UI(UI):
                     break
 
                 else:
-                    window.close()
+                    window.close()  
 
             if event == "new_game_button":
                 self.__setup_new_game_page()                

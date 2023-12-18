@@ -19,6 +19,7 @@ def shuffle_2D_array(arr):
 
 
 # ! CREDIT TO: https://stackoverflow.com/questions/17985216/simpler-way-to-draw-a-circle-with-tkinter
+# ! ALSO MIGRATE THIS TO THE UI FILE AS A PRIVATE METHOD IN GraphicalUI
 def create_circle(canvas, x, y, r, fill): #center coordinates, radius
     x0 = x - r
     y0 = y - r

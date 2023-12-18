@@ -20,7 +20,7 @@ class Board:
         if game_state_string:
             self.__load_game_state(game_state_string)
 
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
         self.__player_lst = [player1, player2]
 
@@ -54,12 +54,11 @@ class Board:
         outer_lst = [GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS]
         inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
 
-        YELLOW_TEST_OUTER_LOOP = [(1,3)]
-        GREEN_TEST_OUTER_LOOP = []
+        YELLOW_TEST_OUTER_LOOP = [(1,2)]
+        GREEN_TEST_OUTER_LOOP = [(2,4), (5,3)]
 
-        YELLOW_TEST_INNER_LOOP = [(1,3)]
-        GREEN_TEST_INNER_LOOP = [(1,5)]
-
+        YELLOW_TEST_INNER_LOOP = [(0,1), (1,2), (1,5)]
+        GREEN_TEST_INNER_LOOP = [(2,4), (4,0), (4,1), (4,5), (5,1)]
 
         for i in outer_lst:
             if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
@@ -81,11 +80,36 @@ class Board:
         self.__outer_loop = CircularList(outer_lst)
         self.__inner_loop = CircularList(inner_lst)
 
-        self.__board[1][3].set_piece(Piece(BoardConstants.player_1_colour))
-        self.__board[1][5].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[1][3].set_piece(Piece(BoardConstants.player_1_colour))
+        # self.__board[1][5].set_piece(Piece(BoardConstants.player_2_colour))
 
         # self.__board[4][4].set_piece(Piece("y"))
         # self.__board[2][0].set_piece(Piece("g"))
+
+        self.__board[0][0].set_piece(Piece(BoardConstants.player_1_colour))
+        self.__board[0][1].set_piece(Piece(BoardConstants.player_1_colour))
+        # self.__board[0][3].set_piece(Piece(BoardConstants.player_1_colour))
+        # self.__board[0][4].set_piece(Piece(BoardConstants.player_1_colour))
+        self.__board[0][5].set_piece(Piece(BoardConstants.player_1_colour))
+
+        # self.__board[1][1].set_piece(Piece(BoardConstants.player_1_colour))
+        self.__board[1][2].set_piece(Piece(BoardConstants.player_1_colour))
+        # self.__board[1][3].set_piece(Piece(BoardConstants.player_1_colour))
+        self.__board[1][5].set_piece(Piece(BoardConstants.player_1_colour))
+
+        # self.__board[2][5].set_piece(Piece(BoardConstants.player_1_colour))
+        self.__board[2][4].set_piece(Piece(BoardConstants.player_2_colour))
+
+        self.__board[4][0].set_piece(Piece(BoardConstants.player_2_colour))
+        self.__board[4][1].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[4][3].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[4][4].set_piece(Piece(BoardConstants.player_2_colour))
+        self.__board[4][5].set_piece(Piece(BoardConstants.player_2_colour))
+
+        # self.__board[5][0].set_piece(Piece(BoardConstants.player_2_colour))
+        self.__board[5][1].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[5][3].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[5][4].set_piece(Piece(BoardConstants.player_2_colour))
 
 
     def __load_game_state(self, game_state_string):
@@ -195,7 +219,7 @@ class Board:
         return [self.__board[i[0]][i[1]] for i in adjacent_lst]
 
     
-    def check_normal_legal(self, start_loc, end_loc, player):
+    def __check_normal_legal(self, start_loc, end_loc, player):
         start_cord = start_loc.get_cords()
         end_cord = end_loc.get_cords()
 
@@ -243,7 +267,7 @@ class Board:
             return True
         return False
 
-    def check_capture_legal(self, start_loc, end_loc, player): # try all possible captures
+    def __check_capture_legal(self, start_loc, end_loc, player): # try all possible captures
 
         start_cords = start_loc.get_cords()
         end_cords = end_loc.get_cords()
@@ -284,10 +308,10 @@ class Board:
 
     def is_legal_move(self, start_loc, end_loc, player, move_type):
         if move_type == "move":
-            return self.check_normal_legal(start_loc, end_loc, player)
+            return self.__check_normal_legal(start_loc, end_loc, player)
         
         elif move_type == "capture":
-            return self.check_capture_legal(start_loc, end_loc, player)
+            return self.__check_capture_legal(start_loc, end_loc, player)
 
         return False
 

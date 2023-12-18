@@ -121,6 +121,8 @@ class Database:
 
         self.__conn.commit()
 
+
+
     def check_if_username_exists(self, username):
         self.__cursor.execute("SELECT username FROM users WHERE username = ?;", (username,))
         return self.__cursor.fetchone() != None
@@ -234,6 +236,129 @@ class Database:
 
         self.__cursor.execute("SELECT game_id, game_date, opponent, winner FROM game_history WHERE username = ?;", (username,))
         return self.__cursor.fetchall()
+
+
+class Database2:
+    
+    def __init__(self, db_name):
+        self.__conn = sqlite3.connect(db_name)
+        self.__cursor = self.__conn.cursor()
+
+
+    def create_user_table(self):
+
+        self.__cursor.execute(
+
+            """
+
+            CREATE TABLE IF NOT EXISTS user (
+                user_id INTEGER,
+                username TEXT,
+                password TEXT,
+                account_creation_date DATE,
+                preferred_piece_colour TEXT,
+                PRIMARY KEY (user_id)
+            );
+
+            """
+
+        )
+
+        self.__conn.commit()
+
+
+    def create_game_history_table(self):
+
+        self.__cursor.execute(
+
+            """
+
+            CREATE TABLE IF NOT EXISTS game_history (
+                historical_game_id INTEGER,
+                user_id INTEGER,
+                opponent TEXT,
+                game_date DATE,
+                winner TEXT,
+                PRIMARY KEY (historical_game_id)
+                FOREIGN KEY (user_id) REFERENCES user(user_id)
+            );
+
+            """
+
+        )
+
+        self.__conn.commit()
+
+
+    def create_AI_game_stats_table(self):
+            
+            self.__cursor.execute(
+    
+                """
+    
+                CREATE TABLE IF NOT EXISTS AI_game_stats (
+                    AI_game_stat_id INTEGER,
+                    user_id INTEGER,
+                    AI_difficulty TEXT,
+                    win_count INTEGER,
+                    loss_count INTEGER,
+                    PRIMARY KEY (AI_game_stat_id)
+                    FOREIGN KEY (user_id) REFERENCES user(user_id)
+                );
+    
+                """
+    
+            )
+    
+            self.__conn.commit()
+
+
+    def saved_games_table(self):
+
+        self.__cursor.execute(
+
+            """
+
+            CREATE TABLE IF NOT EXISTS saved_games (
+                saved_game_id INTEGER,
+                user_id INTEGER,
+                game_state_string TEXT,
+                opponent_name TEXT,
+                player2_starts BOOLEAN,
+                player1_num_pieces INTEGER,
+                player2_num_pieces INTEGER,
+                PRIMARY KEY (saved_game_id)
+                FOREIGN KEY (user_id) REFERENCES user(user_id)
+            );
+
+            """
+
+        )
+
+        self.__conn.commit()
+
+
+    def check_if_username_exists(self, username):
+        self.__cursor.execute("SELECT username FROM user WHERE username = ?;", (username,))
+        return self.__cursor.fetchone() != None
+    
+
+    def get_user_stats(self, username):
+        # requires an inner join
+
+        self.__cursor.execute(
+            """
+
+            SELECT AI_game_stats.AI_difficulty, AI_game_stats.win_count, AI_game_stats.loss_count FROM AI_game_stats
+            INNER JOIN user ON user.user_id = AI_game_stats.user_id
+            WHERE user.username = ?;
+
+            """, (username,)
+        )
+
+
+        self.__conn.commit()
+    
 
 
 

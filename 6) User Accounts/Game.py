@@ -65,7 +65,7 @@ class Game:
         return self.__game_over
 
     def get_winner(self):
-        if self.is_game_over() == True: # ! RECENT CHANGE MADE
+        if self.is_game_over(): # ! RECENT CHANGE MADE
             if self.__player1.get_piece_count() > self.__player2.get_piece_count():
                 return self.__player1
             

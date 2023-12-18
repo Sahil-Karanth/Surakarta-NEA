@@ -5,15 +5,26 @@ import time
 import sys
 from copy import deepcopy
 from multiprocessing import cpu_count
-from multiprocessing import Pool
+# from multiprocessing import Pool
+from multiprocessing.dummy import Pool
 
-# ! change formula name to UCT because I'm not using UCB1
-
+# need a better evaluation function because there are many more moves than just capturing pieces so need to differentiate between positions
+# with the same number of pieces
 
 # ! 10 SECOND NUM ITERATION TESTS --> done first move of a fresh game
-    # before changes --> 18 iterations, 18 rollouts
-    # 3 parallel rollouts --> 11 iterations, 33 rollouts
-    # 5 parallel rollouts --> 8 iterations, 40 rollouts
+#     multiprocess: 12 iterations, 36 rollouts
+#     single process: 25, 25
+#     muiltithread: 9 iterations, 27 rollouts
+
+
+# rollout timing tests
+    # 35.661699056625366 out of 45 seconds spent in rollouts
+    # 104.00432991981506 out of 120 seconds spent in rollouts
+    # 48.94266414642334 out of 60 seconds spent in rollouts
+
+# num iterations tests
+    # from base board
+        # 45 seconds: 103, 95, 108, 104
 
 
 
@@ -78,10 +89,10 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
-    TIME_FOR_MOVE = 10 # seconds
-    MOVES_PER_ROLLOUT = 200
-    EXPLORATION_CONSTANT = 2
-    NUM_PARALLEL_ROLLOUTS = 1
+    TIME_FOR_MOVE = 20 # seconds
+    MOVES_PER_ROLLOUT = 2000
+    EXPLORATION_CONSTANT = 1.414
+    NUM_PARALLEL_ROLLOUTS = 3
 
     def __init__(self, root_board):
         self.__root = Node(root_board, BoardConstants.player_2_colour, depth=0)
@@ -89,6 +100,8 @@ class GameTree:
         self.__current_node = self.__root
         self.__rollout_board = None # used with rollouts
         self.__num_rollouts = 0
+        self.__time_in_rollouts = 0 # seconds
+        self.__node_count = 1 # number of nodes in the tree
 
     def __get_current_player_colour(self, depth):
 
@@ -108,7 +121,7 @@ class GameTree:
 
         self.__current_node.add_child(child)
 
-        print("added child node with depth: ", child.get_depth())
+        # print("added child node with depth: ", child.get_depth())
 
 
     def UCB1(self, node):
@@ -179,6 +192,7 @@ class GameTree:
         legal_moves = self.__get_current_legal_moves()
 
         for move_obj in legal_moves:
+            self.__node_count += 1
             board = self.__current_node.get_board()
             board.move_piece(move_obj)
             self.add_node(board, move_obj)
@@ -200,6 +214,8 @@ class GameTree:
         return rollout_results_lst
     
     def rollout(self, rollout_board):
+        
+        start_time = time.time()
 
         # self.__rollout_board = deepcopy(self.__current_node.get_board())
         num_moves = 0
@@ -208,6 +224,7 @@ class GameTree:
 
             terminal_board_state = self.__check_terminal_board(rollout_board)
             if terminal_board_state:
+                print(f"rollout ended after {num_moves} moves")
                 return terminal_board_state
             
             rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
@@ -222,10 +239,15 @@ class GameTree:
 
             num_moves += 1
 
+        end_time = time.time()
+
+        self.__time_in_rollouts += end_time - start_time
+
+        print(f"rollout ended after {num_moves} moves")
         return self.__get_early_stop_rollout_state(rollout_board)
             
 
-    def backpropagate(self, results):
+    def backpropagate_multiple(self, results):
 
         result = sum([res.get() for res in results])
 
@@ -236,9 +258,20 @@ class GameTree:
             node.update_value(result)
             node = node.get_parent()
 
+
+    def backpropagate(self, result):
+
+        node = self.__current_node
+
+        while node != None:
+            node.increase_visited_count()
+            node.update_value(result)
+            node = node.get_parent()
+
+
     def run_MCTS_iteration(self):
 
-        print("NEW ITERATION")
+        # print("NEW ITERATION")
 
         # ! move rollout and backprop to after the if else as it does the same thing in both cases
 
@@ -246,19 +279,25 @@ class GameTree:
             self.select_new_current()
 
         if self.__current_node.get_visited_count() == 0:
-            results = self.multiprocess_rollouts()
-            self.backpropagate(results)
-            print("rollouts complete with result: ", [i.get() for i in results])
+            # results = self.multiprocess_rollouts()
+            result = self.rollout(deepcopy(self.__current_node.get_board()))
+            # print(f"end of rollouts and player 1 has {self.__current_node.get_board().get_piece_count(1)} pieces and player 2 has {self.__current_node.get_board().get_piece_count(2)} pieces")
+            # self.backpropagate(results)
+            self.backpropagate(result)
+            # print("rollouts complete with result: ", [i.get() for i in results])
 
         else:
             self.node_expansion()
             if len(self.__current_node.get_children()) != 0:
                 self.__current_node = self.__current_node.get_children()[0]
-            results = self.multiprocess_rollouts()
-            self.backpropagate(results)
-            print("rollout complete with result: ", [i.get() for i in results])
+            # results = self.multiprocess_rollouts()
+            result = self.rollout(deepcopy(self.__current_node.get_board()))
+            # self.backpropagate_multiple(results)
+            self.backpropagate(result)
+            # print("rollout complete with result: ", [i.get() for i in results])
 
-        self.__num_rollouts += len(results)
+        # self.__num_rollouts += len(results)
+        self.__num_rollouts += 1
 
         self.__current_node = self.__root
 
@@ -267,6 +306,7 @@ class GameTree:
 
         """returns the next move to make"""
 
+        avg_time_for_single_iteration = 0
         start_time = time.time()
 
         self.node_expansion()
@@ -277,13 +317,18 @@ class GameTree:
         # while True: # ! DELETE THIS WHILE LOOP CONDITION (FOR TESTING ONLY)
             self.run_MCTS_iteration()
             num_iterations += 1
+            avg_time_for_single_iteration += (time.time() - start_time) / num_iterations
+
 
         best_node = max(self.__root.get_children(), key=lambda node: node.get_value())
         
+        print(f"MCTS RAN FOR: {GameTree.TIME_FOR_MOVE} SECONDS")
         print(f"BEST NODE'S VALUE = {best_node.get_value()}")
         print("NUM MCTS ITERATIONS = ", num_iterations)
         print("NUM ROLLOUTS = ", self.__num_rollouts)
-        print("TREE DEPTH = ", self.__current_tree_depth)
+        print("MAX TREE DEPTH = ", self.__current_tree_depth)
+        print("TIME IN ROLLOUTS = ", self.__time_in_rollouts)
+        print("NUM NODES IN TREE = ", self.__node_count)
 
         print("ALL IMMEDIATE CHILDREN VALUES")
         print([(node.get_value(), node.get_move_obj().__str__()) for node in self.__root.get_children()])
