@@ -1,6 +1,6 @@
 class Move:
 
-    """Represents a move made which is pushed to the move history stack"""
+    """Represents a move in the game. Stores the start and end locations of the move, the type of move and the colour of the start and end locations. Start and end colours are stored as pieces at a location can change"""
 
     def __init__(self, start_loc, end_loc, move_type):
         self.__start_loc = start_loc

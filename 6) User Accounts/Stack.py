@@ -1,5 +1,7 @@
 class Stack:
 
+    """Implements a stack data structure"""
+
     def __init__(self):
         self.__stack = []
 

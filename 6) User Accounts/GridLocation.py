@@ -4,30 +4,32 @@ from BoardConstants import BoardConstants
 class GridLocation:
 
     """represnts information about a location on the board such as
-    the piece on it and its coordinates"""
+    the piece on it, its coordinates and which of the looped tracks it sits on"""
+
+    # outer loop cordinates have row (2 or 3) and column (2 or 3)
+    OUTER_LOOP_NUMBERS = (2, 3)
+
+    # inner loop cordinates have row (1 or 4) and column (1 or 4)
+    INNER_LOOP_NUMBERS = (1, 4)
 
     def __init__(self, cords):
         self.__cords = cords
-
-        # initial values set for a fresh board
-        self.__piece = self.__set_initial_piece()
         self.__loop = self.__set_loop()
+
+        # initial piece set for a fresh board
+        self.__piece = self.__set_initial_piece()
 
     def __set_loop(self):
 
-        """determines which loop a location sits on"""
+        """determines which loop(s) a location sits on"""
 
-        # outer loop cordinates have row (2 or 3) and column (2 or 3) etc
-        OUTER_LOOP_NUMBERS = (2, 3)
-        INNER_LOOP_NUMBERS = (1, 4)
-
-        if (self.__cords[0] in OUTER_LOOP_NUMBERS and self.__cords[1] in INNER_LOOP_NUMBERS) or (self.__cords[0] in INNER_LOOP_NUMBERS and self.__cords[1] in OUTER_LOOP_NUMBERS):
+        if (self.__cords[0] in self.OUTER_LOOP_NUMBERS and self.__cords[1] in self.INNER_LOOP_NUMBERS) or (self.__cords[0] in self.INNER_LOOP_NUMBERS and self.__cords[1] in self.OUTER_LOOP_NUMBERS):
             return "BOTH"
 
-        elif INNER_LOOP_NUMBERS[0] in self.__cords or INNER_LOOP_NUMBERS[1] in self.__cords:
+        elif self.INNER_LOOP_NUMBERS[0] in self.__cords or self.INNER_LOOP_NUMBERS[1] in self.__cords:
             return "INNER"
         
-        elif OUTER_LOOP_NUMBERS[0] in self.__cords or OUTER_LOOP_NUMBERS[1] in self.__cords:
+        elif self.OUTER_LOOP_NUMBERS[0] in self.__cords or self.OUTER_LOOP_NUMBERS[1] in self.__cords:
             return "OUTER"
         
         else:
@@ -35,7 +37,7 @@ class GridLocation:
 
     def __set_initial_piece(self):
 
-        """determines which piece should be placed on a location at the start"""
+        """determines which piece should be placed on a location at the start of the game"""
 
         if self.__cords[0] in BoardConstants.PLAYER_1_ROWS:
             return Piece(BoardConstants.player_1_colour)
