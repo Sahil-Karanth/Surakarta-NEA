@@ -52,6 +52,7 @@ class Graphical_UI(UI):
     DISP_BOARD_PIECE_RADIUS = 15
 
     AVAILABLE_PIECE_COLOURS = ["yellow", "green", "red", "lightblue", "orange", "black"]
+    AI_RESERVED_NAMES = ["Easy AI", "Medium AI", "Hard AI"]
 
 
     def __init__(self):
@@ -779,6 +780,9 @@ class Graphical_UI(UI):
 
                 if self.__db.check_if_username_exists(username):
                     sg.popup("Username already exists", title="Error Signing Up", keep_on_top=True)
+
+                elif username in self.AI_RESERVED_NAMES:
+                    sg.popup("Username is reserved and cannot be used", title="Error Signing Up", keep_on_top=True)
                     
                 else:
                     self.__db.add_user(username, password, values["piece_colour_choice"])
