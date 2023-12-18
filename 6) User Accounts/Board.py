@@ -20,7 +20,7 @@ class Board:
         if game_state_string:
             self.__load_game_state(game_state_string)
 
-        self.__edit_board_for_testing()
+        # self.__edit_board_for_testing()
 
         self.__player_lst = [player1, player2]
 
@@ -567,9 +567,11 @@ class Board:
             for loc in row:
                 if loc.get_colour() == player_colour:
                     loc_legal_moves = self.__get_loc_legal_moves(loc, self.__player_colour_map[player_colour])
-                    move = random.choice(loc_legal_moves)
+                    
+                    if len(loc_legal_moves) > 0:
+                        move = random.choice(loc_legal_moves)
 
-                    return move
+                        return move
 
 
     
