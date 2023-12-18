@@ -83,6 +83,9 @@ class Graphical_UI(UI):
         self.__ai_mode = False
         self.__ai_name = None
 
+        # needed to combat the python garbage collector
+        self.__disp_board_background_img = None
+
         self.__db = Database("database.db")
 
         self.capture_count_test = 0
@@ -440,7 +443,7 @@ class Graphical_UI(UI):
 
     def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
 
-        move_obj = self.__game.move_piece(start_loc, end_loc, move_type)
+        move_obj = self.__game.make_and_return_move(start_loc, end_loc, move_type)
         self.__update_board_display(move_obj.get_start_cords(), move_obj.get_end_cords(), move_obj.get_start_colour())
 
         self.__update_current_player_display()
@@ -547,6 +550,87 @@ class Graphical_UI(UI):
 
             self.__reset_game_variables()
             self.__setup_home_page()
+
+
+    def __handle_save_game(self):
+
+        if self.__current_page == "match_page" and self.__logged_in:
+
+            if self.__db.game_already_saved(self.__logged_in_username):
+                overwrite = sg.popup_yes_no("You already have a saved game. Do you want to overwrite it?", title="Game Already Saved", keep_on_top=True)
+            
+                if overwrite == "No":
+                    return
+
+            game_state_string = self.__game.get_game_state_string()
+            player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
+
+            self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2))
+            sg.popup("Game saved", title="Game Saved", keep_on_top=True)
+
+        else:
+            sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
+
+
+    def __handle_login(self, username, password):
+
+        if self.__db.login(username, password):
+            sg.popup("Logged in", title="Logged In", keep_on_top=True)
+
+            self.__logged_in_username = username
+            self.__logged_in = True
+
+            self.__preferred_piece_colour = self.__db.get_preferred_piece_colour(username)
+
+            BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
+
+            if self.__preferred_piece_colour == "green":
+                BoardConstants.set_player_colour("yellow", 2)
+
+            self.__login_window.close()
+
+        else:
+            sg.popup("Incorrect username or password", title="Error Logging In", keep_on_top=True)
+
+
+    def __handle_sign_up(self, username, password, preferred_piece_colour):
+        if self.__db.check_if_username_exists(username):
+            sg.popup("Username already exists", title="Error Signing Up", keep_on_top=True)
+
+        elif username in self.AI_RESERVED_NAMES:
+            sg.popup("Username is reserved and cannot be used", title="Error Signing Up", keep_on_top=True)
+            
+        else:
+            self.__db.add_user(username, password, preferred_piece_colour)
+            sg.popup("Account created", title="Account Created", keep_on_top=True)
+            self.__signup_window.close()
+
+    def __handle_showing_display_board(self):
+
+        self.__display_board_window = self.__make_display_board_window()
+        
+        image_path = 'blank_board.png'
+        image = Image.open(image_path)
+        image.thumbnail((400, 400))  # Resize the image to fit the canvas
+        self.__disp_board_background_img = ImageTk.PhotoImage(image)
+        
+        canvas = self.__display_board_window['-CANVAS-']
+        
+        canvas.TKCanvas.create_image(235, 215, image=self.__disp_board_background_img , anchor="center")
+        
+        self.__draw_pieces_on_disp_board(self.__display_board_window)
+
+
+    def __handle_restart_match(self):
+        if self.__current_page == "match_page":
+            player1_name = self.__game.get_player_name(1)
+            player2_name = self.__game.get_player_name(2)
+            self.__setup_match_page(player1_name, player2_name)
+
+        else:
+            sg.popup("You can only restart a match from the match page", title="Error Restarting Match", keep_on_top=True)
+        
+
   
     def __update_board_display(self, start_cords, end_cords, start_colour):
 
@@ -692,24 +776,13 @@ class Graphical_UI(UI):
                     
 
             elif event == "Save Game":
-                if self.__current_page == "match_page" and self.__logged_in:
-
-                    if self.__db.game_already_saved(self.__logged_in_username):
-                        overwrite = sg.popup_yes_no("You already have a saved game. Do you want to overwrite it?", title="Game Already Saved", keep_on_top=True)
-                    
-                        if overwrite == "No":
-                            continue
-
-                    game_state_string = self.__game.get_game_state_string()
-                    player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
-
-                    self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2))
-                    sg.popup("Game saved", title="Game Saved", keep_on_top=True)
-
-                else:
-                    sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
+                self.__handle_save_game()
 
             elif event == "load_game_button":
+                
+                
+
+                continue
                 if self.__logged_in:
 
                     loaded_game_data = self.__db.load_game_state(self.__logged_in_username)
@@ -751,43 +824,14 @@ class Graphical_UI(UI):
 
             elif event == "login_submit_button":
                 username, password = values["login_username_input"], values["login_password_input"]
-
-                if self.__db.login(username, password):
-                    sg.popup("Logged in", title="Logged In", keep_on_top=True)
-
-                    self.__logged_in_username = username
-                    self.__logged_in = True
-
-                    self.__preferred_piece_colour = self.__db.get_preferred_piece_colour(username)
-
-                    BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
-
-                    if self.__preferred_piece_colour == "green":
-                        BoardConstants.set_player_colour("yellow", 2)
-
-                    self.__login_window.close()
-
-                else:
-                    sg.popup("Incorrect username or password", title="Error Logging In", keep_on_top=True)
-
-
+                self.__handle_login(username, password)
 
             elif event == "signup_button":
                 self.__signup_window = self.__make_login_or_signup_window("signup")
 
             elif event == "signup_submit_button":
-                username, password = values["signup_username_input"], values["signup_password_input"]
-
-                if self.__db.check_if_username_exists(username):
-                    sg.popup("Username already exists", title="Error Signing Up", keep_on_top=True)
-
-                elif username in self.AI_RESERVED_NAMES:
-                    sg.popup("Username is reserved and cannot be used", title="Error Signing Up", keep_on_top=True)
-                    
-                else:
-                    self.__db.add_user(username, password, values["piece_colour_choice"])
-                    sg.popup("Account created", title="Account Created", keep_on_top=True)
-                    self.__signup_window.close()
+                username, password, preferred_piece_colour = values["signup_username_input"], values["signup_password_input"], values["piece_colour_choice"]
+                self.__handle_sign_up(username, password, preferred_piece_colour)
 
             elif event == "AI_play_button":
                 self.__toggle_play_inputs("AI_play_inputs")
@@ -796,7 +840,6 @@ class Graphical_UI(UI):
                 self.__toggle_play_inputs("local_play_inputs")
 
             elif event == "submit_local_play_button":
-
                 player_1_name = self.__get_player1_name()
                 self.__setup_match_page(player_1_name, values["player_2_local_input"])
 
@@ -810,22 +853,8 @@ class Graphical_UI(UI):
                 self.__setup_match_page(player_1_name, self.__ai_name, ai_level=difficulty_level)
 
             elif event == "show_board_button":
-                self.__display_board_window = self.__make_display_board_window()
-
                 disp_win_open = True
-                
-                # thie needs to be here directly and not in a method for pysimplegui to display the image
-                image_path = 'blank_board.png'
-                image = Image.open(image_path)
-                image.thumbnail((400, 400))  # Resize the image to fit the canvas
-                background_img = ImageTk.PhotoImage(image)
-                
-                canvas = self.__display_board_window['-CANVAS-']
-                
-                canvas.TKCanvas.create_image(235, 215, image=background_img , anchor="center")
-                
-                self.__draw_pieces_on_disp_board(self.__display_board_window)
-
+                self.__handle_showing_display_board()
 
             elif event == "undo_move_button":
                 self.__undo_move(self.__ai_mode)
@@ -841,14 +870,7 @@ class Graphical_UI(UI):
                 self.__setup_home_page()
 
             elif event == "Restart Match":
-                if self.__current_page == "match_page":
-                    player1_name = self.__game.get_player_name(1)
-                    player2_name = self.__game.get_player_name(2)
-                    self.__setup_match_page(player1_name, player2_name)
-
-                else:
-                    sg.popup("You can only restart a match from the match page", title="Error Restarting Match", keep_on_top=True)
-
+                self.__handle_restart_match()
 
             elif event == "submit_move_button":
                 self.__make_move_on_display(values, self.__ai_mode)
