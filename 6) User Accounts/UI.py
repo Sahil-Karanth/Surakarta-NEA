@@ -7,16 +7,12 @@ import textwrap
 import time
 from PIL import ImageTk, Image
 from Database import Database
-import datetime
-
+import sys
 
 # ! todo: change uses of class attributes to use self instead of class name
-# ! todo: add validation for all ways a user could make the game crash
-# ! todo: reject usernames or entered names that are the AI names
+# ! todo: add validation for all ways a user could make the game crash --> try except blocks
 # ! todo: make sure the user can't spawn a bunch of display board windows
 # ! todo: FIX LOOP UPDATES when a game is loaded
-# ! todo: reduce time complexity of getting next legal moves
-# ! todo: combine children list and next legal moves list into one list as I only need to generate the legal moves when I need to expand the node
 # ! todo: fix game loading so the number of pieces each player has is loaded correctly (also split the constant into two for each player)
 
 
@@ -39,7 +35,7 @@ class Graphical_UI(UI):
     FONT = "Helvetica"
     TITLE_FONT_SIZE = 60
     BUTTON_DIMENSIONS = (10, 1)
-    COLUMN_PAD = 20
+    COLUMN_PAD = 12
     LOGIN_PAD = 10
     PARAGRAPH_FONT_SIZE = 15
 
@@ -70,6 +66,8 @@ class Graphical_UI(UI):
         self.__main_window = None
         self.__display_board_window = None
         self.__login_window = None
+        self.__signup_window = None
+        self.__load_game_window = None
 
         self.__logged_in = False
         self.__logged_in_username = None 
@@ -342,6 +340,68 @@ class Graphical_UI(UI):
         display_board_window = self.__create_window("Display Board", layout, "center", size=(500, 400), maximise=False, modal=False, disable_close=False, keep_on_top=True)
 
         return display_board_window
+    
+
+        """
+                        if self.__logged_in:
+
+                            loaded_game_data = self.__db.load_game_state(self.__logged_in_username)
+
+                            if not loaded_game_data:
+                                sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
+                                continue
+
+                            game_state_string, player2_name, player2_starts, player1pieces, player2pieces = loaded_game_data
+
+                            if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
+                                self.__ai_mode = True
+                                self.__ai_name = player2_name
+
+
+                            if self.__ai_mode:
+                                ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
+                                self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
+
+                            elif game_state_string and player2_name:
+                                self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
+
+                            else:
+                                sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
+
+                        else:
+                            sg.popup("You must be logged in to load a game", title="Error Loading Game", keep_on_top=True)
+        """
+
+
+
+    def __make_load_game_window(self):
+
+        if not self.__logged_in:
+            sg.popup("You must be logged in to load a game", title="Error Loading Game", keep_on_top=True)
+            return
+        
+
+        saved_games = self.__db.load_saved_games(self.__logged_in_username)
+
+        saved_games_table_headers = ["Game ID", "Date", "Opponent"]
+        saved_games_rows = [[element for element in row] for row in saved_games]
+
+        saved_games_table = sg.Table(saved_games_rows, saved_games_table_headers, expand_x=True, background_color="light gray", text_color="black")
+
+            
+        layout = [
+            [sg.Text("Enter a Game ID to Load", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.Input("", pad=(200, self.COLUMN_PAD), key="loading_game_id_input", font=self.PARAGRAPH_FONT_PARAMS, justification="center")],
+            [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key="submit_loading_game_id_button")],
+            [saved_games_table]
+        ]
+
+        load_game_window = self.__create_window("Load Game", layout, "center", size=(500, 500), maximise=False, modal=True, disable_close=False, keep_on_top=True)
+
+        return load_game_window
+
+
+
 
     
     def __make_stats_window(self, username):
@@ -552,15 +612,43 @@ class Graphical_UI(UI):
             self.__setup_home_page()
 
 
+    def __handle_load_game(self, game_id):
+
+        loaded_game_data = self.__db.load_game_state(game_id)
+
+        if not loaded_game_data:
+            sg.popup("No saved games found", title="Error Loading Game", keep_on_top=True)
+            return
+
+        game_state_string, player2_name, player2_starts, player1pieces, player2pieces = loaded_game_data
+
+        if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
+            self.__ai_mode = True
+            self.__ai_name = player2_name
+
+
+        if self.__ai_mode:
+            ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
+            self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
+
+        elif game_state_string and player2_name:
+            self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
+
+        else:
+            sg.popup(f"No game with id {game_id} could be found", title="Error Loading Game", keep_on_top=True)
+
+        self.__load_game_window.close()
+
+
     def __handle_save_game(self):
 
         if self.__current_page == "match_page" and self.__logged_in:
 
-            if self.__db.game_already_saved(self.__logged_in_username):
-                overwrite = sg.popup_yes_no("You already have a saved game. Do you want to overwrite it?", title="Game Already Saved", keep_on_top=True)
+            # if self.__db.game_already_saved(self.__logged_in_username):
+            #     overwrite = sg.popup_yes_no("You already have a saved game. Do you want to overwrite it?", title="Game Already Saved", keep_on_top=True)
             
-                if overwrite == "No":
-                    return
+            #     if overwrite == "No":
+            #         return
 
             game_state_string = self.__game.get_game_state_string()
             player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
@@ -779,39 +867,11 @@ class Graphical_UI(UI):
                 self.__handle_save_game()
 
             elif event == "load_game_button":
-                
-                
+                self.__load_game_window = self.__make_load_game_window()
 
-                continue
-                if self.__logged_in:
-
-                    loaded_game_data = self.__db.load_game_state(self.__logged_in_username)
-
-                    if not loaded_game_data:
-                        sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
-                        continue
-
-                    game_state_string, player2_name, player2_starts, player1pieces, player2pieces = loaded_game_data
-
-                    if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
-                        self.__ai_mode = True
-                        self.__ai_name = player2_name
-
-
-                    if self.__ai_mode:
-                        ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
-                        self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
-
-                    elif game_state_string and player2_name:
-                        self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
-
-                    else:
-                        sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
-
-                else:
-                    sg.popup("You must be logged in to load a game", title="Error Loading Game", keep_on_top=True)
-
-
+            elif event == "submit_loading_game_id_button":
+                game_id = values["loading_game_id_input"]
+                self.__handle_load_game(game_id)
 
             elif event == "Show Login Status":
                 if self.__logged_in_username:
@@ -877,5 +937,9 @@ class Graphical_UI(UI):
 
                 if disp_win_open:
                     self.__draw_pieces_on_disp_board(self.__display_board_window)
+
+            else:
+                print(event)
+                print(values)
 
         self.__main_window.close()

@@ -1,7 +1,6 @@
 import sqlite3
 import hashlib
 import os
-import binascii
 from datetime import datetime
 
 class Database:
@@ -16,12 +15,13 @@ class Database:
 
             """
 
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE IF NOT EXISTS Users (
+                user_id INTEGER,
                 username TEXT,
                 password TEXT,
                 account_creation_date DATE,
                 preferred_piece_colour TEXT,
-                PRIMARY KEY (username)
+                PRIMARY KEY (user_id)
             );
 
             """
@@ -37,15 +37,17 @@ class Database:
 
             """
 
-            CREATE TABLE IF NOT EXISTS saved_games (
-                username TEXT,
+            CREATE TABLE IF NOT EXISTS SavedGames (
+                saved_game_id INTEGER,
+                user_id INTEGER,
+                date_saved DATE,
                 game_state_string TEXT,
                 opponent_name TEXT,
                 player2_starts BOOLEAN,
                 player1_num_pieces INTEGER,
                 player2_num_pieces INTEGER,
-                PRIMARY KEY (username)
-                FOREIGN KEY (username) REFERENCES users(username)
+                PRIMARY KEY (saved_game_id)
+                FOREIGN KEY (user_id) REFERENCES users(user_id)
             );
 
             """
@@ -62,14 +64,14 @@ class Database:
 
             """
 
-            CREATE TABLE IF NOT EXISTS game_history (
-                game_id INTEGER,
-                username TEXT,
+            CREATE TABLE IF NOT EXISTS GameHistory (
+                historical_game_id INTEGER,
+                user_id INTEGER,
                 opponent TEXT,
                 game_date DATE,
                 winner TEXT,
-                PRIMARY KEY (game_id)
-                FOREIGN KEY (username) REFERENCES users(username)
+                PRIMARY KEY (historical_game_id)
+                FOREIGN KEY (user_id) REFERENCES users(user_id)
             );
 
             """
@@ -85,13 +87,12 @@ class Database:
 
             """
 
-            CREATE TABLE IF NOT EXISTS AI_game_stats (
+            CREATE TABLE IF NOT EXISTS AIGameStats (
+                AI_game_stat_id INTEGER,
+                user_id INTEGER,
                 AI_difficulty TEXT,
-                username TEXT,
-                wins INTEGER,
-                losses INTEGER,
-                PRIMARY KEY (AI_difficulty, username)
-                FOREIGN KEY (username) REFERENCES users(username)
+                win_count INTEGER,
+                loss_count INTEGER
             );
 
             """
@@ -100,31 +101,26 @@ class Database:
 
         self.__conn.commit()
 
-    def create_friends_table(self):
 
-        self.__cursor.execute(
+    def __get_new_primary_key(self, table_name, primary_key_name):
+        self.__cursor.execute(f"SELECT MAX({primary_key_name}) FROM {table_name};")
 
-            """
+        old_key = self.__cursor.fetchone()[0]
 
-            CREATE TABLE IF NOT EXISTS friends (
-                username TEXT,
-                friend_username TEXT,
-                status TEXT,
-                PRIMARY KEY (username, friend_username)
-                FOREIGN KEY (username) REFERENCES users(username)
-                FOREIGN KEY (friend_username) REFERENCES users(username)
-            );
+        if old_key == None:
+            return 1
 
-            """
+        else:
+            return old_key + 1
+        
+    def __get_user_id_from_username(self, username):
 
-        )
-
-        self.__conn.commit()
-
+        self.__cursor.execute("SELECT user_id FROM Users WHERE username = ?;", (username,))
+        return self.__cursor.fetchone()[0]
 
 
     def check_if_username_exists(self, username):
-        self.__cursor.execute("SELECT username FROM users WHERE username = ?;", (username,))
+        self.__cursor.execute("SELECT username FROM Users WHERE username = ?;", (username,))
         return self.__cursor.fetchone() != None
     
     def add_user(self, username, password, preferred_piece_colour):
@@ -136,16 +132,21 @@ class Database:
 
         account_creation_date = datetime.now().strftime("%Y-%m-%d")
 
-        self.__cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?);", (username, hashed_password, account_creation_date, preferred_piece_colour))
+        user_id = self.__get_new_primary_key("Users", "user_id")
 
+        self.__cursor.execute("INSERT INTO Users VALUES (?, ?, ?, ?, ?);", (user_id, username, hashed_password, account_creation_date, preferred_piece_colour))
+
+        AI_game_stat_id = self.__get_new_primary_key("AIGameStats", "AI_game_stat_id")
         for difficulty in ["Easy AI", "Medium AI", "Hard AI"]:
-            self.__cursor.execute("INSERT INTO AI_game_stats VALUES (?, ?, ?, ?);", (difficulty, username, 0, 0))
+            self.__cursor.execute("INSERT INTO AIGameStats VALUES (?, ?, ?, ?, ?);", (AI_game_stat_id, user_id, difficulty, 0, 0))
+            AI_game_stat_id += 1
+
         
         self.__conn.commit()
 
     def login(self, username, password):
 
-        stored_password = self.__cursor.execute("SELECT password FROM users WHERE username = ?;", (username,)).fetchone()
+        stored_password = self.__cursor.execute("SELECT password FROM Users WHERE username = ?;", (username,)).fetchone()
 
         if stored_password == None:
             return False
@@ -161,20 +162,54 @@ class Database:
         return stored_password == hashed_password
 
     def get_preferred_piece_colour(self, username):
-        self.__cursor.execute("SELECT preferred_piece_colour FROM users WHERE username = ?;", (username,))
+        self.__cursor.execute("SELECT preferred_piece_colour FROM Users WHERE username = ?;", (username,))
         return self.__cursor.fetchone()[0]
         
     def get_user_stats(self, username):
-        self.__cursor.execute("SELECT ai_difficulty, wins, losses FROM AI_game_stats WHERE username = ?;", (username,))
+
+        self.__cursor.execute(
+                
+                """
+                
+                SELECT AI_difficulty, win_count, loss_count FROM AIGameStats
+                    INNER JOIN Users ON Users.user_id = AIGameStats.user_id
+                WHERE Users.username = ?;
+
+                """, (username,)
+        )
+
         return self.__cursor.fetchall()
     
     def __increment_win_stat(self, username, ai_difficulty):
-        self.__cursor.execute("UPDATE AI_game_stats SET wins = wins + 1 WHERE username = ? AND ai_difficulty = ?;", (username, ai_difficulty))
+
+        self.__cursor.execute(
+            """            
+
+            UPDATE AIGameStats
+            SET win_count = win_count + 1
+            INNER JOIN Users ON Users.user_id = AIGameStats.user_id
+            WHERE Users.username = ? AND AIGameStats.AI_difficulty = ?;
+
+            """, (username, ai_difficulty)
+        )
+
         self.__conn.commit()
 
+
     def __increment_loss_stat(self, username, ai_difficulty):
-        self.__cursor.execute("UPDATE AI_game_stats SET losses = losses + 1 WHERE username = ? AND ai_difficulty = ?;", (username, ai_difficulty))
-        self.__conn.commit()
+            
+            self.__cursor.execute(
+                """            
+    
+                UPDATE AIGameStats
+                SET loss_count = loss_count + 1
+                INNER JOIN Users ON Users.user_id = AIGameStats.user_id
+                WHERE Users.username = ? AND AIGameStats.AI_difficulty = ?;
+    
+                """, (username, ai_difficulty)
+            )
+    
+            self.__conn.commit()
     
     def update_user_stats(self, username, human_won, ai_difficulty):
 
@@ -184,200 +219,102 @@ class Database:
         else:
             self.__increment_loss_stat(username, ai_difficulty)
 
-        
-
-        self.__conn.commit()
 
     def delete_table(self, table_name):
         self.__cursor.execute(f"DROP TABLE {table_name};")
         self.__conn.commit()
 
-    def game_already_saved(self, username):
+    # def game_already_saved(self, username):
 
-        self.__cursor.execute("SELECT username FROM saved_games WHERE username = ?;", (username,))
-        return self.__cursor.fetchone() != None
+    #     self.__cursor.execute("SELECT username FROM saved_games WHERE username = ?;", (username,))
+    #     return self.__cursor.fetchone() != None
 
     def save_game_state(self, username, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces):
 
-        if self.game_already_saved(username):
-            self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
+        # if self.game_already_saved(username):
+        #     self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
         
+        date_today = datetime.now().strftime("%Y-%m-%d")
+        saved_game_id = self.__get_new_primary_key("SavedGames", "saved_game_id")
+        user_id = self.__get_user_id_from_username(username)
 
-        self.__cursor.execute("INSERT INTO saved_games VALUES (?, ?, ?, ?, ?, ?);", (username, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces))
+        self.__cursor.execute("INSERT INTO SavedGames VALUES (?, ?, ?, ?, ?, ?, ?, ?);", (saved_game_id, user_id, date_today, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces))
         self.__conn.commit()
 
-    def load_game_state(self, username):
+    def load_saved_games(self, username):
 
-        self.__cursor.execute("SELECT game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces FROM saved_games WHERE username = ?;", (username,))
+        self.__cursor.execute(
+            """
+
+            SELECT saved_game_id, date_saved, opponent_name FROM SavedGames
+                INNER JOIN Users ON Users.user_id = SavedGames.user_id
+            WHERE username = ?;
+
+            """, (username,)
+        )
+
+        return self.__cursor.fetchall()
+    
+
+    def load_game_state(self, saved_game_id):
+
+        self.__cursor.execute("SELECT game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces FROM SavedGames WHERE saved_game_id = ?;", (saved_game_id,))
         return self.__cursor.fetchone()
     
     def delete_saved_game(self, username):
-        self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
+
+        self.__cursor.execute(
+            """
+
+            DELETE FROM SavedGames
+                INNER JOIN Users ON Users.user_id = SavedGames.user_id
+            WHERE username = ?;
+
+            """, (username,)
+        )
+
         self.__conn.commit()
 
     def add_game_to_history(self, username, player2name, winner_name):
 
         game_date = datetime.now().strftime("%Y-%m-%d")
 
-        self.__cursor.execute("SELECT MAX(game_id) FROM game_history;")
+        historical_game_id = self.__get_new_primary_key("GameHistory", "historical_game_id")
+        user_id = self.__get_user_id_from_username(username)
 
-        max_id = self.__cursor.fetchone()[0]
-
-        if max_id == None:
-            game_id = 1
-
-        else:
-            game_id = max_id + 1
-
-        self.__cursor.execute("INSERT INTO game_history VALUES (?, ?, ?, ?, ?);", (game_id, username, player2name, game_date, winner_name))
+        self.__cursor.execute("INSERT INTO GameHistory VALUES (?, ?, ?, ?, ?);", (historical_game_id, user_id, player2name, game_date, winner_name))
         self.__conn.commit()
 
     def get_game_history(self, username):
 
-        self.__cursor.execute("SELECT game_id, game_date, opponent, winner FROM game_history WHERE username = ?;", (username,))
-        return self.__cursor.fetchall()
-
-
-class Database2:
-    
-    def __init__(self, db_name):
-        self.__conn = sqlite3.connect(db_name)
-        self.__cursor = self.__conn.cursor()
-
-
-    def create_user_table(self):
-
-        self.__cursor.execute(
-
-            """
-
-            CREATE TABLE IF NOT EXISTS user (
-                user_id INTEGER,
-                username TEXT,
-                password TEXT,
-                account_creation_date DATE,
-                preferred_piece_colour TEXT,
-                PRIMARY KEY (user_id)
-            );
-
-            """
-
-        )
-
-        self.__conn.commit()
-
-
-    def create_game_history_table(self):
-
-        self.__cursor.execute(
-
-            """
-
-            CREATE TABLE IF NOT EXISTS game_history (
-                historical_game_id INTEGER,
-                user_id INTEGER,
-                opponent TEXT,
-                game_date DATE,
-                winner TEXT,
-                PRIMARY KEY (historical_game_id)
-                FOREIGN KEY (user_id) REFERENCES user(user_id)
-            );
-
-            """
-
-        )
-
-        self.__conn.commit()
-
-
-    def create_AI_game_stats_table(self):
-            
-            self.__cursor.execute(
-    
-                """
-    
-                CREATE TABLE IF NOT EXISTS AI_game_stats (
-                    AI_game_stat_id INTEGER,
-                    user_id INTEGER,
-                    AI_difficulty TEXT,
-                    win_count INTEGER,
-                    loss_count INTEGER,
-                    PRIMARY KEY (AI_game_stat_id)
-                    FOREIGN KEY (user_id) REFERENCES user(user_id)
-                );
-    
-                """
-    
-            )
-    
-            self.__conn.commit()
-
-
-    def saved_games_table(self):
-
-        self.__cursor.execute(
-
-            """
-
-            CREATE TABLE IF NOT EXISTS saved_games (
-                saved_game_id INTEGER,
-                user_id INTEGER,
-                game_state_string TEXT,
-                opponent_name TEXT,
-                player2_starts BOOLEAN,
-                player1_num_pieces INTEGER,
-                player2_num_pieces INTEGER,
-                PRIMARY KEY (saved_game_id)
-                FOREIGN KEY (user_id) REFERENCES user(user_id)
-            );
-
-            """
-
-        )
-
-        self.__conn.commit()
-
-
-    def check_if_username_exists(self, username):
-        self.__cursor.execute("SELECT username FROM user WHERE username = ?;", (username,))
-        return self.__cursor.fetchone() != None
-    
-
-    def get_user_stats(self, username):
-        # requires an inner join
-
         self.__cursor.execute(
             """
 
-            SELECT AI_game_stats.AI_difficulty, AI_game_stats.win_count, AI_game_stats.loss_count FROM AI_game_stats
-            INNER JOIN user ON user.user_id = AI_game_stats.user_id
-            WHERE user.username = ?;
+            SELECT historical_game_id, game_date, opponent, winner FROM GameHistory
+                INNER JOIN Users ON Users.user_id = GameHistory.user_id
+            WHERE username = ?;
 
             """, (username,)
         )
 
+        return self.__cursor.fetchall()
 
-        self.__conn.commit()
+        # self.__cursor.execute("SELECT historical_game_id, game_date, opponent, winner FROM GameHistory WHERE username = ?;", (username,))
+        # return self.__cursor.fetchall()
+
+
     
 
 
 
 # db = Database("database.db")
 
-
-
-# print(db.login("test2", "amazing_pwd&"))
-
-# db.add_user("valid_user", "password", "white")
+# db.delete_table("users")
+# db.delete_table("game_history")
+# db.delete_table("AI_game_stats")
+# db.delete_table("saved_games")
 
 # db.create_users_table()
 # db.create_game_history_table()
 # db.create_AI_game_stats_table()
-# db.create_friends_table()
 # db.create_saved_games_table()
-
-# db.delete_table("users")
-# db.delete_table("game_history")
-# db.delete_table("AI_game_stats")
-# db.delete_table("friends")
-# db.delete_table("saved_games")
