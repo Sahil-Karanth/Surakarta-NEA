@@ -86,6 +86,7 @@ class Graphical_UI(UI):
         self.__disp_board_background_img = None
 
         self.__db = Database("database.db")
+        self.__saved_games = None
 
         self.capture_count_test = 0
 
@@ -349,22 +350,25 @@ class Graphical_UI(UI):
             return
         
 
-        saved_games = self.__db.load_saved_games(self.__logged_in_username)
+        self.__saved_games = self.__db.load_saved_games(self.__logged_in_username)
 
         saved_games_table_headers = ["Game ID", "Date", "Opponent"]
-        saved_games_rows = [[element for element in row] for row in saved_games]
+        saved_games_rows = [[element for element in row] for row in self.__saved_games]
 
-        saved_games_table = sg.Table(saved_games_rows, saved_games_table_headers, expand_x=True, background_color="light gray", text_color="black")
+        saved_games_table = sg.Table(saved_games_rows, saved_games_table_headers, expand_x=True, background_color="light gray", text_color="black", key="saved_games_table")
 
             
         layout = [
             [sg.Text("Enter a Game ID to Load", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Input("", pad=(200, self.COLUMN_PAD), key="loading_game_id_input", font=self.PARAGRAPH_FONT_PARAMS, justification="center")],
-            [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key="submit_loading_game_id_button")],
-            [saved_games_table]
+            [sg.Button("Load", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key="submit_loading_game_id_button")],
+            [saved_games_table],
+            [sg.Text("Enter a Game ID to Delete", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
+            [sg.Input("", pad=(200, self.COLUMN_PAD), key="deleting_game_id_input", font=self.PARAGRAPH_FONT_PARAMS, justification="center")],
+            [sg.Button("Delete", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key="submit_deleting_game_id_button")],
         ]
 
-        load_game_window = self.__create_window("Load Game", layout, "center", size=(500, 500), maximise=False, modal=True, disable_close=False, keep_on_top=True)
+        load_game_window = self.__create_window("Load Game", layout, "center", size=(500, 550), maximise=False, modal=True, disable_close=False, keep_on_top=True)
 
         return load_game_window
 
@@ -580,12 +584,25 @@ class Graphical_UI(UI):
             self.__setup_home_page()
 
 
+    def __handle_delete_saved_game(self, game_id):
+        print([i[0] for i in self.__saved_games])
+        if int(game_id) not in [i[0] for i in self.__saved_games]:
+            sg.popup(f"No game with that ID exists", title="Error Deleting Game", keep_on_top=True)
+            return
+
+        self.__db.delete_saved_game(game_id)
+        sg.popup("Game deleted", title="Game Deleted", keep_on_top=True)
+
+        # update the table
+        self.__load_game_window["saved_games_table"].update(values=self.__db.load_saved_games(self.__logged_in_username))
+
+
     def __handle_load_game(self, game_id):
 
         loaded_game_data = self.__db.load_game_state(game_id)
 
         if not loaded_game_data:
-            sg.popup("No saved games found", title="Error Loading Game", keep_on_top=True)
+            sg.popup(f"No game with that ID exists", title="Error Loading Game", keep_on_top=True)
             return
         
         self.__loaded_game_id = game_id
@@ -635,6 +652,8 @@ class Graphical_UI(UI):
 
 
     def __handle_login(self, username, password):
+
+        # ! MAKE BETTER
 
         if self.__db.login(username, password):
             sg.popup("Logged in", title="Logged In", keep_on_top=True)
@@ -846,6 +865,11 @@ class Graphical_UI(UI):
             elif event == "submit_loading_game_id_button":
                 game_id = values["loading_game_id_input"]
                 self.__handle_load_game(game_id)
+
+            elif event == "submit_deleting_game_id_button":
+                game_id = values["deleting_game_id_input"]
+                self.__handle_delete_saved_game(game_id)
+
 
             elif event == "Show Login Status":
                 if self.__logged_in_username:
