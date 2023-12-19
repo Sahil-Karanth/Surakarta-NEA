@@ -261,16 +261,16 @@ class Database:
         self.__cursor.execute("SELECT game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces FROM SavedGames WHERE saved_game_id = ?;", (saved_game_id,))
         return self.__cursor.fetchone()
     
-    def delete_saved_game(self, username):
+    def delete_saved_game(self, saved_game_id):
 
         self.__cursor.execute(
             """
 
             DELETE FROM SavedGames
-                INNER JOIN Users ON Users.user_id = SavedGames.user_id
-            WHERE username = ?;
+            WHERE saved_game_id = ?;
 
-            """, (username,)
+            """, (saved_game_id,)
+
         )
 
         self.__conn.commit()

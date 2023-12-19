@@ -341,39 +341,6 @@ class Graphical_UI(UI):
 
         return display_board_window
     
-
-        """
-                        if self.__logged_in:
-
-                            loaded_game_data = self.__db.load_game_state(self.__logged_in_username)
-
-                            if not loaded_game_data:
-                                sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
-                                continue
-
-                            game_state_string, player2_name, player2_starts, player1pieces, player2pieces = loaded_game_data
-
-                            if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
-                                self.__ai_mode = True
-                                self.__ai_name = player2_name
-
-
-                            if self.__ai_mode:
-                                ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
-                                self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
-
-                            elif game_state_string and player2_name:
-                                self.__setup_match_page(self.__logged_in_username, player2_name, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
-
-                            else:
-                                sg.popup("No saved game found", title="Error Loading Game", keep_on_top=True)
-
-                        else:
-                            sg.popup("You must be logged in to load a game", title="Error Loading Game", keep_on_top=True)
-        """
-
-
-
     def __make_load_game_window(self):
 
         if not self.__logged_in:
@@ -619,6 +586,8 @@ class Graphical_UI(UI):
         if not loaded_game_data:
             sg.popup("No saved games found", title="Error Loading Game", keep_on_top=True)
             return
+        
+        self.__loaded_game_id = game_id
 
         game_state_string, player2_name, player2_starts, player1pieces, player2pieces = loaded_game_data
 
@@ -649,6 +618,10 @@ class Graphical_UI(UI):
             
             #     if overwrite == "No":
             #         return
+
+
+            if self.__game_is_loaded:
+                self.__db.delete_saved_game(self.__loaded_game_id)
 
             game_state_string = self.__game.get_game_state_string()
             player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
