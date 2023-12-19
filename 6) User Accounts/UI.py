@@ -13,6 +13,7 @@ import sys
 # ! todo: add validation for all ways a user could make the game crash --> try except blocks
 # ! todo: make sure the user can't spawn a bunch of display board windows
 # ! todo: FIX LOOP UPDATES when a game is loaded
+    # error found to be that when a loc is None it is not registering as emtpy by is_empty
 # ! todo: fix game loading so the number of pieces each player has is loaded correctly (also split the constant into two for each player)
 
 

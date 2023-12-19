@@ -97,4 +97,7 @@ class CircularList:
         ind_lst = self.__get_all_occurence_indexes(self.__lst, cords)
 
         for i in ind_lst:
-            self.__lst[i].set_piece(Piece(piece_colour))
+            if piece_colour == None:
+                self.__lst[i].set_piece(None)
+            else:
+                self.__lst[i].set_piece(Piece(piece_colour))
