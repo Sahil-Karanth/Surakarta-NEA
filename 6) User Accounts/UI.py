@@ -9,12 +9,13 @@ from PIL import ImageTk, Image
 from Database import Database
 import sys
 
+
 # ! todo: change uses of class attributes to use self instead of class name
 # ! todo: add validation for all ways a user could make the game crash --> try except blocks
 # ! todo: make sure the user can't spawn a bunch of display board windows
-# ! todo: FIX LOOP UPDATES when a game is loaded
-    # error found to be that when a loc is None it is not registering as emtpy by is_empty
-# ! todo: fix game loading so the number of pieces each player has is loaded correctly (also split the constant into two for each player)
+# ! todo: make it so you can change your piece colour
+# ! todo: make sure changing piece colour works when loading a game with the old piece colour
+# ! todo: add titles to stats tables
 
 
 class UI:
@@ -69,6 +70,7 @@ class Graphical_UI(UI):
         self.__login_window = None
         self.__signup_window = None
         self.__load_game_window = None
+        self.__change_piece_colour_window = None
 
         self.__logged_in = False
         self.__logged_in_username = None 
@@ -175,11 +177,23 @@ class Graphical_UI(UI):
         """Creates the menu which is displayed on every page"""
 
         menu_layout = [
-            ["Utilities", ["Home", "Show Login Status", "Quit"]],
+            ["Utilities", ["Home", "Show Login Status", "Logout", "Change Piece Colour", "Quit"]],
             ["Match Options", ["Restart Match", "Save Game"]]
         ]
 
         return sg.Menu(menu_layout, pad=(0, self.COLUMN_PAD))
+    
+    def __make_change_piece_colour_window(self):
+
+        """Creates the change piece colour window"""
+
+        layout = [
+            [sg.Text("Preferred Piece Colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Combo(self.AVAILABLE_PIECE_COLOURS, default_value=self.__preferred_piece_colour, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")],
+            [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=(self.FONT, 15), size=self.BUTTON_DIMENSIONS, key="submit_change_piece_colour_button")]
+        ]
+
+        return self.__create_window("Change Piece Colour", layout, "center", modal=True, keep_on_top=True, size=(300, 150), maximise=False, disable_close=False)
         
 
     def __make_login_or_signup_window(self, login_or_signup):
@@ -487,6 +501,10 @@ class Graphical_UI(UI):
 
         """updates the onscreen board and game object board with the move made"""
 
+        if len(self.__highlighted_board_positions) != 2:
+            sg.popup("Please select a start and end location", keep_on_top=True)
+            return
+
         start_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[0])
         end_cords = self.__str_key_to_cords_tuple(self.__highlighted_board_positions[1])
 
@@ -515,6 +533,8 @@ class Graphical_UI(UI):
                 self.capture_count_test += 1
                 self.__update_display_number_captured_pieces()
                 self.__end_if_game_over()
+                self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
+                self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
                 return
             
         else:
@@ -584,6 +604,24 @@ class Graphical_UI(UI):
             self.__setup_home_page()
 
 
+    def __handle_change_piece_colour(self, new_piece_colour):
+            
+            """changes the piece colour of the player"""
+        
+            self.__preferred_piece_colour = new_piece_colour
+            BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
+    
+            if self.__preferred_piece_colour == "green":
+                BoardConstants.set_player_colour("yellow", 2)
+
+            elif self.__preferred_piece_colour == "yellow":
+                BoardConstants.set_player_colour("green", 2)
+    
+            self.__db.update_preferred_piece_colour(self.__logged_in_username, self.__preferred_piece_colour)
+
+            self.__change_piece_colour_window.close()
+    
+
     def __handle_delete_saved_game(self, game_id):
         print([i[0] for i in self.__saved_games])
         if int(game_id) not in [i[0] for i in self.__saved_games]:
@@ -625,6 +663,22 @@ class Graphical_UI(UI):
             sg.popup(f"No game with id {game_id} could be found", title="Error Loading Game", keep_on_top=True)
 
         self.__load_game_window.close()
+
+    def __handle_logout(self):
+
+        if self.__logged_in:
+            self.__logged_in = False
+            self.__logged_in_username = None
+            self.__preferred_piece_colour = None
+            BoardConstants.set_player_colour("yellow", 1)
+            BoardConstants.set_player_colour("green", 2)
+            sg.popup("Logged out", title="Logged Out", keep_on_top=True)
+
+        elif self.__current_page != "home_page":
+            sg.popup("You can only logout from the home page", title="Error Logging Out", keep_on_top=True)
+
+        else:
+            sg.popup("You are not logged in", title="Error Logging Out", keep_on_top=True)
 
 
     def __handle_save_game(self):
@@ -871,11 +925,26 @@ class Graphical_UI(UI):
                 self.__handle_delete_saved_game(game_id)
 
 
+            elif event == "Change Piece Colour":
+                if self.__logged_in:
+                    self.__change_piece_colour_window = self.__make_change_piece_colour_window()
+
+                else:
+                    sg.popup("You must be logged in to change your piece colour", title="Error Changing Piece Colour", keep_on_top=True)
+
+            elif event == "submit_change_piece_colour_button":
+                new_colour = values["piece_colour_choice"]
+                self.__handle_change_piece_colour(new_colour)
+
+
             elif event == "Show Login Status":
                 if self.__logged_in_username:
                     sg.popup(f"Logged in as '{self.__logged_in_username}'", title="Logged In", keep_on_top=True)
                 else:
                     sg.popup("Not logged in", title="Not Logged In", keep_on_top=True)
+
+            elif event == "Logout":
+                self.__handle_logout()
 
             elif event == "login_button":
                 self.__login_window = self.__make_login_or_signup_window("login")
@@ -935,9 +1004,5 @@ class Graphical_UI(UI):
 
                 if disp_win_open:
                     self.__draw_pieces_on_disp_board(self.__display_board_window)
-
-            else:
-                print(event)
-                print(values)
 
         self.__main_window.close()

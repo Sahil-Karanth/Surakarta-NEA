@@ -303,11 +303,28 @@ class Database:
         # return self.__cursor.fetchall()
 
 
+    def update_preferred_piece_colour(self, username, new_colour):
+
+        self.__cursor.execute(
+            """
+
+            UPDATE Users
+            SET preferred_piece_colour = ?
+            WHERE username = ?;
+
+            """, (new_colour, username)
+        )
+
     
 
 
 
 # db = Database("database.db")
+
+# db.save_game_state("f", "$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$green$.$.$.$.$.$.$.$.$orange$.$.$", "testopp1", False, 1, 1)
+
+
+
 
 # db.delete_table("users")
 # db.delete_table("game_history")
