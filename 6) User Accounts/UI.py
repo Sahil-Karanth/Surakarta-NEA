@@ -7,14 +7,6 @@ import textwrap
 import time
 from PIL import ImageTk, Image
 from Database import Database
-import sys
-
-
-# ! todo: change uses of class attributes to use self instead of class name
-# ! todo: add validation for all ways a user could make the game crash --> try except blocks
-# ! todo: make sure the user can't spawn a bunch of display board windows
-# ! todo: add titles to stats tables
-
 
 class UI:
 
@@ -406,7 +398,9 @@ class Graphical_UI(UI):
         game_history_table = sg.Table(game_history_rows, game_history_table_headers, expand_x=True, background_color="light gray", text_color="black")
 
         layout = [
+            [sg.Text("AI Match Stats", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [ai_stats_table],
+            [sg.Text("Game History", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [game_history_table],
         ]
 
