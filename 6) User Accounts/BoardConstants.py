@@ -3,6 +3,9 @@ class BoardConstants: # ! rename to BoardValues
     player_1_colour = "yellow"
     player_2_colour = "green"
 
+    DEFAULT_PLAYER_1_COLOUR = "yellow"
+    DEFAULT_PLAYER_2_COLOUR = "green"
+
     MIN_ROW_INDEX = 0
     MAX_ROW_INDEX = 5
     PLAYER_1_ROWS = (0, 1)
