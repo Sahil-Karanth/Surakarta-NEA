@@ -46,6 +46,7 @@ class Database:
                 player2_starts BOOLEAN,
                 player1_num_pieces INTEGER,
                 player2_num_pieces INTEGER,
+                player1_colour TEXT,
                 PRIMARY KEY (saved_game_id)
                 FOREIGN KEY (user_id) REFERENCES users(user_id)
             );
@@ -229,7 +230,7 @@ class Database:
     #     self.__cursor.execute("SELECT username FROM saved_games WHERE username = ?;", (username,))
     #     return self.__cursor.fetchone() != None
 
-    def save_game_state(self, username, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces):
+    def save_game_state(self, username, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces, player1_colour):
 
         # if self.game_already_saved(username):
         #     self.__cursor.execute("DELETE FROM saved_games WHERE username = ?;", (username,))
@@ -238,7 +239,7 @@ class Database:
         saved_game_id = self.__get_new_primary_key("SavedGames", "saved_game_id")
         user_id = self.__get_user_id_from_username(username)
 
-        self.__cursor.execute("INSERT INTO SavedGames VALUES (?, ?, ?, ?, ?, ?, ?, ?);", (saved_game_id, user_id, date_today, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces))
+        self.__cursor.execute("INSERT INTO SavedGames VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (saved_game_id, user_id, date_today, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces, player1_colour))
         self.__conn.commit()
 
     def load_saved_games(self, username):
@@ -258,7 +259,7 @@ class Database:
 
     def load_game_state(self, saved_game_id):
 
-        self.__cursor.execute("SELECT game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces FROM SavedGames WHERE saved_game_id = ?;", (saved_game_id,))
+        self.__cursor.execute("SELECT game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces, player1_colour FROM SavedGames WHERE saved_game_id = ?;", (saved_game_id,))
         return self.__cursor.fetchone()
     
     def delete_saved_game(self, saved_game_id):
@@ -315,11 +316,12 @@ class Database:
             """, (new_colour, username)
         )
 
+        self.__conn.commit()
     
 
 
 
-# db = Database("database.db")
+db = Database("database.db")
 
 # db.save_game_state("f", "$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$green$.$.$.$.$.$.$.$.$orange$.$.$", "testopp1", False, 1, 1)
 
@@ -329,7 +331,7 @@ class Database:
 # db.delete_table("users")
 # db.delete_table("game_history")
 # db.delete_table("AI_game_stats")
-# db.delete_table("saved_games")
+# db.delete_table("SavedGames")
 
 # db.create_users_table()
 # db.create_game_history_table()

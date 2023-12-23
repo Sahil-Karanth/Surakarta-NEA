@@ -609,13 +609,16 @@ class Graphical_UI(UI):
             """changes the piece colour of the player"""
         
             self.__preferred_piece_colour = new_piece_colour
-            BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
-    
-            if self.__preferred_piece_colour == "green":
-                BoardConstants.set_player_colour("yellow", 2)
 
-            elif self.__preferred_piece_colour == "yellow":
-                BoardConstants.set_player_colour("green", 2)
+            self.__update_preferred_piece_colour(new_piece_colour)
+
+            # BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
+    
+            # if self.__preferred_piece_colour == "green":
+            #     BoardConstants.set_player_colour("yellow", 2)
+
+            # elif self.__preferred_piece_colour == "yellow":
+            #     BoardConstants.set_player_colour("green", 2)
     
             self.__db.update_preferred_piece_colour(self.__logged_in_username, self.__preferred_piece_colour)
 
@@ -645,7 +648,13 @@ class Graphical_UI(UI):
         
         self.__loaded_game_id = game_id
 
-        game_state_string, player2_name, player2_starts, player1pieces, player2pieces = loaded_game_data
+        game_state_string, player2_name, player2_starts, player1pieces, player2pieces, player1_colour = loaded_game_data
+
+        # BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
+
+        self.__preferred_piece_colour = player1_colour
+        self.__update_preferred_piece_colour(self.__preferred_piece_colour)
+    
 
         if player2_name in self.__ai_name_to_level_num_map.values(): # if the player 2 name is an AI name
             self.__ai_mode = True
@@ -670,8 +679,9 @@ class Graphical_UI(UI):
             self.__logged_in = False
             self.__logged_in_username = None
             self.__preferred_piece_colour = None
-            BoardConstants.set_player_colour("yellow", 1)
-            BoardConstants.set_player_colour("green", 2)
+            # BoardConstants.set_player_colour("yellow", 1)
+            # BoardConstants.set_player_colour("green", 2)
+            self.__update_preferred_piece_colour("yellow")
             sg.popup("Logged out", title="Logged Out", keep_on_top=True)
 
         elif self.__current_page != "home_page":
@@ -698,11 +708,18 @@ class Graphical_UI(UI):
             game_state_string = self.__game.get_game_state_string()
             player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
 
-            self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2))
+            self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2), self.__preferred_piece_colour)
             sg.popup("Game saved", title="Game Saved", keep_on_top=True)
 
         else:
             sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
+
+    def __update_preferred_piece_colour(self, new_colour):
+
+        BoardConstants.set_player_colour(new_colour, 1)
+
+        if new_colour == "green":
+            BoardConstants.set_player_colour("yellow", 2)
 
 
     def __handle_login(self, username, password):
@@ -715,12 +732,9 @@ class Graphical_UI(UI):
             self.__logged_in_username = username
             self.__logged_in = True
 
+
             self.__preferred_piece_colour = self.__db.get_preferred_piece_colour(username)
-
-            BoardConstants.set_player_colour(self.__preferred_piece_colour, 1)
-
-            if self.__preferred_piece_colour == "green":
-                BoardConstants.set_player_colour("yellow", 2)
+            self.__update_preferred_piece_colour(self.__preferred_piece_colour)
 
             self.__login_window.close()
 
