@@ -88,7 +88,7 @@ class Graphical_UI(UI):
         # login status variables
         self.__logged_in = False
         self.__logged_in_username = None 
-        self.__preferred_piece_colour = None
+        # self.__preferred_piece_colour = None
 
         # game variables
         self.__game = None
@@ -119,8 +119,6 @@ class Graphical_UI(UI):
 
         self.__current_page = None
         self.__setup_home_page()
-
-
 
     def __create_window(self, title, layout, justification, maximise=True, size=(700, 700), modal=False, disable_close=False, keep_on_top=False):
 
@@ -198,7 +196,7 @@ class Graphical_UI(UI):
 
         layout = [
             [sg.Text("Preferred Piece Colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
-            [sg.Combo(self.AVAILABLE_PIECE_COLOURS, default_value=self.__preferred_piece_colour, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")],
+            [sg.Combo(self.AVAILABLE_PIECE_COLOURS, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")],
             [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=self.SUBMIT_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_change_piece_colour_button")]
         ]
 
@@ -688,8 +686,7 @@ class Graphical_UI(UI):
             self.__update_preferred_piece_colour(new_piece_colour)
     
             # update the new piece colour in the database
-            self.__db.update_preferred_piece_colour(self.__logged_in_username, self.__preferred_piece_colour)
-
+            self.__db.update_preferred_piece_colour(self.__logged_in_username, new_piece_colour)
             self.__change_piece_colour_window.close()
     
     def __handle_delete_saved_game(self, game_id):
@@ -734,8 +731,12 @@ class Graphical_UI(UI):
         # unpack the loaded game data
         game_state_string, player2_name, player2_starts, player1pieces, player2pieces, player1_colour = loaded_game_data
 
+        print(player1_colour)
+
         # update the player 1 colour in the BoardConstants class to be the colour that the user had when they saved the game
         self.__update_preferred_piece_colour(player1_colour)
+
+        print(BoardConstants.player_1_colour)
 
         # if the player 2 name is an AI name, the game is an AI game
         if player2_name in self.__ai_name_to_level_num_map.values():
@@ -791,7 +792,7 @@ class Graphical_UI(UI):
             player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
 
             # save the game to the database
-            self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2), self.__preferred_piece_colour)
+            self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2), BoardConstants.player_1_colour)
             sg.popup("Game saved", title="Game Saved", keep_on_top=True)
 
         else:
