@@ -13,8 +13,6 @@ import sys
 # ! todo: change uses of class attributes to use self instead of class name
 # ! todo: add validation for all ways a user could make the game crash --> try except blocks
 # ! todo: make sure the user can't spawn a bunch of display board windows
-# ! todo: make it so you can change your piece colour
-# ! todo: make sure changing piece colour works when loading a game with the old piece colour
 # ! todo: add titles to stats tables
 
 
@@ -348,6 +346,9 @@ class Graphical_UI(UI):
 
 
     def __make_display_board_window(self):
+
+        if self.__display_board_window: # can't just make it a modal window because then the user can't interact with the main window
+            self.__display_board_window.close()
 
         layout = [
             [sg.Canvas(size=(500, 400), key='-CANVAS-')],
