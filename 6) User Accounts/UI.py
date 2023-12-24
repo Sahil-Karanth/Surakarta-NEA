@@ -8,8 +8,28 @@ import time
 from PIL import ImageTk, Image
 from Database import Database
 
-# todo: make sure it works wihtout self.__preffered_piece_colour
-# todo: replace methods that take in instance variables to just use them by default
+# todo
+    # make sure it works wihtout self.__preferred_piece_colour
+    # replace methods that take in instance variables to just use them by default
+    # make some of the strings like "move" constants
+    # make method names better
+    # rename board_loop to looped_track
+
+
+# ! to add to coursework document:
+    # format of the gaame state string
+    # Board has players only for MCTS all other player things are handled by Game (this is why I pass in player objects to Board methods)
+        # explain that I'm doing it so you don't have to make a Game during MCTS
+        # try and enforce this so it can only be used from the GameTree class
+    # explain how a capture is illegal if you go all the way round and end up back at the start
+    # add stop early conditions for illegal capture to pseudocode
+    # clearly state the difference between looped_track and a board loop and the terminology I will use
+
+
+# ? to ask:
+    # in the Board class' get_capture_with method is the repeated code okay
+        # slight difference which might make the method code long/confusing if I try and make it more general
+
 
 class UI:
 

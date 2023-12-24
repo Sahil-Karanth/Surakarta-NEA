@@ -321,16 +321,16 @@ class Database:
 
 
 
-db = Database("database.db")
+# db = Database("database.db")
 
 # db.save_game_state("f", "$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$green$.$.$.$.$.$.$.$.$orange$.$.$", "testopp1", False, 1, 1)
 
 
 
 
-# db.delete_table("users")
-# db.delete_table("game_history")
-# db.delete_table("AI_game_stats")
+# db.delete_table("Users")
+# db.delete_table("GameHistory")
+# db.delete_table("AIGameStats")
 # db.delete_table("SavedGames")
 
 # db.create_users_table()
