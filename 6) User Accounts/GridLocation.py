@@ -28,13 +28,13 @@ class GridLocation:
         """determines which loop(s) a location sits on"""
 
         if (self.__cords[0] in self.OUTER_LOOP_NUMBERS and self.__cords[1] in self.INNER_LOOP_NUMBERS) or (self.__cords[0] in self.INNER_LOOP_NUMBERS and self.__cords[1] in self.OUTER_LOOP_NUMBERS):
-            return "BOTH"
+            return MultiClassBoardAttributes.BOTH_LOOP_STRING
 
         elif self.INNER_LOOP_NUMBERS[0] in self.__cords or self.INNER_LOOP_NUMBERS[1] in self.__cords:
-            return "INNER"
+            return MultiClassBoardAttributes.INNER_LOOP_STRING
         
         elif self.OUTER_LOOP_NUMBERS[0] in self.__cords or self.OUTER_LOOP_NUMBERS[1] in self.__cords:
-            return "OUTER"
+            return MultiClassBoardAttributes.OUTER_LOOP_STRING
         
         else:
             return None

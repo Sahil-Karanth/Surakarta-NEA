@@ -604,10 +604,10 @@ class Graphical_UI(UI):
 
         # getting the move type from the radio buttons
         if values["move_type_radio_move"]:
-            move_type = "move"
+            move_type = MultiClassBoardAttributes.NORMAL_MOVE_TYPE
         
         elif values["move_type_radio_capture"]:
-            move_type = "capture"
+            move_type = MultiClassBoardAttributes.CAPTURE_MOVE_TYPE
 
         else:
             sg.popup("Please select a move type", keep_on_top=True)
@@ -625,7 +625,7 @@ class Graphical_UI(UI):
             # make move on board and GUI
             self.__update_game_and_UI_post_move(start_loc, end_loc, move_type)
 
-            if move_type == "capture":
+            if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_display_number_captured_pieces() # update the number of pieces captured by each player
                 self.__end_if_game_over() # check if human has won --> only need to check if the game is over after a capture move
 
@@ -648,7 +648,7 @@ class Graphical_UI(UI):
             # make the AI's move on the board and GUI
             self.__update_game_and_UI_post_move(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
 
-            if move.get_move_type() == "capture":
+            if move.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_display_number_captured_pieces()
                 self.__end_if_game_over() # check if AI has won
 
@@ -1023,7 +1023,7 @@ class Graphical_UI(UI):
         self.__update_board_display(move_obj.get_end_cords(), move_obj.get_start_cords(), move_obj.get_start_colour())
 
         # if the last move was a capture move, restore the piece that was captured to the board GUI
-        if move_obj.get_move_type() == "capture":            
+        if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:            
             cords = self.__tuple_key_cords_str(move_obj.get_end_cords())
             self.__main_window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
 

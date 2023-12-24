@@ -10,8 +10,7 @@ class Board:
 
     """Represents the board for the game. The main board is represented by a 2D array of GridLocation objects. The board also contains two CircularList objects
     representing the inner and outer loops of the board."""
-
-
+    
     NUM_BOARD_LOOPS = 4
     SAVED_GAME_STATE_SEPARATOR = "$"
     SAVED_GAME_STATE_EMPTY_CHAR = "."
@@ -52,9 +51,9 @@ class Board:
 
         # maps a text representation of a loop to a tuple containing the BoardLoop objects for the inner and outer loops
         self.loop_text_to_tuple_map = {
-            "INNER": (self.__inner_loop, None),
-            "OUTER": (None, self.__outer_loop),
-            "BOTH": (self.__inner_loop, self.__outer_loop),
+            MultiClassBoardAttributes.INNER_LOOP_STRING: (self.__inner_loop, None),
+            MultiClassBoardAttributes.OUTER_LOOP_STRING: (None, self.__outer_loop),
+            MultiClassBoardAttributes.BOTH_LOOP_STRING: (self.__inner_loop, self.__outer_loop),
             None: (None, None)
         }
 
@@ -368,10 +367,10 @@ class Board:
         """Returns True if a move from start_loc to end_loc is legal for the player provided as an argument otherwise returns False.
         This public method is used by the Game class to check if a move is legal."""
 
-        if move_type == "move":
+        if move_type == MultiClassBoardAttributes.NORMAL_MOVE_TYPE:
             return self.__check_normal_legal(start_loc, end_loc, player)
         
-        elif move_type == "capture":
+        elif move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             return self.__check_capture_legal(start_loc, end_loc, player)
 
         return False
@@ -463,7 +462,7 @@ class Board:
             
             # return a Move object representing the capture if a valid capture is found
             if self.__is_valid_capture(start_location, curr_loc, loop_count):
-                return Move(start_location, curr_loc, "capture")
+                return Move(start_location, curr_loc, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE)
 
             # stop iteraating if a blocking condition occurs that means a capture cannot be made in the current direction
             if self.__check_direction_invalid(start_location, curr_loc, loop_count):
@@ -501,7 +500,7 @@ class Board:
         """Moves the piece at start_loc to end_loc. If undo is True, the move is made in reverse."""
 
         # decrement the piece count of the player that has had a piece captured
-        if move_obj.get_move_type() == "capture":
+        if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             self.__update_piece_counts(move_obj.get_end_colour())
 
 
@@ -523,7 +522,7 @@ class Board:
         self.__inner_loop.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
         self.__outer_loop.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
 
-        if move_obj.get_move_type() == "capture":
+        if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             if undo:
                 self.__inner_loop.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
                 self.__outer_loop.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
@@ -545,7 +544,7 @@ class Board:
 
         """Undoes the move specified by move_obj by making the move in reverse"""
 
-        if move_obj.get_move_type() == "capture":
+        if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             
             # update the board loops to reflect the undo move
             self.__update_loops_after_move(move_obj, undo=True)
@@ -554,7 +553,7 @@ class Board:
             self.__spawn_piece(move_obj.get_start_colour(), move_obj.get_start_loc())
             self.__spawn_piece(move_obj.get_end_colour(), move_obj.get_end_loc())
         
-        elif move_obj.get_move_type() == "move":
+        elif move_obj.get_move_type() == MultiClassBoardAttributes.NORMAL_MOVE_TYPE:
             self.move_piece(move_obj, undo=True)
 
     def __spawn_piece(self, colour, loc):
@@ -578,7 +577,7 @@ class Board:
 
                 # if end_loc has an opponent's piece, check if a legal move can be made to it
                 if not end_loc.is_empty() and end_loc.get_colour() != player.get_colour():
-                    if self.is_legal_move(location, end_loc, player, "move") or self.is_legal_move(location, end_loc, player, "capture"):
+                    if self.is_legal_move(location, end_loc, player, MultiClassBoardAttributes.NORMAL_MOVE_TYPE) or self.is_legal_move(location, end_loc, player, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE):
                         return True
 
         return False
@@ -591,14 +590,14 @@ class Board:
 
         # get normal non-capturing legal moves
         for end_loc in self.__get_adjacent_locations(loc):
-            if self.is_legal_move(loc, end_loc, player, "move"):
-                legal_moves.append(Move(loc, end_loc, "move"))
+            if self.is_legal_move(loc, end_loc, player, MultiClassBoardAttributes.NORMAL_MOVE_TYPE):
+                legal_moves.append(Move(loc, end_loc, MultiClassBoardAttributes.NORMAL_MOVE_TYPE))
 
         # get legal captures
         for row in self.__board:
             for end_loc in row:
-                if end_loc.get_colour() != player.get_colour() and self.is_legal_move(loc, end_loc, player, "capture"):
-                    legal_moves.append(Move(loc, end_loc, "capture"))
+                if end_loc.get_colour() != player.get_colour() and self.is_legal_move(loc, end_loc, player, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE):
+                    legal_moves.append(Move(loc, end_loc, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE))
 
         return legal_moves
     
@@ -692,7 +691,7 @@ class Board:
 
         for end_loc in self.__get_adjacent_locations(start_loc):
             if end_loc.is_empty():
-                return Move(start_loc, end_loc, "move")
+                return Move(start_loc, end_loc, MultiClassBoardAttributes.NORMAL_MOVE_TYPE)
             
         return None
 

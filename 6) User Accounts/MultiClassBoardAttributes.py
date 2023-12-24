@@ -10,6 +10,13 @@ class MultiClassBoardAttributes:
     DEFAULT_PLAYER_1_COLOUR = "yellow"
     DEFAULT_PLAYER_2_COLOUR = "green"
 
+    NORMAL_MOVE_TYPE = "move"
+    CAPTURE_MOVE_TYPE = "capture"
+
+    INNER_LOOP_STRING = "INNER"
+    OUTER_LOOP_STRING = "OUTER"
+    BOTH_LOOP_STRING = "BOTH"
+
     MIN_ROW_INDEX = 0
     MAX_ROW_INDEX = 5
     NUM_STARTING_PIECES_EACH = 12
