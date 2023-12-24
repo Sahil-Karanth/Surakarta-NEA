@@ -1,18 +1,19 @@
 from Piece import Piece
-from BoardConstants import BoardConstants
 
-# ! TODO: make another CircularList class that inherits from this one but is specifically for when every element is a GridLocation object
-    # would also migrate the methods that are specific to GridLocation objects to that class
+class LoopedTrack:
 
+    """An implementation of a circular list data structure used for the board's two looped tracks.
+    LoopedTrack objects contain GridLocation objects as elements and can be traversed in either direction."""
 
-class CircularList:
+    def __init__(self, grid_location_lst):
 
-    """The data structure used for the board's two loops.
-    Circular Lists can be traversed in either direction."""
+        # underlying list to store the data
+        self.__lst = grid_location_lst
 
-    def __init__(self, lst):
-        self.__lst = lst
-        self.__length = len(lst)
+        # length of the LoopedTrack
+        self.__length = len(self.__lst)
+
+        # pointers to keep track of the current location in the LoopedTrack for right and left traversal
         self.__right_pointer = 0
         self.__left_pointer = 0
 
@@ -30,6 +31,7 @@ class CircularList:
         """sets the specified pointer's location to the given index.
         Values returned by get_next_left() and get_next_right() will be affected by this change"""
 
+        # making sure index is in the range of the list (negative indexes are allowed)
         if (index * -1) <= len(self.__lst):
             if pointer_type == "left":
                 self.__left_pointer = index
@@ -54,16 +56,15 @@ class CircularList:
         self.__left_pointer = (self.__left_pointer - 1) % len(self.__lst)
         return item
     
-    def __get_all_occurence_indexes(self, lst, cords):
-
-        # ! change to just use self.__lst instead of passing in lst
+    def __get_all_occurence_indexes(self, cords):
 
         """returns a list of all the indexes that a location with the specified cords is found in lst"""
 
         ind_lst = []
-        for i,n in enumerate(lst):
-            if n.get_cords() == cords:
-                ind_lst.append(i)
+
+        for ind, grid_loc in enumerate(self.__lst):
+            if grid_loc.get_cords() == cords:
+                ind_lst.append(ind)
 
         return ind_lst
     
@@ -71,21 +72,22 @@ class CircularList:
 
         """replaces all occurences of pos1's piece with pos2's piece and all occurences of pos2's piece with pos1's piece"""
 
-        pos1_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos1.get_cords())
-        pos2_ind_lst = self.__get_all_occurence_indexes(self.__lst, pos2.get_cords())
+        # get all the indexes of pos1 and pos2 in the LoopedTrack
+        pos1_ind_lst = self.__get_all_occurence_indexes(pos1.get_cords())
+        pos2_ind_lst = self.__get_all_occurence_indexes(pos2.get_cords())
 
+        # replace all occurences of pos1's piece with pos2's piece and vice versa
         for i in pos1_ind_lst:
             self.__lst[i].set_piece(pos2.get_piece())
 
         for i in pos2_ind_lst:
             self.__lst[i].set_piece(pos1.get_piece())
 
-
     def remove_piece(self, cords):
 
         """replaces all occurences of a piece at cords with None"""
 
-        ind_lst = self.__get_all_occurence_indexes(self.__lst, cords)
+        ind_lst = self.__get_all_occurence_indexes(cords)
 
         for i in ind_lst:
             self.__lst[i].set_piece(None)

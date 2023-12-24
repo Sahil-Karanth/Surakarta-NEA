@@ -1,4 +1,4 @@
-from CircularList import CircularList
+from LoopedTrack import LoopedTrack
 from GridLocation import GridLocation
 from BoardConstants import BoardConstants
 from utility_functions import oneD_to_twoD_array, shuffle_2D_array, twoD_to_oneD_array
@@ -15,8 +15,8 @@ class Board:
 
         # data structures for the board
         self.__board = []
-        self.__inner_loop = CircularList([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
-        self.__outer_loop = CircularList([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
+        self.__inner_loop = LoopedTrack([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
+        self.__outer_loop = LoopedTrack([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
 
         # populate the board with GridLocation objects
         self.__build_board()
