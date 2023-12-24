@@ -9,7 +9,6 @@ from PIL import ImageTk, Image
 from Database import Database
 
 # todo
-    # make some of the strings like "move" constants
     # make method names better
     # rename board_loop to looped_track
 

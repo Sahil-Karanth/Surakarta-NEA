@@ -13,19 +13,19 @@ class MultiClassBoardAttributes:
     NORMAL_MOVE_TYPE = "move"
     CAPTURE_MOVE_TYPE = "capture"
 
-    INNER_LOOP_STRING = "INNER"
-    OUTER_LOOP_STRING = "OUTER"
-    BOTH_LOOP_STRING = "BOTH"
+    INNER_TRACK_STRING = "INNER"
+    OUTER_TRACK_STRING = "OUTER"
+    BOTH_TRACK_STRING = "BOTH"
 
     MIN_ROW_INDEX = 0
     MAX_ROW_INDEX = 5
     NUM_STARTING_PIECES_EACH = 12
 
-
-
-
     @staticmethod
     def set_player_colour(colour, player_num):
+
+        """sets the colour of a player's pieces. Used by the GUI to change the colour of the pieces for a logged in user."""
+
         if player_num == 1:
             MultiClassBoardAttributes.player_1_colour = colour
         elif player_num == 2:

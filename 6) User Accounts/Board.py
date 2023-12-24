@@ -8,21 +8,22 @@ import random
 
 class Board:
 
-    """Represents the board for the game. The main board is represented by a 2D array of GridLocation objects. The board also contains two CircularList objects
-    representing the inner and outer loops of the board."""
+    """Represents the board for the game. The main board is represented by a 2D array of GridLocation objects. The board also contains two LoopedTrack objects
+    representing the inner and outer looped tracks of the board."""
     
     NUM_BOARD_LOOPS = 4
     SAVED_GAME_STATE_SEPARATOR = "$"
     SAVED_GAME_STATE_EMPTY_CHAR = "."
 
-    OUTER_LOOP_CORDS = [
+    # ! CHANGE NAME TO OUTER_TRACK_CORDS
+    OUTER_TRACK_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
         (2,0), (2,1), (2,2), (2,3), (2,4), (2,5),
         (0,3), (1,3), (2,3), (3,3), (4,3), (5,3),
         (3,5), (3,4), (3,3), (3,2), (3,1), (3,0),
     ]
 
-    INNER_LOOP_CORDS = [
+    INNER_TRACK_CORDS = [
         (4,0), (4,1), (4,2), (4,3), (4,4), (4,5),
         (5,4), (4,4), (3,4), (2,4), (1,4), (0,4),
         (1,5), (1,4), (1,3), (1,2), (1,1), (1,0),
@@ -34,8 +35,8 @@ class Board:
 
         # data structures for the board
         self.__board = []
-        self.__inner_loop = LoopedTrack([GridLocation(i) for i in self.INNER_LOOP_CORDS])
-        self.__outer_loop = LoopedTrack([GridLocation(i) for i in self.OUTER_LOOP_CORDS])
+        self.__inner_track = LoopedTrack([GridLocation(i) for i in self.INNER_TRACK_CORDS])
+        self.__outer_track = LoopedTrack([GridLocation(i) for i in self.OUTER_TRACK_CORDS])
 
         # populate the board with GridLocation objects
         self.__build_board()
@@ -49,11 +50,11 @@ class Board:
         self.__player_lst = [player1, player2]
 
 
-        # maps a text representation of a loop to a tuple containing the BoardLoop objects for the inner and outer loops
-        self.loop_text_to_tuple_map = {
-            MultiClassBoardAttributes.INNER_LOOP_STRING: (self.__inner_loop, None),
-            MultiClassBoardAttributes.OUTER_LOOP_STRING: (None, self.__outer_loop),
-            MultiClassBoardAttributes.BOTH_LOOP_STRING: (self.__inner_loop, self.__outer_loop),
+        # maps a text representation of a track to a tuple containing the LoopedTrack objects for the inner and outer tracks
+        self.track_text_to_tuple_map = {
+            MultiClassBoardAttributes.INNER_TRACK_STRING: (self.__inner_track, None),
+            MultiClassBoardAttributes.OUTER_TRACK_STRING: (None, self.__outer_track),
+            MultiClassBoardAttributes.BOTH_TRACK_STRING: (self.__inner_track, self.__outer_track),
             None: (None, None)
         }
 
@@ -71,8 +72,8 @@ class Board:
             for loc in row:
                 loc.set_piece(None)
 
-        outer_lst = [GridLocation(i) for i in self.OUTER_LOOP_CORDS]
-        inner_lst = [GridLocation(i) for i in self.INNER_LOOP_CORDS]
+        outer_lst = [GridLocation(i) for i in self.OUTER_TRACK_CORDS]
+        inner_lst = [GridLocation(i) for i in self.INNER_TRACK_CORDS]
 
         YELLOW_TEST_OUTER_LOOP = [(1,2)]
         GREEN_TEST_OUTER_LOOP = [(2,4), (5,3)]
@@ -97,8 +98,8 @@ class Board:
                 i.set_piece(None)
 
 
-        self.__outer_loop = LoopedTrack(outer_lst)
-        self.__inner_loop = LoopedTrack(inner_lst)
+        self.__outer_track = LoopedTrack(outer_lst)
+        self.__inner_track = LoopedTrack(inner_lst)
 
         # self.__board[1][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
         # self.__board[1][5].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
@@ -159,37 +160,37 @@ class Board:
                 else:
                     self.__board[i][j].set_piece(Piece(curr_piece_str))
 
-                # update the piece at the corresponding location in the outer loop
-                if curr_cords in self.OUTER_LOOP_CORDS:
-                    self.__outer_loop.update_piece(curr_cords, curr_piece_str)
+                # update the piece at the corresponding location in the outer track
+                if curr_cords in self.OUTER_TRACK_CORDS:
+                    self.__outer_track.update_piece(curr_cords, curr_piece_str)
 
-                # update the piece at the corresponding location in the inner loop
-                elif curr_cords in self.INNER_LOOP_CORDS:
-                    self.__inner_loop.update_piece(curr_cords, curr_piece_str)
+                # update the piece at the corresponding location in the inner track
+                elif curr_cords in self.INNER_TRACK_CORDS:
+                    self.__inner_track.update_piece(curr_cords, curr_piece_str)
 
-    def __get_common_loops(self, text_loop_1, text_loop_2):
+    def __get_common_tracks(self, text_track_1, text_track_2):
 
-        """Returns a tuple in the form in the form (inner_loop, outer_loop) containing the common 
-        loops between the two text loop representations passed in as arguments. If a loop is not common,
+        """Returns a tuple in the form in the form (inner_track, outer_track) containing the common 
+        tracks between the two text track representations passed in as arguments. If a track is not common,
         the corresponding element in the tuple will be None."""
 
-        # get the BoardLoop tuples for the inner and outer loops from the text representations
-        loop_1_tuple = self.loop_text_to_tuple_map[text_loop_1]
-        loop_2_tuple = self.loop_text_to_tuple_map[text_loop_2]
+        # get the LoopedTrack tuples for the inner and outer tracks from the text representations
+        track_1_tuple = self.track_text_to_tuple_map[text_track_1]
+        track_2_tuple = self.track_text_to_tuple_map[text_track_2]
 
-        common_loops = []
+        common_tracks = []
 
-        for a,b in zip(loop_1_tuple, loop_2_tuple):
+        for a,b in zip(track_1_tuple, track_2_tuple):
             if a and b:
-                common_loops.append(a)
+                common_tracks.append(a)
 
-        return tuple(common_loops)
+        return tuple(common_tracks)
     
-    def __get_loop_from_text(self, text_loop):
+    def __get_track_from_text(self, text_track):
 
-        """Returns the BoardLoop tuple corresponding to the text representation of a loop passed in as an argument"""
+        """Returns the LoopedTrack tuple corresponding to the text representation of a track passed in as an argument"""
 
-        return self.loop_text_to_tuple_map[text_loop]
+        return self.track_text_to_tuple_map[text_track]
 
     def __build_board(self):
 
@@ -290,9 +291,9 @@ class Board:
         
         return False
     
-    def __get_board_loop_loc_indexes(self, board_loop, loc):
+    def __get_looped_track_loc_indexes(self, looped_track, loc):
 
-        """Returns a list of indexes where loc is found in board_loop. board_loop is a BoardLoop object which
+        """Returns a list of indexes where loc is found in looped_track. looped_track is a LoopedTrack object which
         is an implementation of a circular list data structure."""
 
         ind_lst = []
@@ -300,11 +301,11 @@ class Board:
         cords = loc.get_cords()
 
         # start at the beginning of the circular list
-        board_loop.set_pointer(0, "right")
+        looped_track.set_pointer(0, "right")
 
-        for i in range(board_loop.get_length()):
+        for i in range(looped_track.get_length()):
             
-            item = board_loop.get_next_right()
+            item = looped_track.get_next_right()
 
             if item.get_cords() == cords:
                 ind_lst.append(i)
@@ -339,24 +340,24 @@ class Board:
         if self.__either_locations_vacant(start_loc, end_loc): # attempting to capture or capture with an empty location
             return False
 
-        # get the BoardLoop objects for the inner and outer loops that both start_loc and end_loc are on
-        board_loop_tuple = self.__get_common_loops(start_loc.get_loop(), end_loc.get_loop())
+        # get the LoopedTrack objects for the inner and outer tracks that both start_loc and end_loc are on
+        looped_track_tuple = self.__get_common_tracks(start_loc.get_track(), end_loc.get_track())
         
-        for board_loop in board_loop_tuple:
+        for looped_track in looped_track_tuple:
 
-            # indexes where start_loc is found in board_loop
-            starting_indexes = self.__get_board_loop_loc_indexes(board_loop, start_loc)
+            # indexes where start_loc is found in looped_track
+            starting_indexes = self.__get_looped_track_loc_indexes(looped_track, start_loc)
 
             for ind in starting_indexes:
 
-                # right_move and left_move are Move objects representing the legal captures (or None if no legal capture is found in that direction) that can be made iterating through the board_loop
-                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, board_loop)
+                # right_move and left_move are Move objects representing the legal captures (or None if no legal capture is found in that direction) that can be made iterating through the looped_track
+                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, looped_track)
 
-                # legal capture found by iterating right through the board_loop  
+                # legal capture found by iterating right through the looped_track  
                 if right_move and right_move.get_end_cords() == end_loc.get_cords():
                     return True
                 
-                # legal capture found by iterating left through the board_loop
+                # legal capture found by iterating left through the looped_track
                 elif left_move and left_move.get_end_cords() == end_loc.get_cords():
                     return True
                 
@@ -391,7 +392,7 @@ class Board:
         if end_location.is_empty():
             return False
         
-        # not capturing a piece of the same colour and at least one of the board's 4 loops has been traversed
+        # not capturing a piece of the same colour and at least one of the 4 board loops has been traversed
         if (end_location.get_colour() != start_location.get_colour()) and (loop_count > 0):
             return True
         
@@ -402,45 +403,45 @@ class Board:
         """Returns False if a capture could still potentially be made in the direction moving to end_location otherwise returns True.
         If the method returns True, the capture legality algorithm should continue iterating in this direction."""
 
-        # one of your own pieces is blocking the path in the current direction of iteration through the board loop
+        # one of your own pieces is blocking the path in the current direction of iteration through the LoopedTrack
         if self.__loc_pieces_same_colour(start_location, end_location):
             return True
         
-        # a piece has been enountered during iteration through the board loop and none of the board's 4 loops have been traversed
+        # a piece has been enountered during iteration through the LoopedTrack and none of the 4 board loops have been traversed
         if loop_count == 0 and not end_location.is_empty():
             return True
         
-        # you have returned to the starting location and all of the board's 4 loops have been traversed
+        # you have returned to the starting location and all of the 4 board loops have been traversed
         if (loop_count == self.NUM_BOARD_LOOPS) and (start_location.get_cords() == end_location.get_cords()):
             return True
         
         return False
     
-    def __get_capture_either_direction(self, start_location, ind, board_loop):
+    def __get_capture_either_direction(self, start_location, ind, looped_track):
 
-        """Returns a Move object if a capture can be made in either direction starting at the piece at ind in board_loop. Otherwise it returns False.
+        """Returns a Move object if a capture can be made in either direction starting at the piece at ind in looped_track. Otherwise it returns False.
         If a valid capture cannot be made with adjacent locations, further locations are checked until either a valid capture is found or
         the direction being checked is can no longer have a valid capture on it."""
 
-        if board_loop == None:
+        if looped_track == None:
             return False
 
-        board_loop.set_pointer(ind, "right")
-        board_loop.set_pointer(ind, "left")
+        looped_track.set_pointer(ind, "right")
+        looped_track.set_pointer(ind, "left")
 
         # the first two vaalues will be the same (the value at ind) so we can skip them
-        board_loop.get_next_right()
-        board_loop.get_next_left()
+        looped_track.get_next_right()
+        looped_track.get_next_left()
 
-        # a Move object representing a valid capture if one is found iterating right through the board loop
-        right_search = self.__search_direction_for_capture(start_location, board_loop, "right")
+        # a Move object representing a valid capture if one is found iterating right through the LoopedTrack
+        right_search = self.__search_direction_for_capture(start_location, looped_track, "right")
 
-        # a Move object representing a valid capture if one is found iterating left through the board loop        
-        left_search = self.__search_direction_for_capture(start_location, board_loop, "left")
+        # a Move object representing a valid capture if one is found iterating left through the LoopedTrack        
+        left_search = self.__search_direction_for_capture(start_location, looped_track, "left")
 
         return (right_search, left_search)
     
-    def __search_direction_for_capture(self, start_location, board_loop, direction):
+    def __search_direction_for_capture(self, start_location, looped_track, direction):
 
         """Returns a move object if a valid capture is found in the direction specified by direction. Otherwise it returns False."""
 
@@ -452,9 +453,9 @@ class Board:
             
             # get the next location in the direction specified by direction
             if direction == "left":
-                curr_loc = board_loop.get_next_left()
+                curr_loc = looped_track.get_next_left()
             elif direction == "right":
-                curr_loc = board_loop.get_next_right()
+                curr_loc = looped_track.get_next_right()
             
             # increment loop_count if a board loop has been traversed to get from prev_loc to curr_loc
             if self.__loop_used(prev_loc, curr_loc):
@@ -489,7 +490,7 @@ class Board:
         prev_cords = prev_loc.get_cords()
         curr_cords = curr_loc.get_cords()
 
-        # a change in x and y cords between adjacent elements in a BoardLoop object mean a loop has been used
+        # a change in x and y cords between adjacent elements in a LoopedTrack object mean a loop has been used
         if prev_cords[0] != curr_cords[0] and prev_cords[1] != curr_cords[1]:
             return True
         
@@ -504,8 +505,8 @@ class Board:
             self.__update_piece_counts(move_obj.get_end_colour())
 
 
-        # update the board loops to reflect the move
-        self.__update_loops_after_move(move_obj)
+        # update the LoopedTrack objects to reflect the move
+        self.__update_tracks_after_move(move_obj)
 
 
         # for an undo move, the start and end locations are switched
@@ -515,20 +516,20 @@ class Board:
         else:
             self.__switch_piece_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
 
-    def __update_loops_after_move(self, move_obj, undo=False):
+    def __update_tracks_after_move(self, move_obj, undo=False):
 
-        """Updates the inner and outer loops to reflect the move specified by move_obj. If undo is True, the move is made in reverse."""
+        """Updates the inner and outer tracks to reflect the move specified by move_obj. If undo is True, the move is made in reverse."""
 
-        self.__inner_loop.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
-        self.__outer_loop.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+        self.__inner_track.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+        self.__outer_track.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
 
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             if undo:
-                self.__inner_loop.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
-                self.__outer_loop.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
+                self.__inner_track.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
+                self.__outer_track.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
             else:
-                self.__inner_loop.remove_piece(move_obj.get_start_cords())
-                self.__outer_loop.remove_piece(move_obj.get_start_cords())
+                self.__inner_track.remove_piece(move_obj.get_start_cords())
+                self.__outer_track.remove_piece(move_obj.get_start_cords())
     
     def __update_piece_counts(self, end_colour):
 
@@ -546,8 +547,8 @@ class Board:
 
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             
-            # update the board loops to reflect the undo move
-            self.__update_loops_after_move(move_obj, undo=True)
+            # update the LoopedTrack objects to reflect the undo move
+            self.__update_tracks_after_move(move_obj, undo=True)
 
             # update the board to reflect the undo move
             self.__spawn_piece(move_obj.get_start_colour(), move_obj.get_start_loc())
@@ -639,20 +640,20 @@ class Board:
         
         """returns a possible capture with the piece at loc"""
 
-        # get the BoardLoop objects for the inner and outer loops that start_loc is on
-        loop_tuple = self.__get_loop_from_text(start_loc.get_loop())
+        # get the LoopedTrack objects for the inner and outer tracks that start_loc is on
+        track_tuple = self.__get_track_from_text(start_loc.get_track())
 
-        for loop in loop_tuple:
-            if loop == None:
+        for track in track_tuple:
+            if track == None:
                 continue
             
-            # indexes where start_loc is found in loop
-            starting_indexes = self.__get_board_loop_loc_indexes(loop, start_loc)
+            # indexes where start_loc is found in track
+            starting_indexes = self.__get_looped_track_loc_indexes(track, start_loc)
 
             for ind in starting_indexes:
 
                 # unlike in the __check_capture_legal method, we're not checking for the legality of a specific capture so we can just return the first capture found
-                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, loop)
+                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, track)
                 if right_move:
                     return right_move
                 

@@ -18,5 +18,3 @@ def shuffle_2D_array(arr):
     return arr
 
 
-# ! CREDIT TO: https://stackoverflow.com/questions/17985216/simpler-way-to-draw-a-circle-with-tkinter
-
