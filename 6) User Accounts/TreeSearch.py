@@ -72,16 +72,21 @@ class GameTree:
 
     def __init__(self, root_board):
         self.__root = Node(root_board, depth=0)
-        self.__current_tree_depth = 0 # the maximum depth of a node in the tree
+
+        # the maximum depth of a node in the tree
+        self.__current_tree_depth = 0
+
         self.__current_node = self.__root
 
     def __get_current_player_colour(self, depth):
         """returns the colour of the current player based on a depth in the tree"""
 
-        if depth % 2 == 0: # if the depth is even, it's player 2's (the AI) turn
+        # if the depth is even, it's player 2's (the AI) turn
+        if depth % 2 == 0:
             return BoardConstants.player_2_colour
         
-        elif depth % 2 == 1: # if the depth is odd, it's player 1's turn
+        # if the depth is odd, it's player 1's turn
+        elif depth % 2 == 1:
             return BoardConstants.player_1_colour
 
     def add_node(self, child_board, move_obj):
@@ -92,19 +97,20 @@ class GameTree:
 
         self.__current_node.add_child(child)
 
-
     def UCB1(self, node):
         
         """returns the UCB1 value of a node used to determine which node to select next in the MCTS algorithm"""
         
+        # using the UCB1 formula
         try:
             return (node.get_value() / node.get_visited_count()) + math.sqrt(GameTree.EXPLORATION_CONSTANT * math.log(node.get_parent().get_visited_count()) / node.get_visited_count())
-    
-        except ZeroDivisionError: # if the node has not been visited yet, it's value is infinity
+        
+        # if the node has not been visited yet, it's value is infinity
+        except ZeroDivisionError:
             return math.inf
-            
 
     def __check_terminal_board(self, board):
+
         """if the board is terminal, returns the result of the board (1 if the AI won, -1 if the AI lost). Otherwise, returns False."""
 
         if board.get_piece_count(1) == 0:
@@ -114,9 +120,9 @@ class GameTree:
             return GameTree.LOSS
         
         return False
-            
 
     def __get_early_stop_rollout_result(self, board):
+
         """returns the result of the board (1 for AI win, -1 for AI loss, 0 if neither player is winning according to the evaluation function) if the rollout ends early because the maximum number of moves has been reached. Otherwise, returns the result of the board."""
 
         if board.get_piece_count(1) > board.get_piece_count(2):
@@ -131,12 +137,13 @@ class GameTree:
     def __get_current_legal_moves(self):
         """returns the legal moves for the current node"""
 
+        # board objct of the current node
         board = self.__current_node.get_board()
+
         curr_depth = self.__current_node.get_depth()
         current_player_colour = self.__get_current_player_colour(curr_depth)
 
         return board.get_legal_moves(current_player_colour)
-
 
     def current_is_leaf(self):
         """returns True if the current node is a leaf node in the tree, otherwise returns False"""
@@ -147,41 +154,51 @@ class GameTree:
 
         """selects a new current node to be the node with the highest UCB1 value among the current node's children"""
 
+        # list of tuples of the form (node, UCB1 value) for each child of the current node
         ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
 
+        # set the current node to the child with the highest UCB1 value
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
 
-
+        # update the maximum depth of the tree if the current node's depth is greater than the current maximum depth
         if self.__current_tree_depth < self.__current_node.get_depth():
             self.__current_tree_depth = self.__current_node.get_depth()
-
 
     def node_expansion(self):
 
         """expands the current node by adding all of its legal moves as children"""
 
+        # list of legal moves for the current node
         legal_moves = self.__get_current_legal_moves()
 
         for move_obj in legal_moves:
+
+            # make a copy of the current node's board and make the move on the copy
             board = deepcopy(self.__current_node.get_board())
             board.move_piece(move_obj)
+
             self.add_node(board, move_obj)
     
     def rollout(self):
 
         """performs a rollout from the current node to a terminal node or to the rollout depth and returns the result of the rollout"""
         
+        # deepcopy the current node's board so that the original board is not modified
         rollout_board = deepcopy(self.__current_node.get_board())
+
         num_moves = 0
 
         while num_moves < GameTree.MOVES_PER_ROLLOUT:
 
+            # check if the board is terminal and if so return the result of the rollout
             terminal_board_result = self.__check_terminal_board(rollout_board)
             if terminal_board_result:
                 print(f"rollout ended after {num_moves} moves")
                 return terminal_board_result
             
+            # get the colour of the current player based on the depth of the current node
             rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
+
             simulated_move = rollout_board.get_single_legal_move(rollout_colour)
             rollout_board.move_piece(simulated_move)
             
@@ -197,36 +214,43 @@ class GameTree:
 
         node = self.__current_node
 
+        # terminate the loop when the root node has had its value and visited count updated
         while node != None:
             node.increment_visited_count()
             node.update_value(result)
             node = node.get_parent()
 
-
     def run_MCTS_iteration(self):
 
         """runs one iteration of the MCTS algorithm from the current node with selection, expansion, rollout, and backpropagation"""
 
+        # 1. Selection
         while not self.current_is_leaf():
             self.select_new_current()
 
         if self.__current_node.get_visited_count() != 0:
+
+            # 2. Expansion
             self.node_expansion()
             if not self.current_is_leaf(): # terminal nodes will not have children
                 self.__current_node = self.__current_node.get_children()[0]
 
+        # 3. Rollout/Simulation
         result = self.rollout()
+
+        # 4. Backpropagation
         self.backpropagate(result)
 
+        # reset the current node to the root node for the next iteration
         self.__current_node = self.__root
 
+    def get_next_move(self):
 
-    def get_next_move(self): # main method to call
-
-        """runs the MCTS algorithm for a set amount of time and returns the best move to make"""
+        """Public method that runs the MCTS algorithm for a set amount of time and returns the best move to make"""
 
         start_time = time.time()
 
+        # initial node expansion before the MCTS iterations begin
         self.node_expansion()
 
         num_iterations = 0
@@ -235,6 +259,7 @@ class GameTree:
             self.run_MCTS_iteration()
             num_iterations += 1
 
+        # best node/move to make is the child of the root node with the highest UCBI value
         best_node = max(self.__root.get_children(), key=lambda node: node.get_value())
         
         print(f"MCTS RAN FOR: {GameTree.TIME_FOR_MOVE} SECONDS")

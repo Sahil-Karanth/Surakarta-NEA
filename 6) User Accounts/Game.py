@@ -12,6 +12,7 @@ class Game:
         
         self.__player1 = Player(player1name, BoardConstants.player_1_colour, player1_num_pieces)
 
+        # If ai_level is not None, player 2 is an AI player. Otherwise, player 2 is a human player.
         if ai_level:
             self.__player2 = self.__make_ai_player(player2name, player2_num_pieces)
         else:
@@ -20,6 +21,7 @@ class Game:
         self.__player_lst = [self.__player1, self.__player2]
 
         self.__game_over = False
+
         self.__board = Board(self.__player1, self.__player2, game_state_string)
 
         self.__move_history_stack = Stack()
@@ -73,6 +75,9 @@ class Game:
         return self.__game_over
 
     def get_winner(self):
+
+        """Returns the player object of the winner. If the game is not over, an exception is raised."""
+
         if self.is_game_over():
             if self.__player1.get_piece_count() > self.__player2.get_piece_count():
                 return self.__player1
@@ -89,8 +94,11 @@ class Game:
         """Makes a move on the board and returns the move object. The move object is pushed onto the move history stack."""
 
         move_obj = Move(start_location, end_location, move_type)
+
+        # push the move onto the move history stack
         self.__move_history_stack.push(move_obj)
 
+        # make the move on the board
         self.__board.move_piece(move_obj)
 
         return move_obj
@@ -103,11 +111,14 @@ class Game:
         if self.__move_history_stack.is_empty():
             return None
 
+        # pop the last move off the move history stack
         move_obj = self.__move_history_stack.pop()
 
+        # add a piece back to the current player's piece count if the move was a capture
         if move_obj.get_move_type() == "capture":
             self.__current_player.add_piece()
 
+        # undo the move on the board
         self.__board.undo_move(move_obj)
 
         return move_obj
