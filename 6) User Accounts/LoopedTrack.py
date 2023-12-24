@@ -96,7 +96,7 @@ class LoopedTrack:
 
         """replaces all occurences of val's piece with a piece of the specified colour"""
 
-        ind_lst = self.__get_all_occurence_indexes(self.__lst, cords)
+        ind_lst = self.__get_all_occurence_indexes(cords)
 
         for i in ind_lst:
             if piece_colour == None:

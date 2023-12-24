@@ -1,6 +1,6 @@
 from LoopedTrack import LoopedTrack
 from GridLocation import GridLocation
-from BoardConstants import BoardConstants
+from MultiClassBoardAttributes import MultiClassBoardAttributes
 from utility_functions import oneD_to_twoD_array, shuffle_2D_array, twoD_to_oneD_array
 from Piece import Piece
 from Move import Move
@@ -11,12 +11,32 @@ class Board:
     """Represents the board for the game. The main board is represented by a 2D array of GridLocation objects. The board also contains two CircularList objects
     representing the inner and outer loops of the board."""
 
+
+    NUM_BOARD_LOOPS = 4
+    SAVED_GAME_STATE_SEPARATOR = "$"
+    SAVED_GAME_STATE_EMPTY_CHAR = "."
+
+    OUTER_LOOP_CORDS = [
+        (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
+        (2,0), (2,1), (2,2), (2,3), (2,4), (2,5),
+        (0,3), (1,3), (2,3), (3,3), (4,3), (5,3),
+        (3,5), (3,4), (3,3), (3,2), (3,1), (3,0),
+    ]
+
+    INNER_LOOP_CORDS = [
+        (4,0), (4,1), (4,2), (4,3), (4,4), (4,5),
+        (5,4), (4,4), (3,4), (2,4), (1,4), (0,4),
+        (1,5), (1,4), (1,3), (1,2), (1,1), (1,0),
+        (0,1), (1,1), (2,1), (3,1), (4,1), (5,1),
+    ]
+
+
     def __init__(self, player1, player2, game_state_string=None):
 
         # data structures for the board
         self.__board = []
-        self.__inner_loop = LoopedTrack([GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS])
-        self.__outer_loop = LoopedTrack([GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS])
+        self.__inner_loop = LoopedTrack([GridLocation(i) for i in self.INNER_LOOP_CORDS])
+        self.__outer_loop = LoopedTrack([GridLocation(i) for i in self.OUTER_LOOP_CORDS])
 
         # populate the board with GridLocation objects
         self.__build_board()
@@ -40,8 +60,8 @@ class Board:
 
         # maps a player colour to a player object
         self.__player_colour_map = {
-            BoardConstants.player_1_colour: player1,
-            BoardConstants.player_2_colour: player2
+            MultiClassBoardAttributes.player_1_colour: player1,
+            MultiClassBoardAttributes.player_2_colour: player2
         }
 
     def get_board_state(self):
@@ -52,8 +72,8 @@ class Board:
             for loc in row:
                 loc.set_piece(None)
 
-        outer_lst = [GridLocation(i) for i in BoardConstants.OUTER_LOOP_CORDS]
-        inner_lst = [GridLocation(i) for i in BoardConstants.INNER_LOOP_CORDS]
+        outer_lst = [GridLocation(i) for i in self.OUTER_LOOP_CORDS]
+        inner_lst = [GridLocation(i) for i in self.INNER_LOOP_CORDS]
 
         YELLOW_TEST_OUTER_LOOP = [(1,2)]
         GREEN_TEST_OUTER_LOOP = [(2,4), (5,3)]
@@ -63,70 +83,70 @@ class Board:
 
         for i in outer_lst:
             if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
-                i.set_piece(Piece(BoardConstants.player_1_colour))
+                i.set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
             elif i.get_cords() in GREEN_TEST_OUTER_LOOP:
-                i.set_piece(Piece(BoardConstants.player_2_colour))
+                i.set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
             else:
                 i.set_piece(None)
 
         for i in inner_lst:
             if i.get_cords() in YELLOW_TEST_INNER_LOOP:
-                i.set_piece(Piece(BoardConstants.player_1_colour))
+                i.set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
             elif i.get_cords() in GREEN_TEST_INNER_LOOP:
-                i.set_piece(Piece(BoardConstants.player_2_colour))
+                i.set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
             else:
                 i.set_piece(None)
 
 
-        self.__outer_loop = CircularList(outer_lst)
-        self.__inner_loop = CircularList(inner_lst)
+        self.__outer_loop = LoopedTrack(outer_lst)
+        self.__inner_loop = LoopedTrack(inner_lst)
 
-        # self.__board[1][3].set_piece(Piece(BoardConstants.player_1_colour))
-        # self.__board[1][5].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[1][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[1][5].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
 
         # self.__board[4][4].set_piece(Piece("y"))
         # self.__board[2][0].set_piece(Piece("g"))
 
-        self.__board[0][0].set_piece(Piece(BoardConstants.player_1_colour))
-        self.__board[0][1].set_piece(Piece(BoardConstants.player_1_colour))
-        # self.__board[0][3].set_piece(Piece(BoardConstants.player_1_colour))
-        # self.__board[0][4].set_piece(Piece(BoardConstants.player_1_colour))
-        self.__board[0][5].set_piece(Piece(BoardConstants.player_1_colour))
+        self.__board[0][0].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        self.__board[0][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[0][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[0][4].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        self.__board[0][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
 
-        # self.__board[1][1].set_piece(Piece(BoardConstants.player_1_colour))
-        self.__board[1][2].set_piece(Piece(BoardConstants.player_1_colour))
-        # self.__board[1][3].set_piece(Piece(BoardConstants.player_1_colour))
-        self.__board[1][5].set_piece(Piece(BoardConstants.player_1_colour))
+        # self.__board[1][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        self.__board[1][2].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[1][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        self.__board[1][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
 
-        # self.__board[2][5].set_piece(Piece(BoardConstants.player_1_colour))
-        self.__board[2][4].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[2][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        self.__board[2][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
 
-        self.__board[4][0].set_piece(Piece(BoardConstants.player_2_colour))
-        self.__board[4][1].set_piece(Piece(BoardConstants.player_2_colour))
-        # self.__board[4][3].set_piece(Piece(BoardConstants.player_2_colour))
-        # self.__board[4][4].set_piece(Piece(BoardConstants.player_2_colour))
-        self.__board[4][5].set_piece(Piece(BoardConstants.player_2_colour))
+        self.__board[4][0].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        self.__board[4][1].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # self.__board[4][3].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # self.__board[4][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        self.__board[4][5].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
 
-        # self.__board[5][0].set_piece(Piece(BoardConstants.player_2_colour))
-        self.__board[5][1].set_piece(Piece(BoardConstants.player_2_colour))
-        # self.__board[5][3].set_piece(Piece(BoardConstants.player_2_colour))
-        # self.__board[5][4].set_piece(Piece(BoardConstants.player_2_colour))
+        # self.__board[5][0].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        self.__board[5][1].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # self.__board[5][3].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # self.__board[5][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
 
     def __load_game_state(self, game_state_string):
 
         """Updates the pieces at each GridLocation in the board to match the game state string passed in as an argument"""
         
         # split the game state string into a list of strings representing the pieces at each location
-        game_state_lst = game_state_string.split(BoardConstants.SAVED_GAME_STATE_SEPARATOR)
+        game_state_lst = game_state_string.split(self.SAVED_GAME_STATE_SEPARATOR)
 
         # replace character representing an empty location with None
-        game_state_lst = [None if i == BoardConstants.SAVED_GAME_STATE_EMPTY_CHAR else i for i in game_state_lst]
+        game_state_lst = [None if i == self.SAVED_GAME_STATE_EMPTY_CHAR else i for i in game_state_lst]
 
         # convert the list of strings into a 6x6 2D array
-        game_state_lst = oneD_to_twoD_array(game_state_lst, BoardConstants.MAX_ROW_INDEX + 1)
+        game_state_lst = oneD_to_twoD_array(game_state_lst, MultiClassBoardAttributes.MAX_ROW_INDEX + 1)
 
-        for i in range(BoardConstants.MAX_ROW_INDEX + 1):
-            for j in range(BoardConstants.MAX_ROW_INDEX + 1):
+        for i in range(MultiClassBoardAttributes.MAX_ROW_INDEX + 1):
+            for j in range(MultiClassBoardAttributes.MAX_ROW_INDEX + 1):
                 
                 # get the string representing the piece at the current location
                 curr_piece_str = game_state_lst[i][j]
@@ -141,11 +161,11 @@ class Board:
                     self.__board[i][j].set_piece(Piece(curr_piece_str))
 
                 # update the piece at the corresponding location in the outer loop
-                if curr_cords in BoardConstants.OUTER_LOOP_CORDS:
+                if curr_cords in self.OUTER_LOOP_CORDS:
                     self.__outer_loop.update_piece(curr_cords, curr_piece_str)
 
                 # update the piece at the corresponding location in the inner loop
-                elif curr_cords in BoardConstants.INNER_LOOP_CORDS:
+                elif curr_cords in self.INNER_LOOP_CORDS:
                     self.__inner_loop.update_piece(curr_cords, curr_piece_str)
 
     def __get_common_loops(self, text_loop_1, text_loop_2):
@@ -178,23 +198,23 @@ class Board:
 
         board = []
 
-        for i in range(BoardConstants.MAX_ROW_INDEX + 1):
-            for j in range(BoardConstants.MAX_ROW_INDEX + 1):
+        for i in range(MultiClassBoardAttributes.MAX_ROW_INDEX + 1):
+            for j in range(MultiClassBoardAttributes.MAX_ROW_INDEX + 1):
                 location = GridLocation((i, j))
                 board.append(location)
 
         # convert the 1D array into a 6x6 2D array
-        self.__board = oneD_to_twoD_array(board, BoardConstants.MAX_ROW_INDEX + 1)
+        self.__board = oneD_to_twoD_array(board, MultiClassBoardAttributes.MAX_ROW_INDEX + 1)
 
     def __is_valid_coordinate(self, coordinate):
 
         """Returns True if coordinate is a valid coordinate on the board otherwise returns False.
         A valid coordinate is a tuple of the form (x, y) where x and y are integers between 0 and 5 inclusive"""
 
-        if coordinate[0] < BoardConstants.MIN_ROW_INDEX or coordinate[0] > BoardConstants.MAX_ROW_INDEX:
+        if coordinate[0] < MultiClassBoardAttributes.MIN_ROW_INDEX or coordinate[0] > MultiClassBoardAttributes.MAX_ROW_INDEX:
             return False
         
-        if coordinate[1] < BoardConstants.MIN_ROW_INDEX or coordinate[1] > BoardConstants.MAX_ROW_INDEX:
+        if coordinate[1] < MultiClassBoardAttributes.MIN_ROW_INDEX or coordinate[1] > MultiClassBoardAttributes.MAX_ROW_INDEX:
             return False
         
         return True
@@ -392,7 +412,7 @@ class Board:
             return True
         
         # you have returned to the starting location and all of the board's 4 loops have been traversed
-        if (loop_count == BoardConstants.NUM_BOARD_LOOPS) and (start_location.get_cords() == end_location.get_cords()):
+        if (loop_count == self.NUM_BOARD_LOOPS) and (start_location.get_cords() == end_location.get_cords()):
             return True
         
         return False
@@ -515,10 +535,10 @@ class Board:
 
         """Decrements the piece count of the player that has had a piece captured"""
 
-        if end_colour == BoardConstants.player_1_colour:
+        if end_colour == MultiClassBoardAttributes.player_1_colour:
             self.__player_lst[0].remove_piece()
 
-        elif end_colour == BoardConstants.player_2_colour:
+        elif end_colour == MultiClassBoardAttributes.player_2_colour:
             self.__player_lst[1].remove_piece()
 
     def undo_move(self, move_obj):
@@ -647,10 +667,10 @@ class Board:
         """Returns a list of 4 GridLocation objects that are on the edge of the board"""
 
         edge_locs = [
-            self.__board[BoardConstants.MIN_ROW_INDEX][BoardConstants.MIN_ROW_INDEX],
-            self.__board[BoardConstants.MIN_ROW_INDEX][BoardConstants.MAX_ROW_INDEX],
-            self.__board[BoardConstants.MAX_ROW_INDEX][BoardConstants.MIN_ROW_INDEX],
-            self.__board[BoardConstants.MAX_ROW_INDEX][BoardConstants.MAX_ROW_INDEX]
+            self.__board[MultiClassBoardAttributes.MIN_ROW_INDEX][MultiClassBoardAttributes.MIN_ROW_INDEX],
+            self.__board[MultiClassBoardAttributes.MIN_ROW_INDEX][MultiClassBoardAttributes.MAX_ROW_INDEX],
+            self.__board[MultiClassBoardAttributes.MAX_ROW_INDEX][MultiClassBoardAttributes.MIN_ROW_INDEX],
+            self.__board[MultiClassBoardAttributes.MAX_ROW_INDEX][MultiClassBoardAttributes.MAX_ROW_INDEX]
         ]
 
         return edge_locs
@@ -686,7 +706,7 @@ class Board:
             for loc in row:
                 
                 # if the location is occupied by a piece of the player's colour, return a random adjacent move f one is found
-                if loc.get_colour() == BoardConstants.player_2_colour:
+                if loc.get_colour() == MultiClassBoardAttributes.player_2_colour:
                     move = self.__get_adjacent_move(loc)
                     if move:
                         return move
@@ -714,11 +734,11 @@ class Board:
 
         for loc in flat_board:
             if loc.is_empty():
-                game_state_lst.append(BoardConstants.SAVED_GAME_STATE_EMPTY_CHAR)
+                game_state_lst.append(MultiClassBoardAttributes.SAVED_GAME_STATE_EMPTY_CHAR)
             else:
                 game_state_lst.append(loc.get_colour())
 
-            game_state_lst.append(BoardConstants.SAVED_GAME_STATE_SEPARATOR)
+            game_state_lst.append(self.SAVED_GAME_STATE_SEPARATOR)
 
         # remove the last separator character
         game_state_lst.pop()

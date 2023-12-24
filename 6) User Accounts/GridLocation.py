@@ -1,5 +1,5 @@
 from Piece import Piece
-from BoardConstants import BoardConstants
+from MultiClassBoardAttributes import MultiClassBoardAttributes
 
 class GridLocation:
 
@@ -11,6 +11,10 @@ class GridLocation:
 
     # inner loop cordinates have row (1 or 4) and column (1 or 4)
     INNER_LOOP_NUMBERS = (1, 4)
+
+    # player 1 pieces start on rows 0 and 1, player 2 pieces start on rows 4 and 5
+    PLAYER_1_ROWS = (0, 1)
+    PLAYER_2_ROWS = (4, 5)
 
     def __init__(self, cords):
         self.__cords = cords
@@ -39,11 +43,11 @@ class GridLocation:
 
         """determines which piece should be placed on a location at the start of the game"""
 
-        if self.__cords[0] in BoardConstants.PLAYER_1_ROWS:
-            return Piece(BoardConstants.player_1_colour)
+        if self.__cords[0] in self.PLAYER_1_ROWS:
+            return Piece(MultiClassBoardAttributes.player_1_colour)
         
-        elif self.__cords[0] in BoardConstants.PLAYER_2_ROWS:
-            return Piece(BoardConstants.player_2_colour)
+        elif self.__cords[0] in self.PLAYER_2_ROWS:
+            return Piece(MultiClassBoardAttributes.player_2_colour)
 
         else:
             return None

@@ -1,7 +1,7 @@
 from Game import Game
 from utility_functions import oneD_to_twoD_array
 import re
-from BoardConstants import BoardConstants
+from MultiClassBoardAttributes import MultiClassBoardAttributes
 import PySimpleGUI as sg
 import textwrap
 import time
@@ -9,8 +9,6 @@ from PIL import ImageTk, Image
 from Database import Database
 
 # todo
-    # make sure it works wihtout self.__preferred_piece_colour
-    # replace methods that take in instance variables to just use them by default
     # make some of the strings like "move" constants
     # make method names better
     # rename board_loop to looped_track
@@ -459,18 +457,18 @@ class Graphical_UI(UI):
 
         return load_game_window
 
-    def __make_stats_window(self, username):
+    def __make_stats_window(self):
 
         """Creates the stats window where the user can view their match stats and game history"""
 
         # request the user's match stats and game history from the database
-        ai_match_stats = self.__db.get_user_stats(username)
+        ai_match_stats = self.__db.get_user_stats(self.__logged_in_username)
         ai_stats_table_headers = ["AI Difficulty", "Wins", "Losses"]
 
         ai_stats_table = self.__create_table(ai_match_stats, ai_stats_table_headers, "ai_stats_table")
 
         # request the user's game history from the database
-        game_history = self.__db.get_game_history(username)
+        game_history = self.__db.get_game_history(self.__logged_in_username)
         game_history_table_headers = ["Game Number", "Date", "Opponent", "Winner"]
 
         game_history_table = self.__create_table(game_history, game_history_table_headers, "game_history_table")
@@ -486,7 +484,7 @@ class Graphical_UI(UI):
 
         return stats_window
 
-    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH, player2_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH):
+    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
 
         """Creates the match page window where the user can play a game of Surakarta. The board state is displayed and the user can move pieces by clicking on the board"""
 
@@ -539,8 +537,8 @@ class Graphical_UI(UI):
 
 
         # calculate the number of pieces captured by each player
-        player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
-        player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
+        player1_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
+        player2_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
 
         # layout to show the number of pieces captured by each player
         player1_captured_layout = [[sg.Text(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}", key="player1_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
@@ -567,8 +565,8 @@ class Graphical_UI(UI):
 
         """Updates the text showing the number of pieces captured by each player on the match page"""
 
-        player1_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
-        player2_captured = BoardConstants.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
+        player1_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
+        player2_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
 
         self.__main_window["player1_captured_text"].update(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}")
         self.__main_window["player2_captured_text"].update(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}")
@@ -702,7 +700,7 @@ class Graphical_UI(UI):
             
             """Changes the piece colour of the player. This method is used when a logged in user changes their preferred piece colour"""
 
-            # update the piece colours in the BoardConstants class (for the current running application)
+            # update the piece colours in the MultiClassBoardAttributes class (for the current running application)
             self.__update_preferred_piece_colour(new_piece_colour)
     
             # update the new piece colour in the database
@@ -753,10 +751,10 @@ class Graphical_UI(UI):
 
         print(player1_colour)
 
-        # update the player 1 colour in the BoardConstants class to be the colour that the user had when they saved the game
+        # update the player 1 colour in the MultiClassBoardAttributes class to be the colour that the user had when they saved the game
         self.__update_preferred_piece_colour(player1_colour)
 
-        print(BoardConstants.player_1_colour)
+        print(MultiClassBoardAttributes.player_1_colour)
 
         # if the player 2 name is an AI name, the game is an AI game
         if player2_name in self.__ai_name_to_level_num_map.values():
@@ -785,7 +783,7 @@ class Graphical_UI(UI):
             self.__logged_in_username = None
 
             # reset the player 1 piece colour to the default colour
-            self.__update_preferred_piece_colour(BoardConstants.DEFAULT_PLAYER_1_COLOUR)
+            self.__update_preferred_piece_colour(MultiClassBoardAttributes.DEFAULT_PLAYER_1_COLOUR)
 
             sg.popup("Logged out", title="Logged Out", keep_on_top=True)
 
@@ -812,7 +810,7 @@ class Graphical_UI(UI):
             player2_starts = self.__game.get_player_name(2) == self.__game.get_current_player_name()
 
             # save the game to the database
-            self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2), BoardConstants.player_1_colour)
+            self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2), MultiClassBoardAttributes.player_1_colour)
             sg.popup("Game saved", title="Game Saved", keep_on_top=True)
 
         else:
@@ -822,15 +820,15 @@ class Graphical_UI(UI):
 
         """Updates the preferred piece colour of the player. This method is used when a logged in user changes their preferred piece colour"""
 
-        BoardConstants.set_player_colour(new_colour, 1)
+        MultiClassBoardAttributes.set_player_colour(new_colour, 1)
 
         # since green is the default colour for player 2, if player 1's colour is changed to green, player 2's colour should be changed to yellow
         if new_colour == "green":
-            BoardConstants.set_player_colour("yellow", 2)
+            MultiClassBoardAttributes.set_player_colour("yellow", 2)
 
         # since yellow is the default colour for player 2, if player 1's colour is changed to yellow, player 2's colour should be changed to green
         elif new_colour == "yellow":
-            BoardConstants.set_player_colour("green", 2)
+            MultiClassBoardAttributes.set_player_colour("green", 2)
 
     def __handle_login(self, username, password):
 
@@ -842,7 +840,7 @@ class Graphical_UI(UI):
             self.__logged_in_username = username
             self.__logged_in = True
 
-            # query the database for the user's preferred piece colour and update the piece colours in the BoardConstants class
+            # query the database for the user's preferred piece colour and update the piece colours in the MultiClassBoardAttributes class
             preferred_piece_colour = self.__db.get_preferred_piece_colour(username)
             self.__update_preferred_piece_colour(preferred_piece_colour)
 
@@ -1026,7 +1024,7 @@ class Graphical_UI(UI):
 
         # if the last move was a capture move, restore the piece that was captured to the board GUI
         if move_obj.get_move_type() == "capture":            
-            cords = self.__tuple_key_cords_str(move_obj.get_end_loc().get_cords())
+            cords = self.__tuple_key_cords_str(move_obj.get_end_cords())
             self.__main_window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
 
             # show the new number of pieces captured by each player
@@ -1090,7 +1088,7 @@ class Graphical_UI(UI):
             # show the user's stats in a modal window
             elif event == "show_stats_button":
                 if self.__logged_in_username:
-                    self.__make_stats_window(self.__logged_in_username)
+                    self.__make_stats_window()
 
                 else:
                     sg.popup("You must be logged in to view your stats", title="Error Showing Stats", keep_on_top=True)

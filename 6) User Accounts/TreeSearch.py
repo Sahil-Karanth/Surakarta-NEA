@@ -1,5 +1,5 @@
 import math
-from BoardConstants import BoardConstants
+from MultiClassBoardAttributes import MultiClassBoardAttributes
 import time
 from copy import deepcopy
 
@@ -83,11 +83,11 @@ class GameTree:
 
         # if the depth is even, it's player 2's (the AI) turn
         if depth % 2 == 0:
-            return BoardConstants.player_2_colour
+            return MultiClassBoardAttributes.player_2_colour
         
         # if the depth is odd, it's player 1's turn
         elif depth % 2 == 1:
-            return BoardConstants.player_1_colour
+            return MultiClassBoardAttributes.player_1_colour
 
     def add_node(self, child_board, move_obj):
         """adds a node to the tree. child_board is the board state of the new node, and move_obj is the move that led to the node."""

@@ -1,6 +1,6 @@
 from Player import Player, EasyAIPlayer, MediumAIPlayer, HardAIPlayer
 from Board import Board
-from BoardConstants import BoardConstants
+from MultiClassBoardAttributes import MultiClassBoardAttributes
 from Move import Move
 from Stack import Stack
 
@@ -8,15 +8,15 @@ class Game:
 
     """The Game class manages the game state. It contains the board, the players, and the move history stack."""
 
-    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH, player2_num_pieces=BoardConstants.NUM_STARTING_PIECES_EACH):
+    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
         
-        self.__player1 = Player(player1name, BoardConstants.player_1_colour, player1_num_pieces)
+        self.__player1 = Player(player1name, MultiClassBoardAttributes.player_1_colour, player1_num_pieces)
 
         # If ai_level is not None, player 2 is an AI player. Otherwise, player 2 is a human player.
         if ai_level:
             self.__player2 = self.__make_ai_player(player2name, player2_num_pieces)
         else:
-            self.__player2 = Player(player2name, BoardConstants.player_2_colour, player2_num_pieces)
+            self.__player2 = Player(player2name, MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
 
         self.__player_lst = [self.__player1, self.__player2]
 
@@ -42,7 +42,7 @@ class Game:
             "Hard AI": HardAIPlayer,
         }
 
-        return difficulty_dict[player2name](BoardConstants.player_2_colour, player2_num_pieces)
+        return difficulty_dict[player2name](MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
 
     
     def get_ai_move(self):

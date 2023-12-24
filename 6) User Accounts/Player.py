@@ -1,4 +1,4 @@
-from BoardConstants import BoardConstants
+from MultiClassBoardAttributes import MultiClassBoardAttributes
 import random
 from utility_functions import shuffle_2D_array
 from TreeSearch import GameTree
@@ -7,7 +7,7 @@ class Player:
 
     """Represents a player in the game. AI players inherit from this class and human players use this class directly"""
 
-    def __init__(self, name, piece_colour, piece_count=BoardConstants.NUM_STARTING_PIECES_EACH):
+    def __init__(self, name, piece_colour, piece_count=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
         self.__name = name
         self.__piece_colour = piece_colour
         self.__piece_count = piece_count # a player may not have 12 pieces when the object is created if the game is being loaded
@@ -36,7 +36,7 @@ class Player:
 
         """Adds a single piece to the player's piece count. Only used to return a piece to a player after a move is undone."""
 
-        if self.__piece_count >= BoardConstants.NUM_STARTING_PIECES_EACH:
+        if self.__piece_count >= MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH:
             raise ValueError("Player has too many pieces, cannot add piece")
         
         self.__piece_count += 1
@@ -45,7 +45,7 @@ class AIPlayer(Player):
 
     """An abstract base class for AI opponents. AI opponent classes inherit from this class and implement the get_move method"""
     
-    def __init__(self, name, piece_colour, piece_count=BoardConstants.NUM_STARTING_PIECES_EACH):
+    def __init__(self, name, piece_colour, piece_count=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
         super().__init__(name, piece_colour, piece_count)
 
     def get_move(self, board):
