@@ -532,14 +532,13 @@ class Graphical_UI(UI):
         # button to show the display board window
         show_display_board_button = sg.Button("show board", key="show_board_button", font=(self.FONT, 15))
 
-
-        # calculate the number of pieces captured by each player
-        player1_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
-        player2_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
+        # text to show the number of pieces captured by each player
+        pieces_captured_player1_text = self.__get_pieces_captured_display_text(1)
+        pieces_captured_player2_text = self.__get_pieces_captured_display_text(2)
 
         # layout to show the number of pieces captured by each player
-        player1_captured_layout = [[sg.Text(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}", key="player1_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
-        player2_captured_layout = [[sg.Text(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}", key="player2_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
+        player1_captured_layout = [[sg.Text(pieces_captured_player1_text, key="player1_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
+        player2_captured_layout = [[sg.Text(pieces_captured_player2_text, key="player2_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
         
         # main layout for the match page
         layout = [
@@ -562,11 +561,21 @@ class Graphical_UI(UI):
 
         """Updates the text showing the number of pieces captured by each player on the match page"""
 
-        player1_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(2)
-        player2_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(1)
+        self.__main_window["player1_captured_text"].update(self.__get_pieces_captured_display_text(1))
+        self.__main_window["player2_captured_text"].update(self.__get_pieces_captured_display_text(2))
 
-        self.__main_window["player1_captured_text"].update(f"{self.__game.get_player_name(1)} captured pieces: {player1_captured}")
-        self.__main_window["player2_captured_text"].update(f"{self.__game.get_player_name(2)} captured pieces: {player2_captured}")
+
+    def __get_pieces_captured_display_text(self, player_number):
+            
+            """Returns a string containing the number of pieces captured by the given player"""
+
+            # calculate the number of pieces captured by the player
+            player_num_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(player_number)
+
+            # textwrap the player names to prevent the text from being too long and pushing the board off the screen
+            text_wrapped_player_name = textwrap.fill(self.__game.get_player_name(player_number), 10)
+    
+            return f"{text_wrapped_player_name} captured pieces: {player_num_captured}"
 
     def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
 
@@ -985,7 +994,6 @@ class Graphical_UI(UI):
         
         else:
             return self.__main_window["player_1_local_input"].get()
-
     
     def __toggle_highlight_board_position(self, key):
 
