@@ -10,17 +10,15 @@ from Database import Database
 
 # todo
     # make method names better
-    # rename board_loop to looped_track
+    # fix names pushing board issue
+    # make easy AI not randomly move back into a corner
+    # fix bug where you can't change your name against AI
+    # fix bug where game crashes after a match is completed
 
 
 # ! to add to coursework document:
-    # format of the gaame state string
-    # Board has players only for MCTS all other player things are handled by Game (this is why I pass in player objects to Board methods)
-        # explain that I'm doing it so you don't have to make a Game during MCTS
-        # try and enforce this so it can only be used from the GameTree class
-    # explain how a capture is illegal if you go all the way round and end up back at the start
-    # add stop early conditions for illegal capture to pseudocode
     # clearly state the difference between looped_track and a board loop and the terminology I will use
+    # objective for game saving how if you load an old game and save the old game is overwritten
 
 
 # ? to ask:
@@ -270,15 +268,15 @@ class Graphical_UI(UI):
         player_1_input_visible = not self.__logged_in
 
         # player 1 name input layout for AI play
-        player_1_input_ai_layout = self.__get_text_and_input_layout("Player 1 Name", "Player 1", "player_1_ai_input")
+        player_1_input_AI_layout = self.__get_text_and_input_layout("Player 1 Name", "Player 1", "player_1_AI_input")
 
         # adding the player 1 name input layout to a column for formatting purposes
-        player_1_ai_input_col = sg.Column(player_1_input_ai_layout, visible=player_1_input_visible)
+        player_1_AI_input_col = sg.Column(player_1_input_AI_layout, visible=player_1_input_visible)
 
         AI_input_layout = [
             [sg.Text("Difficulty", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Slider(range=(1, 3), default_value=1, orientation="h", size=self.SLIDER_SIZE, pad=(0, self.COLUMN_PAD), key="difficulty_slider")],
-            [player_1_ai_input_col],
+            [player_1_AI_input_col],
         ]
 
         # main column for the AI play inputs
@@ -975,15 +973,19 @@ class Graphical_UI(UI):
 
         return f"{tuple_key[0]},{tuple_key[1]}"
     
-    def __get_player1_name(self):
+    def __get_player1_name(self, ai_mode):
 
         """returns the player 1 during a match. If the user is logged in, this is the logged in username."""
 
         if self.__logged_in:
             return self.__logged_in_username
         
+        elif ai_mode:
+            return self.__main_window["player_1_AI_input"].get()
+        
         else:
             return self.__main_window["player_1_local_input"].get()
+
     
     def __toggle_highlight_board_position(self, key):
 
@@ -1159,7 +1161,7 @@ class Graphical_UI(UI):
 
             # submit the local play input fields and set up the match page
             elif event == "submit_local_play_button":
-                player_1_name = self.__get_player1_name()
+                player_1_name = self.__get_player1_name(ai_mode=False)
                 self.__setup_match_page(player_1_name, values["player_2_local_input"])
 
             # submit the AI play input fields and set up the match page
@@ -1168,7 +1170,7 @@ class Graphical_UI(UI):
                 self.__ai_name = self.__difficulty_level_to_ai_name(difficulty_level)
                 self.__ai_mode = True
 
-                player_1_name = self.__get_player1_name()
+                player_1_name = self.__get_player1_name(ai_mode=True)
 
                 self.__setup_match_page(player_1_name, self.__ai_name, ai_level=difficulty_level)
 

@@ -45,8 +45,9 @@ class Board:
         if game_state_string:
             self.__load_game_state(game_state_string)
 
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
+        # player objects are also stored in Board solely for MCTS. All other player related methods are in the Game class
         self.__player_lst = [player1, player2]
 
 
@@ -75,11 +76,11 @@ class Board:
         outer_lst = [GridLocation(i) for i in self.OUTER_TRACK_CORDS]
         inner_lst = [GridLocation(i) for i in self.INNER_TRACK_CORDS]
 
-        YELLOW_TEST_OUTER_LOOP = [(1,2)]
-        GREEN_TEST_OUTER_LOOP = [(2,4), (5,3)]
+        YELLOW_TEST_OUTER_LOOP = [(0,3)]
+        GREEN_TEST_OUTER_LOOP = []
 
-        YELLOW_TEST_INNER_LOOP = [(0,1), (1,2), (1,5)]
-        GREEN_TEST_INNER_LOOP = [(2,4), (4,0), (4,1), (4,5), (5,1)]
+        YELLOW_TEST_INNER_LOOP = []
+        GREEN_TEST_INNER_LOOP = [(5,1)]
 
         for i in outer_lst:
             if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
@@ -107,25 +108,25 @@ class Board:
         # self.__board[4][4].set_piece(Piece("y"))
         # self.__board[2][0].set_piece(Piece("g"))
 
-        self.__board[0][0].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        self.__board[0][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[0][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[0][4].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        self.__board[0][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[0][0].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[0][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        self.__board[0][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # # self.__board[0][4].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[0][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
 
-        # self.__board[1][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        self.__board[1][2].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[1][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        self.__board[1][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # # self.__board[1][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[1][2].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # # self.__board[1][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[1][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
 
-        # self.__board[2][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        self.__board[2][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # # self.__board[2][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+        # self.__board[2][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
 
-        self.__board[4][0].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        self.__board[4][1].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # self.__board[4][3].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # self.__board[4][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        self.__board[4][5].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # self.__board[4][0].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # self.__board[4][1].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # # self.__board[4][3].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # # self.__board[4][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+        # self.__board[4][5].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
 
         # self.__board[5][0].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
         self.__board[5][1].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))

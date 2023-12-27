@@ -24,7 +24,7 @@ class Database:
                 username TEXT,
                 password TEXT,
                 account_creation_date DATE,
-                preferred_piece_colour TEXT,
+                piece_colour TEXT,
                 PRIMARY KEY (user_id)
             );
 
@@ -99,7 +99,8 @@ class Database:
                 user_id INTEGER,
                 AI_difficulty TEXT,
                 win_count INTEGER,
-                loss_count INTEGER
+                loss_count INTEGER,
+                PRIMARY KEY (AI_game_stat_id)
             );
 
             """
@@ -193,7 +194,7 @@ class Database:
         
         """Returns the preferred piece colour of a user given their username."""
 
-        self.__cursor.execute("SELECT preferred_piece_colour FROM Users WHERE username = ?;", (username,))
+        self.__cursor.execute("SELECT piece_colour FROM Users WHERE username = ?;", (username,))
         return self.__cursor.fetchone()[0]
         
     def get_user_stats(self, username):
@@ -218,14 +219,13 @@ class Database:
         """Increments the win_count for a user and AI difficulty."""
 
         self.__cursor.execute(
-            """            
+            f"""            
 
             UPDATE AIGameStats
             SET win_count = win_count + 1
-            INNER JOIN Users ON Users.user_id = AIGameStats.user_id
-            WHERE Users.username = ? AND AIGameStats.AI_difficulty = ?;
+            WHERE AI_difficulty = ? AND user_id = ?;
 
-            """, (username, ai_difficulty)
+            """, (ai_difficulty, self.__get_user_id_from_username(username))
         )
 
         self.__conn.commit()
@@ -239,10 +239,9 @@ class Database:
     
                 UPDATE AIGameStats
                 SET loss_count = loss_count + 1
-                INNER JOIN Users ON Users.user_id = AIGameStats.user_id
-                WHERE Users.username = ? AND AIGameStats.AI_difficulty = ?;
+                WHERE AI_difficulty = ? AND user_id = ?;
     
-                """, (username, ai_difficulty)
+                """, (ai_difficulty, self.__get_user_id_from_username(username))
             )
     
             self.__conn.commit()
@@ -364,7 +363,7 @@ class Database:
             """
 
             UPDATE Users
-            SET preferred_piece_colour = ?
+            SET piece_colour = ?
             WHERE username = ?;
 
             """, (new_colour, username)
