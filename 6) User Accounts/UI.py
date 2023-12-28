@@ -10,10 +10,7 @@ from Database import Database
 
 # todo
     # make method names better
-    # fix names pushing board issue
     # make easy AI not randomly move back into a corner
-    # fix bug where you can't change your name against AI
-    # fix bug where game crashes after a match is completed
 
 
 # ! to add to coursework document:
@@ -190,6 +187,9 @@ class Graphical_UI(UI):
             [sg.Text("Surakarta", pad=(0, self.COLUMN_PAD), font=(self.FONT, self.TITLE_FONT_SIZE))],
             [buttons_frame]
         ]
+
+        if self.__main_window:
+            self.__main_window.close()
 
         self.__current_page = "home_page"
         self.__main_window = self.__create_window("Surakarta", layout, "center")
@@ -564,7 +564,6 @@ class Graphical_UI(UI):
         self.__main_window["player1_captured_text"].update(self.__get_pieces_captured_display_text(1))
         self.__main_window["player2_captured_text"].update(self.__get_pieces_captured_display_text(2))
 
-
     def __get_pieces_captured_display_text(self, player_number):
             
             """Returns a string containing the number of pieces captured by the given player"""
@@ -634,10 +633,6 @@ class Graphical_UI(UI):
             if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_display_number_captured_pieces() # update the number of pieces captured by each player
                 self.__end_if_game_over() # check if human has won --> only need to check if the game is over after a capture move
-
-                # unhiglight the selected locations
-                self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
-                self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
                 return
             
         else:
