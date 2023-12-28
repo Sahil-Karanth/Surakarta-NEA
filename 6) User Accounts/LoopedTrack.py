@@ -68,7 +68,7 @@ class LoopedTrack:
 
         return ind_lst
     
-    def switch_positions(self, pos1, pos2):
+    def switch_piece_positions(self, pos1, pos2):
 
         """replaces all occurences of pos1's piece with pos2's piece and all occurences of pos2's piece with pos1's piece"""
 

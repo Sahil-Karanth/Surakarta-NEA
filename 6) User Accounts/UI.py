@@ -9,17 +9,15 @@ from PIL import ImageTk, Image
 from Database import Database
 
 # todo
-    # make method names better
     # make easy AI not randomly move back into a corner
 
 
 # ! to add to coursework document:
-    # clearly state the difference between looped_track and a board loop and the terminology I will use
     # objective for game saving how if you load an old game and save the old game is overwritten
 
 
 # ? to ask:
-    # in the Board class' get_capture_with method is the repeated code okay
+    # in the Board class' get_loc_single_capture method is the repeated code okay
         # slight difference which might make the method code long/confusing if I try and make it more general
 
 
@@ -30,6 +28,7 @@ class UI:
     def __init__(self):
         self.__UI_type = None
         self.__game = None
+
     def get_UI_type(self):
         return self.__UI_type
     
@@ -77,7 +76,6 @@ class Graphical_UI(UI):
     AVAILABLE_PIECE_COLOURS = ["yellow", "green", "red", "lightblue", "orange", "black"]
     AI_RESERVED_NAMES = ["Easy AI", "Medium AI", "Hard AI"]
 
-
     def __init__(self):
         super().__init__()
         self.__UI_type = "GRAPHICAL"
@@ -100,7 +98,7 @@ class Graphical_UI(UI):
         # login status variables
         self.__logged_in = False
         self.__logged_in_username = None 
-        # self.__preferred_piece_colour = None
+        # self.__piece_colour = None
 
         # game variables
         self.__game = None
@@ -207,10 +205,10 @@ class Graphical_UI(UI):
     
     def __make_change_piece_colour_window(self):
 
-        """Creates the change piece colour window which lets a logged in user change their preferred piece colour"""
+        """Creates the change piece colour window which lets a logged in user change their piece colour"""
 
         layout = [
-            [sg.Text("Preferred Piece Colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Text("piece colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
             [sg.Combo(self.AVAILABLE_PIECE_COLOURS, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")],
             [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=self.SUBMIT_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_change_piece_colour_button")]
         ]
@@ -229,13 +227,13 @@ class Graphical_UI(UI):
 
         if login_or_signup == "signup":
 
-            # add preferred piece colour dropdown menu to signup window
+            # add piece colour dropdown menu to signup window
             drop_down_menu_layout = [
-                [sg.Text("Preferred Piece Colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+                [sg.Text("piece colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
                 [sg.Combo(self.AVAILABLE_PIECE_COLOURS, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")]
             ]
 
-            # signup window is taller than the login window because of the preferred piece colour dropdown menu
+            # signup window is taller than the login window because of the piece colour dropdown menu
             modal_height = self.SIGNUP_WINDOW_HEIGHT 
         
         layout = [
@@ -249,7 +247,7 @@ class Graphical_UI(UI):
 
         return self.__create_window(login_or_signup.title(), layout, "center", modal=True, keep_on_top=True, size=(300, modal_height), maximise=False, disable_close=False)
 
-    def __get_text_and_input_layout(self, disp_text, inp_default_text, inp_key):
+    def __get_new_game_text_and_input_layout(self, disp_text, inp_default_text, inp_key):
 
         """Returns a layout containing a text element and an input element"""
 
@@ -268,7 +266,7 @@ class Graphical_UI(UI):
         player_1_input_visible = not self.__logged_in
 
         # player 1 name input layout for AI play
-        player_1_input_AI_layout = self.__get_text_and_input_layout("Player 1 Name", "Player 1", "player_1_AI_input")
+        player_1_input_AI_layout = self.__get_new_game_text_and_input_layout("Player 1 Name", "Player 1", "player_1_AI_input")
 
         # adding the player 1 name input layout to a column for formatting purposes
         player_1_AI_input_col = sg.Column(player_1_input_AI_layout, visible=player_1_input_visible)
@@ -283,7 +281,7 @@ class Graphical_UI(UI):
         AI_input_col = sg.Column(key="AI_play_inputs", layout=AI_input_layout, pad=(0, self.COLUMN_PAD), visible=False)
 
         # player 1 name input layout for local play
-        player_1_input_local_layout = self.__get_text_and_input_layout("Player 1 Name", "Player 1", "player_1_local_input")
+        player_1_input_local_layout = self.__get_new_game_text_and_input_layout("Player 1 Name", "Player 1", "player_1_local_input")
 
         # adding the player 1 name input layout to a column for formatting purposes
         player_1_local_input_col = sg.Column(player_1_input_local_layout, visible=player_1_input_visible)
@@ -330,7 +328,7 @@ class Graphical_UI(UI):
         self.__current_page = "help_page"
         self.__main_window = self.__create_window("Help Page", layout, "center")
 
-    def __toggle_play_inputs(self, key_to_make_visible):
+    def __toggle_new_game_input_visibility(self, key_to_make_visible):
 
         """Toggles the visibility of the AI play inputs and the local play inputs. When the AI play inputs are visible, the local play inputs are not and vice versa"""
 
@@ -347,7 +345,7 @@ class Graphical_UI(UI):
             local_visible = True
         
         else:
-            raise ValueError("key_to_make_visible parameter of the __toggle_play_inputs method must be either 'AI_play_inputs' or 'local_play_inputs'")
+            raise ValueError("key_to_make_visible parameter of the __toggle_new_game_input_visibility method must be either 'AI_play_inputs' or 'local_play_inputs'")
 
 
         # make the elements visible or invisible
@@ -465,7 +463,7 @@ class Graphical_UI(UI):
         ai_stats_table = self.__create_table(ai_match_stats, ai_stats_table_headers, "ai_stats_table")
 
         # request the user's game history from the database
-        game_history = self.__db.get_game_history(self.__logged_in_username)
+        game_history = self.__db.get_user_game_history(self.__logged_in_username)
         game_history_table_headers = ["Game Number", "Date", "Opponent", "Winner"]
 
         game_history_table = self.__create_table(game_history, game_history_table_headers, "game_history_table")
@@ -555,9 +553,9 @@ class Graphical_UI(UI):
 
         if player2_starts: # player 2 can start if the game is being loaded (i.e. not a new game)
             self.__update_current_player_display(self.__game_is_loaded)
-            self.__update_display_number_captured_pieces()
+            self.__update_number_captured_pieces_display()
 
-    def __update_display_number_captured_pieces(self):
+    def __update_number_captured_pieces_display(self):
 
         """Updates the text showing the number of pieces captured by each player on the match page"""
 
@@ -576,7 +574,7 @@ class Graphical_UI(UI):
     
             return f"{text_wrapped_player_name} captured pieces: {player_num_captured}"
 
-    def __update_game_and_UI_post_move(self, start_loc, end_loc, move_type):
+    def __update_game_and_UI_after_move(self, start_loc, end_loc, move_type):
 
         """updates the game object and the match page GUI after a move has been made"""
 
@@ -584,7 +582,7 @@ class Graphical_UI(UI):
         move_obj = self.__game.make_and_return_move(start_loc, end_loc, move_type)
 
         # updating the UI with the move object
-        self.__update_board_display(move_obj.get_start_cords(), move_obj.get_end_cords(), move_obj.get_start_colour())
+        self.__update_board_display_after_move(move_obj.get_start_cords(), move_obj.get_end_cords(), move_obj.get_start_colour())
 
         # update GUI and game object with the new current player
         self.__update_current_player_display()
@@ -628,10 +626,10 @@ class Graphical_UI(UI):
         if self.__game.is_legal_move(start_loc, end_loc, move_type): # check if the attempted move is legal
 
             # make move on board and GUI
-            self.__update_game_and_UI_post_move(start_loc, end_loc, move_type)
+            self.__update_game_and_UI_after_move(start_loc, end_loc, move_type)
 
             if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
-                self.__update_display_number_captured_pieces() # update the number of pieces captured by each player
+                self.__update_number_captured_pieces_display() # update the number of pieces captured by each player
                 self.__end_if_game_over() # check if human has won --> only need to check if the game is over after a capture move
                 return
             
@@ -647,10 +645,10 @@ class Graphical_UI(UI):
             move = self.__game.get_ai_move() # get the AI's move
 
             # make the AI's move on the board and GUI
-            self.__update_game_and_UI_post_move(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
+            self.__update_game_and_UI_after_move(move.get_start_loc(), move.get_end_loc(), move.get_move_type())
 
             if move.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
-                self.__update_display_number_captured_pieces()
+                self.__update_number_captured_pieces_display()
                 self.__end_if_game_over() # check if AI has won
 
     def __reset_game_variables(self):
@@ -671,7 +669,7 @@ class Graphical_UI(UI):
         self.__game.set_game_status()
 
         if self.__game.is_game_over():
-            winning_player = self.__game.get_winner()
+            winning_player = self.__game.get_winning_player()
 
             sg.popup(f"{winning_player.get_name()} has won the game!", title="Game Over", keep_on_top=True)
 
@@ -692,20 +690,20 @@ class Graphical_UI(UI):
 
             # add game to game history if the user is logged in
             if self.__logged_in:
-                self.__db.add_game_to_history(self.__logged_in_username, self.__game.get_player_name(2), self.__game.get_winner().get_name())
+                self.__db.add_game_to_history(self.__logged_in_username, self.__game.get_player_name(2), winning_player.get_name())
 
             self.__reset_game_variables()
             self.__setup_home_page() # go back to the home page after a match has ended
 
     def __handle_change_piece_colour(self, new_piece_colour):
             
-            """Changes the piece colour of the player. This method is used when a logged in user changes their preferred piece colour"""
+            """Changes the piece colour of the player. This method is used when a logged in user changes their piece colour"""
 
             # update the piece colours in the MultiClassBoardAttributes class (for the current running application)
-            self.__update_preferred_piece_colour(new_piece_colour)
+            self.__update_piece_colour(new_piece_colour)
     
             # update the new piece colour in the database
-            self.__db.update_preferred_piece_colour(self.__logged_in_username, new_piece_colour)
+            self.__db.update_stored_piece_colour(self.__logged_in_username, new_piece_colour)
             self.__change_piece_colour_window.close()
     
     def __handle_delete_saved_game(self, game_id):
@@ -753,7 +751,7 @@ class Graphical_UI(UI):
         print(player1_colour)
 
         # update the player 1 colour in the MultiClassBoardAttributes class to be the colour that the user had when they saved the game
-        self.__update_preferred_piece_colour(player1_colour)
+        self.__update_piece_colour(player1_colour)
 
         print(MultiClassBoardAttributes.player_1_colour)
 
@@ -784,7 +782,7 @@ class Graphical_UI(UI):
             self.__logged_in_username = None
 
             # reset the player 1 piece colour to the default colour
-            self.__update_preferred_piece_colour(MultiClassBoardAttributes.DEFAULT_PLAYER_1_COLOUR)
+            self.__update_piece_colour(MultiClassBoardAttributes.DEFAULT_PLAYER_1_COLOUR)
 
             sg.popup("Logged out", title="Logged Out", keep_on_top=True)
 
@@ -817,9 +815,9 @@ class Graphical_UI(UI):
         else:
             sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
 
-    def __update_preferred_piece_colour(self, new_colour):
+    def __update_piece_colour(self, new_colour):
 
-        """Updates the preferred piece colour of the player. This method is used when a logged in user changes their preferred piece colour"""
+        """Updates the piece colour of the player. This method is used when a logged in user changes their piece colour"""
 
         MultiClassBoardAttributes.set_player_colour(new_colour, 1)
 
@@ -841,16 +839,16 @@ class Graphical_UI(UI):
             self.__logged_in_username = username
             self.__logged_in = True
 
-            # query the database for the user's preferred piece colour and update the piece colours in the MultiClassBoardAttributes class
-            preferred_piece_colour = self.__db.get_preferred_piece_colour(username)
-            self.__update_preferred_piece_colour(preferred_piece_colour)
+            # query the database for the user's piece colour and update the piece colours in the MultiClassBoardAttributes class
+            piece_colour = self.__db.get_piece_colour(username)
+            self.__update_piece_colour(piece_colour)
 
             self.__login_window.close()
 
         else:
             sg.popup("Incorrect username or password", title="Error Logging In", keep_on_top=True)
 
-    def __handle_sign_up(self, username, password, preferred_piece_colour):
+    def __handle_sign_up(self, username, password, piece_colour):
 
         """Attempts to sign the user up with the given username and password. Displays an error message if the username is already taken or if the username is reserved"""
 
@@ -864,7 +862,7 @@ class Graphical_UI(UI):
             
         else:
             # add the user to the database
-            self.__db.add_user(username, password, preferred_piece_colour)
+            self.__db.add_user(username, password, piece_colour)
 
             sg.popup("Account created", title="Account Created", keep_on_top=True)
             self.__signup_window.close()
@@ -919,7 +917,7 @@ class Graphical_UI(UI):
         else:
             sg.popup("Not logged in", title="Not Logged In", keep_on_top=True)
 
-    def __update_board_display(self, start_cords, end_cords, start_colour):
+    def __update_board_display_after_move(self, start_cords, end_cords, start_colour):
 
         """updates the GUI board display after a move has been made"""
 
@@ -971,7 +969,7 @@ class Graphical_UI(UI):
 
         return tuple(int(i) for i in string_key.split(","))
     
-    def __tuple_key_cords_str(self, tuple_key):
+    def __cords_tuple_to_str_key(self, tuple_key):
 
         """converts a tuple key of the form (x,y) to a string of the form 'x,y' where x and y are integers"""
 
@@ -1024,15 +1022,15 @@ class Graphical_UI(UI):
             return
         
         # update the GUI board display by making the last move in reverse
-        self.__update_board_display(move_obj.get_end_cords(), move_obj.get_start_cords(), move_obj.get_start_colour())
+        self.__update_board_display_after_move(move_obj.get_end_cords(), move_obj.get_start_cords(), move_obj.get_start_colour())
 
         # if the last move was a capture move, restore the piece that was captured to the board GUI
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:            
-            cords = self.__tuple_key_cords_str(move_obj.get_end_cords())
+            cords = self.__cords_tuple_to_str_key(move_obj.get_end_cords())
             self.__main_window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
 
             # show the new number of pieces captured by each player
-            self.__update_display_number_captured_pieces()
+            self.__update_number_captured_pieces_display()
 
         # update the current player in game and on the GUI's display text
         self.__update_current_player_display()
@@ -1151,16 +1149,16 @@ class Graphical_UI(UI):
 
             # attempt to sign the user up
             elif event == "signup_submit_button":
-                username, password, preferred_piece_colour = values["signup_username_input"], values["signup_password_input"], values["piece_colour_choice"]
-                self.__handle_sign_up(username, password, preferred_piece_colour)
+                username, password, piece_colour = values["signup_username_input"], values["signup_password_input"], values["piece_colour_choice"]
+                self.__handle_sign_up(username, password, piece_colour)
 
             # show the AI play input fields and hide the local play input fields in the new game page
             elif event == "AI_play_button":
-                self.__toggle_play_inputs("AI_play_inputs")
+                self.__toggle_new_game_input_visibility("AI_play_inputs")
 
             # show the local play input fields and hide the AI play input fields in the new game page
             elif event == "local_play_button":
-                self.__toggle_play_inputs("local_play_inputs")
+                self.__toggle_new_game_input_visibility("local_play_inputs")
 
             # submit the local play input fields and set up the match page
             elif event == "submit_local_play_button":

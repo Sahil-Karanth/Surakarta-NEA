@@ -190,7 +190,7 @@ class Database:
         # compare the stored password and the hashed password
         return stored_password == hashed_password
 
-    def get_preferred_piece_colour(self, username):
+    def get_piece_colour(self, username):
         
         """Returns the preferred piece colour of a user given their username."""
 
@@ -336,7 +336,7 @@ class Database:
         self.__cursor.execute("INSERT INTO GameHistory VALUES (?, ?, ?, ?, ?);", (historical_game_id, user_id, player2name, game_date, winner_name))
         self.__conn.commit()
 
-    def get_game_history(self, username):
+    def get_user_game_history(self, username):
 
         """Returns a list of games from the GameHistory table for a user given their username."""
 
@@ -355,7 +355,7 @@ class Database:
         # self.__cursor.execute("SELECT historical_game_id, game_date, opponent, winner FROM GameHistory WHERE username = ?;", (username,))
         # return self.__cursor.fetchall()
 
-    def update_preferred_piece_colour(self, username, new_colour):
+    def update_stored_piece_colour(self, username, new_colour):
         
         """Updates a user's preferred piece colour in the Users table."""
 

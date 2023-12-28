@@ -228,7 +228,7 @@ class Board:
             return False
         return True
     
-    def __is_adjacent(self, start_loc, end_loc):
+    def __are_locs_adjacent(self, start_loc, end_loc):
         
         """Returns True if start_loc and end_loc are adjacent to each other on the board otherwise returns False.
         Diagonal locations are considered adjacent."""
@@ -287,7 +287,7 @@ class Board:
             return False
         
         # if the end location is adjacent to the start location and is empty, the move is legal
-        if self.__is_adjacent(start_loc, end_loc) and end_loc.is_empty():
+        if self.__are_locs_adjacent(start_loc, end_loc) and end_loc.is_empty():
             return True
         
         return False
@@ -459,7 +459,7 @@ class Board:
                 curr_loc = looped_track.get_next_right()
             
             # increment loop_count if a board loop has been traversed to get from prev_loc to curr_loc
-            if self.__loop_used(prev_loc, curr_loc):
+            if self.__board_loop_used(prev_loc, curr_loc):
                 loop_count += 1
             
             # return a Move object representing the capture if a valid capture is found
@@ -484,7 +484,7 @@ class Board:
         self.__board[end_cords[0]][end_cords[1]].set_piece(start_loc.get_piece())
         self.__board[start_cords[0]][start_cords[1]].set_piece(None)
     
-    def __loop_used(self, prev_loc, curr_loc):
+    def __board_loop_used(self, prev_loc, curr_loc):
 
         """Returns True if a loop has been used to get from prev_loc to curr_loc. Otherwise it returns False"""
 
@@ -521,8 +521,8 @@ class Board:
 
         """Updates the inner and outer tracks to reflect the move specified by move_obj. If undo is True, the move is made in reverse."""
 
-        self.__inner_track.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
-        self.__outer_track.switch_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+        self.__inner_track.switch_piece_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+        self.__outer_track.switch_piece_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
 
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             if undo:
@@ -566,23 +566,6 @@ class Board:
         piece = Piece(colour)
 
         self.__board[cords[0]][cords[1]].set_piece(piece)
-
-    def check_has_legal_moves(self, location, player):
-
-        """Returns True if the location passed as an argument has a legal move to make otherwise returns False"""
-
-        if location.get_piece() == None:
-            return False
-
-        for row in self.__board:
-            for end_loc in row:
-
-                # if end_loc has an opponent's piece, check if a legal move can be made to it
-                if not end_loc.is_empty() and end_loc.get_colour() != player.get_colour():
-                    if self.is_legal_move(location, end_loc, player, MultiClassBoardAttributes.NORMAL_MOVE_TYPE) or self.is_legal_move(location, end_loc, player, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE):
-                        return True
-
-        return False
     
     def __get_loc_legal_moves(self, loc, player):
 
@@ -603,7 +586,7 @@ class Board:
 
         return legal_moves
     
-    def get_legal_moves(self, player_colour):
+    def get_player_legal_moves(self, player_colour):
 
         """Returns a list of legal moves that can be made by player"""
 
@@ -620,7 +603,7 @@ class Board:
 
         return legal_moves
     
-    def get_single_legal_move(self, player_colour):
+    def get_single_random_legal_move(self, player_colour):
 
         """Returns a single, random legal move (Move object) that can be made by the player specified by player_colour"""
 
@@ -637,7 +620,7 @@ class Board:
 
                         return move
 
-    def get_capture_with(self, start_loc):
+    def get_loc_single_capture(self, start_loc):
         
         """returns a possible capture with the piece at loc"""
 
@@ -697,7 +680,7 @@ class Board:
             
         return None
 
-    def get_random_move(self):
+    def get_random_normal_move(self):
 
         """Returns a random normal move (non-capturing move) that can be made on the board for the Easy AI opponent"""
 

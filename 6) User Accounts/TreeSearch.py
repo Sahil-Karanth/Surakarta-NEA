@@ -68,7 +68,7 @@ class GameTree:
     WIN = 1
     TIME_FOR_MOVE = 20 # seconds
     MOVES_PER_ROLLOUT = 2000
-    EXPLORATION_CONSTANT = 1.414
+    EXPLORATION_CONSTANT = 1.414 # ! CHANGEME
 
     def __init__(self, root_board):
         self.__root = Node(root_board, depth=0)
@@ -97,7 +97,7 @@ class GameTree:
 
         self.__current_node.add_child(child)
 
-    def UCB1(self, node):
+    def calc_UCB1(self, node):
         
         """returns the UCB1 value of a node used to determine which node to select next in the MCTS algorithm"""
         
@@ -143,7 +143,7 @@ class GameTree:
         curr_depth = self.__current_node.get_depth()
         current_player_colour = self.__get_current_player_colour(curr_depth)
 
-        return board.get_legal_moves(current_player_colour)
+        return board.get_player_legal_moves(current_player_colour)
 
     def current_is_leaf(self):
         """returns True if the current node is a leaf node in the tree, otherwise returns False"""
@@ -155,7 +155,7 @@ class GameTree:
         """selects a new current node to be the node with the highest UCB1 value among the current node's children"""
 
         # list of tuples of the form (node, UCB1 value) for each child of the current node
-        ucb1_scores = [(node, self.UCB1(node)) for node in self.__current_node.get_children()]
+        ucb1_scores = [(node, self.calc_UCB1(node)) for node in self.__current_node.get_children()]
 
         # set the current node to the child with the highest UCB1 value
         self.__current_node = max(ucb1_scores, key=lambda x: x[1])[0]
@@ -199,7 +199,7 @@ class GameTree:
             # get the colour of the current player based on the depth of the current node
             rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
 
-            simulated_move = rollout_board.get_single_legal_move(rollout_colour)
+            simulated_move = rollout_board.get_single_random_legal_move(rollout_colour)
             rollout_board.move_piece(simulated_move)
             
             num_moves += 1
@@ -271,6 +271,4 @@ class GameTree:
         print([(node.get_value(), node.get_move_obj().__str__()) for node in self.__root.get_children()])
 
         return best_node.get_move_obj()
-
-
 

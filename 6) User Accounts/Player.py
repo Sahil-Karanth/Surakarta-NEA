@@ -72,7 +72,7 @@ class EasyAIPlayer(AIPlayer):
         for row in shuffled_board:
             for loc in row:
                 if (loc.get_colour() == self.get_colour()):
-                    move = board.get_capture_with(loc)
+                    move = board.get_loc_single_capture(loc)
 
                     if move: # capture possible with piece at loc
                         return move
@@ -85,7 +85,7 @@ class EasyAIPlayer(AIPlayer):
         if len(corner_move_lst) > 0: # checks if no captures are found
             return random.choice(corner_move_lst)
 
-        return board.get_random_move()
+        return board.get_random_normal_move()
 
 
 class MediumAIPlayer(AIPlayer):
