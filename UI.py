@@ -76,6 +76,9 @@ class Graphical_UI(UI):
     AVAILABLE_PIECE_COLOURS = ["yellow", "green", "red", "lightblue", "orange", "black"]
     AI_RESERVED_NAMES = ["Easy AI", "Medium AI", "Hard AI"]
 
+    PIECE_IMAGES_PATH = "images/piece_images/"
+    BOARD_IMAGES_PATH = "images/board_images/"
+
     def __init__(self):
         super().__init__()
         self.__UI_type = "GRAPHICAL"
@@ -321,7 +324,7 @@ class Graphical_UI(UI):
         layout = [
             [self.__create_menu()],
             [text_layout],
-            [sg.Image("images/board_images/starting_board.png", expand_y=True)],
+            [sg.Image(f"{self.BOARD_IMAGES_PATH}starting_board.png", expand_x=True, expand_y=True)],
         ]
 
         self.__main_window.close() # close the previous window (home page)
@@ -359,7 +362,7 @@ class Graphical_UI(UI):
 
         """Creates a button used to represent a board piece with the given piece type and key. The button is invisible by default"""
 
-        return sg.Button("", image_filename=f"images/piece_images/{piece_type}_counter.png", pad=self.PIECE_BUTTON_PAD, visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
+        return sg.Button("", image_filename=f"{self.PIECE_IMAGES_PATH}{piece_type}_counter.png", pad=self.PIECE_BUTTON_PAD, visible=visible, key=key, button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0)
 
     def __create_table(self, database_table_data, headers, key):
 
@@ -874,7 +877,7 @@ class Graphical_UI(UI):
         self.__display_board_window = self.__make_display_board_window()
         
         # loading the board image to be the background of the canvas
-        image_path = 'images/board_images/blank_board.png'
+        image_path = f"{self.BOARD_IMAGES_PATH}blank_board.png"
         image = Image.open(image_path)
 
         # Resize the image to fit the canvas
@@ -926,8 +929,8 @@ class Graphical_UI(UI):
         end_cords_str = f"{end_cords[0]},{end_cords[1]}"
 
         # update the start and end location piece buttons on the GUI board with their new images
-        self.__main_window[f"{start_cords_str}"].update(image_filename=f"blank_counter.png")   
-        self.__main_window[f"{end_cords_str}"].update(image_filename=f"{start_colour}_counter.png")
+        self.__main_window[f"{start_cords_str}"].update(image_filename=f"{self.PIECE_IMAGES_PATH}blank_counter.png")   
+        self.__main_window[f"{end_cords_str}"].update(image_filename=f"{self.PIECE_IMAGES_PATH}{start_colour}_counter.png")
 
     def __update_current_player_display(self, game_is_loaded=False):
 
@@ -1027,7 +1030,7 @@ class Graphical_UI(UI):
         # if the last move was a capture move, restore the piece that was captured to the board GUI
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:            
             cords = self.__cords_tuple_to_str_key(move_obj.get_end_cords())
-            self.__main_window[f"{cords}"].update(image_filename=f"{move_obj.get_end_colour()}_counter.png")
+            self.__main_window[f"{cords}"].update(image_filename=f"{self.PIECE_IMAGES_PATH}{move_obj.get_end_colour()}_counter.png")
 
             # show the new number of pieces captured by each player
             self.__update_number_captured_pieces_display()
