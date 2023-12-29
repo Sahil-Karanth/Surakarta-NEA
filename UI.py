@@ -81,10 +81,14 @@ class Graphical_UI(UI):
 
     def __init__(self):
         super().__init__()
+        
         self.__UI_type = "GRAPHICAL"
 
-        with open("dummy_text", "r") as f:
-            self.__dummy_text = textwrap.fill(f.read(), 140)
+        with open("help_page_text", "r") as f:
+            
+            self.__about_surakarta_text = textwrap.fill(f.readline(), 140)
+            self.__rules_text = textwrap.fill(f.readline(), 140)
+
 
         sg.theme('Dark')
 
@@ -316,9 +320,9 @@ class Graphical_UI(UI):
 
         text_layout = [
             [sg.Text("What is Surakarta?", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.Text(self.__dummy_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Text(self.__about_surakarta_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
             [sg.Text("Rules", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.Text(self.__dummy_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Text(self.__rules_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
         ]
 
         layout = [
