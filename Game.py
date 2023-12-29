@@ -122,9 +122,12 @@ class Game:
     def get_current_player_name(self):
         return self.__current_player.get_name()
     
+    def get_current_player_colour(self):
+        return self.__current_player.get_colour()
+
     def switch_current_player(self):
         self.__current_player, self.__non_current_player = self.__non_current_player, self.__current_player
-    
+
     def get_player_name(self, player_number):
         return self.__player_lst[player_number - 1].get_name()
     

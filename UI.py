@@ -10,8 +10,6 @@ from Database import Database
 
 # todo
     # make easy AI not randomly move back into a corner
-    # change file structure
-
 
 # ! to add to coursework document:
 
@@ -27,18 +25,19 @@ class UI:
 
     def __init__(self):
         self.__UI_type = None
+
+        # a Game object
         self.__game = None
 
     def get_UI_type(self):
-        return self.__UI_type
+        raise NotImplementedError
     
     def play_game(self):
         raise NotImplementedError
-
-   
+  
 class Graphical_UI(UI):
 
-    """Graphical User Interface class for the game"""
+    """Graphical User Interface class for the game. Inherits from the UI class."""
 
     BUTTON_SIZE = 30
     FONT = "Helvetica"
@@ -964,7 +963,10 @@ class Graphical_UI(UI):
         if not key:
             return False
 
-        pattern = r'^[0-5],[0-5]$'
+        min_row_index = MultiClassBoardAttributes.MIN_ROW_INDEX
+        max_row_index = MultiClassBoardAttributes.MAX_ROW_INDEX
+
+        pattern = fr'^[{min_row_index}-{max_row_index}],[{min_row_index}-{max_row_index}]$'
         if bool(re.match(pattern, key)):
             return True
         
@@ -1220,100 +1222,128 @@ class Graphical_UI(UI):
 
 class Terminal_UI(UI):
     
+    """Terminal user interface for the game. Inherits from the UI class. Only supports local play."""
+
+    # constants used to display the board
+    EMPTY_SPACE_CHAR = "."
+    ROW_SPACING = " " * 2
+    COL_INDENT = " " * 5
+    COL_SPACING = " " * 2
+    COL_UNDERLINE_INDENT = " " * 3
+    COL_UNDERLINE = "—" * 18
+
     def __init__(self):
         self.__UI_type = "TERMINAL"
-        self.__game = self.__setup_game()
-
-    def __setup_game(self):
-        # player1name = input("Enter player 1's name: ")
-        # player2name = input("Enter player 2's name: ")
-        # TEST CODE
-        player1name = f"Player 1 ({BoardConstants.PLAYER_1_COLOUR})"
-        player2name = f"Player 2 ({BoardConstants.PLAYER_2_COLOUR})"
-        # END TEST CODE
-        return Game(player1name, player2name)
+        self.__game = Game(input("Enter player 1's name: "), input("Enter player 2's name: "))
     
     def get_UI_type(self):
         return self.__UI_type
     
-    def get_cords_from_user(self, prompt):
+    def __get_cords_from_user(self, prompt):
+
+        """Gets a valid coordinate from the user in the form 'row,col' where row and col are integers between 0 and 5 inclusive."""
+
         valid = False
-        pattern = r'^[0-5],[0-5]$'
+
+        min_row_index = MultiClassBoardAttributes.MIN_ROW_INDEX
+        max_row_index = MultiClassBoardAttributes.MAX_ROW_INDEX
+        
+        # regex pattern to check if the user's input is valid
+        pattern = fr'^[{min_row_index}-{max_row_index}],[{min_row_index}-{max_row_index}]$'
+
         while not valid:
+
             choice = input(prompt)
             if bool(re.match(pattern, choice)):
                 valid = True
+
             else:
                 print("Invalid Coordinate. Must be of the form 'r,c' where r and c are integers between 0 and 5 inclusive.")
 
+        # convert the user's input to a tuple of integers of the form (r,c)
         return tuple([int(i) for i in choice.split(",")])
-
-    def get_piece_colour(self, piece):
-        return piece.get_colour()
     
-    def display_board(self):
+    def __display_board(self):
+
+        """Displays the board in the terminal"""
+
         board = self.__game.get_board_state()
         
         disp_board = []
+
         for row in board:
             for loc in row:
                 if loc.is_empty():
-                    disp_board.append(f"{'.'}")
+                    disp_board.append(f"{self.EMPTY_SPACE_CHAR}")
+
                 else:
-                    disp_board.append(loc.get_colour())
+                    # single character representing the colour of the piece
+                    disp_board.append(loc.get_colour()[0])
         
-        disp_board = oneD_to_twoD_array(disp_board, BoardConstants.MAX_ROW_INDEX + 1)
+        # convert the one dimensional array to a 6x6 two dimensional array
+        disp_board = oneD_to_twoD_array(disp_board, MultiClassBoardAttributes.MAX_ROW_INDEX + 1)
 
-        self.__display_row_indexes()
+        # display the column indexes
+        self.__display_col_indexes()
 
-        for i,row in enumerate(disp_board):
-            print(f"{i} | ", end=" ")
-            print("  ".join(row))
+        # displaay the row indexes and the board
+        for ind,row in enumerate(disp_board):
+            print(f"{ind} | ", end=" ")
+            print(self.ROW_SPACING.join(row))
 
-    def __display_row_indexes(self):
-        print("     ", end="")
-        print("  ".join([str(i) for i in range(BoardConstants.MAX_ROW_INDEX + 1)]))
-        print("    ", end="")
-        print("—" * 17)
+    def __display_col_indexes(self):
+        
+        """Displays the column indexes of the board in the terminal"""
 
-    def display_winner(self):
-        winner = self.__game.get_winner()
+        print(self.COL_INDENT, end="")
+        print(self.COL_SPACING.join([str(i) for i in range(MultiClassBoardAttributes.MAX_ROW_INDEX + 1)]))
+        print(self.COL_UNDERLINE_INDENT, end="")
+        print(self.COL_UNDERLINE)
+
+    def __display_winner(self):
+
+        """Displays the winner of the game in the terminal"""
+
+        winner = self.__game.get_winning_player()
         print(f"{winner.get_name()} won!")
 
-    def get_move_type(self):
+    def __get_move_type(self):
+
+        """Gets the move type from the user. Either a normal move or a capture move."""
+
         valid = False
         while not valid:
-            move_type = input("Enter 'move' for an ordinary move to an adjacent position or 'capture' for a capturing move: ")
-            if move_type == "move" or move_type == "capture":
+            
+            move_type = input(f"Enter {MultiClassBoardAttributes.NORMAL_MOVE_TYPE} for an ordinary move to an adjacent position or {MultiClassBoardAttributes.CAPTURE_MOVE_TYPE} for a capturing move: ")
+            
+            if move_type == MultiClassBoardAttributes.NORMAL_MOVE_TYPE or move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 valid = True
+
             else:
                 print("Invalid move type. Please try again.")
+
         return move_type
 
     def play_game(self):
 
+        """The main loop of the terminal UI. Handles all events and updates the UI accordingly.
+        This is the main public method of the UI class and is called by the main.py file to launch the application."""
+
         while not self.__game.is_game_over():
-            self.display_board()
-            print()
-            print(f"{self.__game.get_current_player_name()}'s turn.")
-            print()
+
+            self.__display_board()
+
+            print(f"\n{self.__game.get_current_player_name()}'s turn ({self.__game.get_current_player_colour()}).\n")
 
             valid = False
             while not valid:
 
-                move_type = self.get_move_type()
-                # # TEST CODE
-                # move_type = "capture"
-                # # END TEST CODE
+                move_type = self.__get_move_type()
 
-                start_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
-                end_cords = self.get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
-                
-                # # TEST CODE
-                # start_cords = (2,4)
-                # end_cords = (4,4)
-                # # END TEST CODE
+                start_cords = self.__get_cords_from_user("Enter a row and column pair in the format r,c for the piece you want to move: ")
+                end_cords = self.__get_cords_from_user("Enter a row and column pair in the format r,c for where you want to move to: ")
 
+                # getting the corresponding GridLocation objects from the game object's board
                 start_loc = self.__game.get_board_state()[start_cords[0]][start_cords[1]]
                 end_loc = self.__game.get_board_state()[end_cords[0]][end_cords[1]]
 
@@ -1322,12 +1352,14 @@ class Terminal_UI(UI):
                 else:
                     print("Invalid move. Please try again.")
 
-            self.__game.move_piece(start_loc, end_loc, move_type)
+            self.__game.make_and_return_move(start_loc, end_loc, move_type)
             
             self.__game.switch_current_player()
             
-            if move_type == "capture":
+            # game can only be over after a capture move
+            if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__game.set_game_status()
 
-        self.display_board()
-        self.display_winner()
+        # display the final board and the winner
+        self.__display_board()
+        self.__display_winner()
