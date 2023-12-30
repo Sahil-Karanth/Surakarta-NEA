@@ -45,7 +45,7 @@ class Board:
         if game_state_string:
             self.__load_game_state(game_state_string)
 
-        self.__edit_board_for_testing()
+        # self.__edit_board_for_testing()
 
         # player objects are also stored in Board solely for MCTS. All other player related methods are in the Game class
         self.__player_lst = [player1, player2]

@@ -572,8 +572,17 @@ class Graphical_UI(UI):
             
             """Returns a string containing the number of pieces captured by the given player"""
 
-            # calculate the number of pieces captured by the player
-            player_num_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(player_number)
+            if player_number == 1:
+                other_player_num = 2
+            
+            elif player_number == 2:
+                other_player_num = 1
+
+            else:
+                raise ValueError("player_number parameter of the __get_pieces_captured_display_text method must be either 1 or 2")
+
+            # calculate the number of pieces captured by the player (starting pieces - pieces left for the other player)
+            player_num_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(other_player_num)
 
             # textwrap the player names to prevent the text from being too long and pushing the board off the screen
             text_wrapped_player_name = textwrap.fill(self.__game.get_player_name(player_number), 10)
@@ -637,7 +646,6 @@ class Graphical_UI(UI):
             if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_number_captured_pieces_display() # update the number of pieces captured by each player
                 self.__end_if_game_over() # check if human has won --> only need to check if the game is over after a capture move
-                return
             
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
@@ -754,12 +762,8 @@ class Graphical_UI(UI):
         # unpack the loaded game data
         game_state_string, player2_name, player2_starts, player1pieces, player2pieces, player1_colour = loaded_game_data
 
-        print(player1_colour)
-
         # update the player 1 colour in the MultiClassBoardAttributes class to be the colour that the user had when they saved the game
         self.__update_piece_colour(player1_colour)
-
-        print(MultiClassBoardAttributes.player_1_colour)
 
         # if the player 2 name is an AI name, the game is an AI game
         if player2_name in self.__ai_name_to_level_num_map.values():
