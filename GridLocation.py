@@ -12,9 +12,9 @@ class GridLocation:
     # inner track cordinates have row (1 or 4) and column (1 or 4)
     INNER_TRACK_NUMBERS = (1, 4)
 
-    # player 1 pieces start on rows 0 and 1, player 2 pieces start on rows 4 and 5
-    PLAYER_1_ROWS = (0, 1)
-    PLAYER_2_ROWS = (4, 5)
+    # player 1 pieces start on rows 4 and 5, player 2 pieces start on rows 0 and 1
+    PLAYER_1_ROWS = (4, 5)
+    PLAYER_2_ROWS = (0, 1)
 
     def __init__(self, cords):
         self.__cords = cords
