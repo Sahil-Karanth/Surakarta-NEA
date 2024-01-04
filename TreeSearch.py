@@ -66,9 +66,9 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
-    TIME_FOR_MOVE = 20 # seconds
+    TIME_FOR_MOVE = 40 # seconds
     MOVES_PER_ROLLOUT = 2000
-    EXPLORATION_CONSTANT = 1.414 # ! CHANGEME
+    EXPLORATION_CONSTANT = 2 # ! CHANGEME
 
     def __init__(self, root_board):
         self.__root = Node(root_board, depth=0)
