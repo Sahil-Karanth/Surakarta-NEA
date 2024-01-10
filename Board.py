@@ -563,7 +563,7 @@ class Board:
             self.__spawn_piece(move_obj.get_end_colour(), move_obj.get_end_loc())
         
         elif move_obj.get_move_type() == MultiClassBoardAttributes.NORMAL_MOVE_TYPE:
-            self.move_piece(move_obj, undo=True)
+            self.__move_piece_with_undo_arg(move_obj, undo=True)
 
     def __spawn_piece(self, colour, loc):
 
