@@ -8,15 +8,15 @@ class Game:
 
     """The Game class manages the game state. It contains the board, the players, and the move history stack."""
 
-    def __init__(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
+    def __init__(self, player1name, player2_name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
         
         self.__player1 = Player(player1name, MultiClassBoardAttributes.player_1_colour, player1_num_pieces)
 
         # If ai_level is not None, player 2 is an AI player. Otherwise, player 2 is a human player.
         if ai_level:
-            self.__player2 = self.__make_ai_player(player2name, player2_num_pieces)
+            self.__player2 = self.__make_ai_player(player2_name, player2_num_pieces)
         else:
-            self.__player2 = Player(player2name, MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
+            self.__player2 = Player(player2_name, MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
 
         self.__player_lst = [self.__player1, self.__player2]
 
@@ -32,7 +32,7 @@ class Game:
         if player2_starts: # if a game is loaded from a save it might be player 2's turn first
             self.switch_current_player()
 
-    def __make_ai_player(self, player2name, player2_num_pieces):
+    def __make_ai_player(self, player2_name, player2_num_pieces):
 
         """Returns an AI player object based on the difficulty level passed in."""
 
@@ -42,7 +42,7 @@ class Game:
             "Hard AI": HardAIPlayer,
         }
 
-        return difficulty_dict[player2name](MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
+        return difficulty_dict[player2_name](MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
 
     def get_ai_move(self):
 
@@ -123,7 +123,7 @@ class Game:
         return self.__current_player.get_name()
     
     def get_current_player_colour(self):
-        return self.__current_player.get_colour()
+        return self.__current_player.get_piece_colour()
 
     def switch_current_player(self):
         self.__current_player, self.__non_current_player = self.__non_current_player, self.__current_player
@@ -132,7 +132,7 @@ class Game:
         return self.__player_lst[player_number - 1].get_name()
     
     def get_player_colour(self, player_number):
-        return self.__player_lst[player_number - 1].get_colour()
+        return self.__player_lst[player_number - 1].get_piece_colour()
     
     def get_player_piece_count(self, player_number):
         return self.__player_lst[player_number - 1].get_piece_count()

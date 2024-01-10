@@ -20,9 +20,6 @@ class LoopedTrack:
     def __str__(self):
         return str(self.__lst)
     
-    def get_lst_TEST(self): # ! DELETE ME
-        return self.__lst
-    
     def get_length(self):
         return self.__length
 
@@ -32,7 +29,7 @@ class LoopedTrack:
         Values returned by get_next_left() and get_next_right() will be affected by this change"""
 
         # making sure index is in the range of the list (negative indexes are allowed)
-        if (index * -1) <= len(self.__lst):
+        if (index * -1) <= len(self.__lst) and index < len(self.__lst):
             if pointer_type == "left":
                 self.__left_pointer = index
             elif pointer_type == "right":
@@ -68,20 +65,20 @@ class LoopedTrack:
 
         return ind_lst
     
-    def switch_piece_positions(self, pos1, pos2):
+    def switch_piece_positions(self, loc1, loc2):
 
-        """replaces all occurences of pos1's piece with pos2's piece and all occurences of pos2's piece with pos1's piece"""
+        """replaces all occurences of loc1's piece with loc2's piece and all occurences of loc2's piece with loc1's piece"""
 
-        # get all the indexes of pos1 and pos2 in the LoopedTrack
-        pos1_ind_lst = self.__get_all_occurence_indexes(pos1.get_cords())
-        pos2_ind_lst = self.__get_all_occurence_indexes(pos2.get_cords())
+        # get all the indexes of loc1 and loc2 in the LoopedTrack
+        loc1_ind_lst = self.__get_all_occurence_indexes(loc1.get_cords())
+        loc2_ind_lst = self.__get_all_occurence_indexes(loc2.get_cords())
 
-        # replace all occurences of pos1's piece with pos2's piece and vice versa
-        for i in pos1_ind_lst:
-            self.__lst[i].set_piece(pos2.get_piece())
+        # replace all occurences of loc1's piece with loc2's piece and vice versa
+        for i in loc1_ind_lst:
+            self.__lst[i].set_piece(loc2.get_piece())
 
-        for i in pos2_ind_lst:
-            self.__lst[i].set_piece(pos1.get_piece())
+        for i in loc2_ind_lst:
+            self.__lst[i].set_piece(loc1.get_piece())
 
     def remove_piece(self, cords):
 
@@ -94,7 +91,7 @@ class LoopedTrack:
 
     def update_piece(self, cords, piece_colour):
 
-        """replaces all occurences of val's piece with a piece of the specified colour"""
+        """replaces all occurences of the piece at the GridLocation specified by cords's piece with a piece of the specified colour"""
 
         ind_lst = self.__get_all_occurence_indexes(cords)
 

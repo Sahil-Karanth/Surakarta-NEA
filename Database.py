@@ -9,7 +9,7 @@ class Database:
 
     def __init__(self, db_name):
         self.__conn = sqlite3.connect(db_name)
-        self.__cursor = self.__conn.cursor()
+        self.__cursor = self.__conn.cursor() # cursor object used to execute SQL commands
         
     def create_users_table(self):
         
@@ -139,7 +139,7 @@ class Database:
         self.__cursor.execute("SELECT username FROM Users WHERE username = ?;", (username,))
         return self.__cursor.fetchone() != None
     
-    def add_user(self, username, password, preferred_piece_colour):
+    def add_user(self, username, password, piece_colour):
         
         """Adds a user to the database. The password is hashed and salted before being stored."""
 
@@ -154,7 +154,7 @@ class Database:
         user_id = self.__get_new_primary_key("Users", "user_id")
 
         # add the user to the Users table
-        self.__cursor.execute("INSERT INTO Users VALUES (?, ?, ?, ?, ?);", (user_id, username, hashed_password, account_creation_date, preferred_piece_colour))
+        self.__cursor.execute("INSERT INTO Users VALUES (?, ?, ?, ?, ?);", (user_id, username, hashed_password, account_creation_date, piece_colour))
 
         # add a record for each AI difficulty to the AIGameStats table for the new user
         AI_game_stat_id = self.__get_new_primary_key("AIGameStats", "AI_game_stat_id")
@@ -163,10 +163,9 @@ class Database:
             self.__cursor.execute("INSERT INTO AIGameStats VALUES (?, ?, ?, ?, ?);", (AI_game_stat_id, user_id, difficulty, 0, 0))
             AI_game_stat_id += 1
 
-        
         self.__conn.commit()
 
-    def login(self, username, password):
+    def check_login_credentials(self, username, password):
 
         """Returns True if the username and password match a record in the database, otherwise returns False.
         The password is hashed and salted before being compared to the stored password."""
@@ -319,7 +318,7 @@ class Database:
 
         self.__conn.commit()
 
-    def add_game_to_history(self, username, player2name, winner_name):
+    def add_game_to_history(self, username, player2_name, winner_name):
         
         """Adds a game to the GameHistory table."""
 
@@ -333,7 +332,7 @@ class Database:
         user_id = self.__get_user_id_from_username(username)
 
         # add the game to the GameHistory table
-        self.__cursor.execute("INSERT INTO GameHistory VALUES (?, ?, ?, ?, ?);", (historical_game_id, user_id, player2name, game_date, winner_name))
+        self.__cursor.execute("INSERT INTO GameHistory VALUES (?, ?, ?, ?, ?);", (historical_game_id, user_id, player2_name, game_date, winner_name))
         self.__conn.commit()
 
     def get_user_game_history(self, username):
@@ -357,7 +356,7 @@ class Database:
 
     def update_stored_piece_colour(self, username, new_colour):
         
-        """Updates a user's preferred piece colour in the Users table."""
+        """Updates a user's piece colour in the Users table."""
 
         self.__cursor.execute(
             """
@@ -373,7 +372,7 @@ class Database:
     
 
 
-# db = Database("database.db")
+db = Database("database.db")
 
 # db.save_game_state("f", "$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$green$.$.$.$.$.$.$.$.$orange$.$.$", "testopp1", False, 1, 1)
 

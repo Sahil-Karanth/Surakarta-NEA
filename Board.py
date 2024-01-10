@@ -15,7 +15,6 @@ class Board:
     SAVED_GAME_STATE_SEPARATOR = "$"
     SAVED_GAME_STATE_EMPTY_CHAR = "."
 
-    # ! CHANGE NAME TO OUTER_TRACK_CORDS
     OUTER_TRACK_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
         (2,0), (2,1), (2,2), (2,3), (2,4), (2,5),
@@ -283,7 +282,7 @@ class Board:
         if not self.__is_valid_cord_pair(start_cord, end_cord):
             return False
 
-        if start_loc.get_colour() != player.get_colour(): # attempting to move opponent's piece
+        if start_loc.get_piece_colour() != player.get_piece_colour(): # attempting to move opponent's piece
             return False
         
         # if the end location is adjacent to the start location and is empty, the move is legal
@@ -332,10 +331,10 @@ class Board:
         if not self.__is_valid_cord_pair(start_cords, end_cords):
             return False
 
-        if start_loc.get_colour() != player.get_colour(): # attempting to move opponent's piece
+        if start_loc.get_piece_colour() != player.get_piece_colour(): # attempting to move opponent's piece
             return False
         
-        if start_loc.get_colour() == end_loc.get_colour(): # attempting to capture own piece
+        if start_loc.get_piece_colour() == end_loc.get_piece_colour(): # attempting to capture own piece
             return False
 
         if self.__either_locations_vacant(start_loc, end_loc): # attempting to capture or capture with an empty location
@@ -381,7 +380,7 @@ class Board:
 
         """Returns True if the pieces at loc1 and loc2 are the same colour and are not the same location otherwise returns False"""
 
-        if (loc1.get_colour() == loc2.get_colour()) and (loc1.get_cords() != loc2.get_cords()):
+        if (loc1.get_piece_colour() == loc2.get_piece_colour()) and (loc1.get_cords() != loc2.get_cords()):
             return True
         return False
     
@@ -394,7 +393,7 @@ class Board:
             return False
         
         # not capturing a piece of the same colour and at least one of the 4 board loops has been traversed
-        if (end_location.get_colour() != start_location.get_colour()) and (loop_count > 0):
+        if (end_location.get_piece_colour() != start_location.get_piece_colour()) and (loop_count > 0):
             return True
         
         return False
@@ -581,7 +580,7 @@ class Board:
         # get legal captures
         for row in self.__board:
             for end_loc in row:
-                if end_loc.get_colour() != player.get_colour() and self.is_legal_move(loc, end_loc, player, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE):
+                if end_loc.get_piece_colour() != player.get_piece_colour() and self.is_legal_move(loc, end_loc, player, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE):
                     legal_moves.append(Move(loc, end_loc, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE))
 
         return legal_moves
@@ -598,7 +597,7 @@ class Board:
             for loc in row:
 
                 # append legal moves if the location is occupied by a piece of the player's colour
-                if loc.get_colour() == player.get_colour():
+                if loc.get_piece_colour() == player.get_piece_colour():
                     legal_moves += self.__get_loc_legal_moves(loc, player)
 
         return legal_moves
@@ -612,7 +611,7 @@ class Board:
 
         for row in shuffled_board:
             for loc in row:
-                if loc.get_colour() == player_colour:
+                if loc.get_piece_colour() == player_colour:
                     loc_legal_moves = self.__get_loc_legal_moves(loc, self.__player_colour_map[player_colour])
                     
                     if len(loc_legal_moves) > 0:
@@ -690,7 +689,7 @@ class Board:
             for loc in row:
                 
                 # if the location is occupied by a piece of the player's colour, return a random adjacent move f one is found
-                if loc.get_colour() == MultiClassBoardAttributes.player_2_colour:
+                if loc.get_piece_colour() == MultiClassBoardAttributes.player_2_colour:
                     move = self.__get_adjacent_move(loc)
                     if move:
                         return move
@@ -720,7 +719,7 @@ class Board:
             if loc.is_empty():
                 game_state_lst.append(MultiClassBoardAttributes.SAVED_GAME_STATE_EMPTY_CHAR)
             else:
-                game_state_lst.append(loc.get_colour())
+                game_state_lst.append(loc.get_piece_colour())
 
             game_state_lst.append(self.SAVED_GAME_STATE_SEPARATOR)
 

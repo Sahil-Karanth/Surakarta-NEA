@@ -10,6 +10,7 @@ from Database import Database
 
 # todo
     # make easy AI not randomly move back into a corner
+    # move maps to class attributes and some of the UI stuff like text and images to class attributes
 
 # ! to add to coursework document:
 
@@ -83,7 +84,7 @@ class Graphical_UI(UI):
         
         self.__UI_type = "GRAPHICAL"
 
-        with open("help_page_text", "r") as f:
+        with open("help_page_text.txt", "r") as f:
             
             self.__about_surakarta_text = textwrap.fill(f.readline(), 140)
             self.__rules_text = textwrap.fill(f.readline(), 140)
@@ -104,7 +105,6 @@ class Graphical_UI(UI):
         # login status variables
         self.__logged_in = False
         self.__logged_in_username = None 
-        # self.__piece_colour = None
 
         # game variables
         self.__game = None
@@ -154,6 +154,8 @@ class Graphical_UI(UI):
 
         if maximise:
             self.__maximise_window(window)
+
+        print(type(window))
 
         return window
 
@@ -400,7 +402,7 @@ class Graphical_UI(UI):
         canvas.delete("counter")
 
         # 6x6 2D array of the board state where each element is a string representing the colour of the piece
-        display_board = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
+        display_board = [[i.get_piece_colour() for i in row] for row in self.__game.get_board_state()]
 
         for i, row in enumerate(display_board):
             for j, counter in enumerate(row):
@@ -485,18 +487,18 @@ class Graphical_UI(UI):
 
         return stats_window
 
-    def __setup_match_page(self, player1name, player2name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
+    def __setup_match_page(self, player1name, player2_name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
 
         """Creates the match page window where the user can play a game of Surakarta. The board state is displayed and the user can move pieces by clicking on the board"""
 
         # create the Game object
-        self.__create_game_object(player1name, player2name, ai_level, game_state_string, player2_starts, player1_num_pieces, player2_num_pieces)
+        self.__create_game_object(player1name, player2_name, ai_level, game_state_string, player2_starts, player1_num_pieces, player2_num_pieces)
 
         if game_state_string:
             self.__game_is_loaded = True
 
         # 6x6 2D array of the board state where each element is a string representing the colour of the piece
-        board_colours = [[i.get_colour() for i in row] for row in self.__game.get_board_state()]
+        board_colours = [[i.get_piece_colour() for i in row] for row in self.__game.get_board_state()]
 
         # layout to show the board state
         board_layout = []
@@ -843,7 +845,7 @@ class Graphical_UI(UI):
 
         """Attempts to log the user in with the given username and password. Displays an error message if the username or password is incorrect"""
 
-        if self.__db.login(username, password):
+        if self.__db.check_login_credentials(username, password):
             sg.popup("Logged in", title="Logged In", keep_on_top=True)
 
             self.__logged_in_username = username
@@ -1282,7 +1284,7 @@ class Terminal_UI(UI):
 
                 else:
                     # single character representing the colour of the piece
-                    disp_board.append(loc.get_colour()[0])
+                    disp_board.append(loc.get_piece_colour()[0])
         
         # convert the one dimensional array to a 6x6 two dimensional array
         disp_board = oneD_to_twoD_array(disp_board, MultiClassBoardAttributes.MAX_ROW_INDEX + 1)

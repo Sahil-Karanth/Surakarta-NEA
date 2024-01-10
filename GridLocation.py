@@ -61,11 +61,11 @@ class GridLocation:
     def get_piece(self):
         return self.__piece
     
-    def get_colour(self):
+    def get_piece_colour(self):
         if self.__piece == None:
             return None
         else:
-            return self.__piece.get_colour()
+            return self.__piece.get_piece_colour()
     
     def get_cords(self):
         return self.__cords

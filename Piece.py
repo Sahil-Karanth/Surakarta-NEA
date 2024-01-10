@@ -8,7 +8,7 @@ class Piece:
     def __str__(self):
         return str(self.__colour)
     
-    def get_colour(self):
+    def get_piece_colour(self):
         return self.__colour
     
 

@@ -12,7 +12,7 @@ class Player:
         self.__piece_colour = piece_colour
         self.__piece_count = piece_count # a player may not have 12 pieces when the object is created if the game is being loaded
 
-    def get_colour(self):
+    def get_piece_colour(self):
         return self.__piece_colour
     
     def get_name(self):
@@ -71,7 +71,7 @@ class EasyAIPlayer(AIPlayer):
 
         for row in shuffled_board:
             for loc in row:
-                if (loc.get_colour() == self.get_colour()):
+                if (loc.get_piece_colour() == self.get_piece_colour()):
                     move = board.get_loc_single_capture(loc)
 
                     if move: # capture possible with piece at loc

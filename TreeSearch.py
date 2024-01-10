@@ -3,9 +3,7 @@ from MultiClassBoardAttributes import MultiClassBoardAttributes
 import time
 from copy import deepcopy
 
-
-# need a better evaluation function because there are many more moves than just capturing pieces so need to differentiate between positions
-# with the same number of pieces
+# ! make method private in GameTree class
 
 class Node:
 

@@ -6,8 +6,8 @@ class Move:
         self.__start_loc = start_loc
         self.__end_loc = end_loc
         self.__move_type = move_type
-        self.__start_colour = self.__start_loc.get_colour()
-        self.__end_colour = self.__end_loc.get_colour()
+        self.__start_colour = self.__start_loc.get_piece_colour()
+        self.__end_colour = self.__end_loc.get_piece_colour()
 
     def __str__(self):
         return f"{self.__move_type} from {self.__start_loc.get_cords()} to {self.__end_loc.get_cords()}"
