@@ -587,9 +587,22 @@ class Graphical_UI(UI):
             player_num_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(other_player_num)
 
             # textwrap the player names to prevent the text from being too long and pushing the board off the screen
-            text_wrapped_player_name = textwrap.fill(self.__game.get_player_name(player_number), 10)
+            player_name = self.__game.get_player_name(player_number)
+            padded_player_name = self.__pad_player_name(player_name)
+            text_wrapped_player_name = textwrap.fill(padded_player_name, 10)
     
             return f"{text_wrapped_player_name} captured pieces: {player_num_captured}"
+
+    def __pad_player_name(self, player_name):
+
+        """Pads the given player_name with spaces before the name if it is shorter than 10 characters
+        until it is 10 characters long. Returns the padded player name."""
+
+        if len(player_name) < 10:
+            return (" " * (10 - len(player_name))) + player_name
+
+        else:
+            return player_name
 
     def __update_game_and_UI_after_move(self, start_loc, end_loc, move_type):
 
