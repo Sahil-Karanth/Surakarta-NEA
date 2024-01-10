@@ -79,16 +79,31 @@ class Graphical_UI(UI):
     PIECE_IMAGES_PATH = "images/piece_images/"
     BOARD_IMAGES_PATH = "images/board_images/"
 
+    with open("help_page_text.txt", "r") as f:  
+        ABOUT_SURAKARTA_TEXT = textwrap.fill(f.readline(), 140)
+        RULES_TEXT = textwrap.fill(f.readline(), 140)
+
+    # display board background image
+    DISP_BOARD_BACKGROUND_IMG = None
+
+    # maps difficulty level numbers to AI level names
+    AI_NAME_TO_LEVEL_NUM_MAP = {
+        1: "Easy AI",
+        2: "Medium AI",
+        3: "Hard AI"
+    }
+
+    # maps AI level names to difficulty level numbers
+    AI_LEVEL_NUM_TO_NAME_MAP = {
+        "Easy AI": 1,
+        "Medium AI": 2,
+        "Hard AI": 3
+    }
+
     def __init__(self):
         super().__init__()
         
         self.__UI_type = "GRAPHICAL"
-
-        with open("help_page_text.txt", "r") as f:
-            
-            self.__about_surakarta_text = textwrap.fill(f.readline(), 140)
-            self.__rules_text = textwrap.fill(f.readline(), 140)
-
 
         sg.theme('Dark')
 
@@ -112,26 +127,9 @@ class Graphical_UI(UI):
         self.__ai_mode = False
         self.__ai_name = None
 
-        # display board background image
-        self.__disp_board_background_img = None # needed to combat the python garbage collector
-
         # database object
         self.__db = Database("database.db")
         self.__saved_games = None # stored to enable deletion of saved games
-
-        # maps difficulty level numbers to AI level names
-        self.__ai_name_to_level_num_map = {
-            1: "Easy AI",
-            2: "Medium AI",
-            3: "Hard AI"
-        }
-
-        # maps AI level names to difficulty level numbers
-        self.__ai_level_num_to_name_map = {
-            "Easy AI": 1,
-            "Medium AI": 2,
-            "Hard AI": 3
-        }
 
         self.__current_page = None
         self.__setup_home_page()
@@ -154,8 +152,6 @@ class Graphical_UI(UI):
 
         if maximise:
             self.__maximise_window(window)
-
-        print(type(window))
 
         return window
 
@@ -321,9 +317,9 @@ class Graphical_UI(UI):
 
         text_layout = [
             [sg.Text("What is Surakarta?", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.Text(self.__about_surakarta_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Text(self.ABOUT_SURAKARTA_TEXT, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
             [sg.Text("Rules", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
-            [sg.Text(self.__rules_text, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
+            [sg.Text(self.RULES_TEXT, pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
         ]
 
         layout = [
@@ -781,12 +777,12 @@ class Graphical_UI(UI):
         self.__update_piece_colour(player1_colour)
 
         # if the player 2 name is an AI name, the game is an AI game
-        if player2_name in self.__ai_name_to_level_num_map.values():
+        if player2_name in self.AI_NAME_TO_LEVEL_NUM_MAP.values():
             self.__ai_mode = True
             self.__ai_name = player2_name
 
             # use the AI name to get the AI level and set up the match page
-            ai_level = self.__ai_level_num_to_name_map[self.__ai_name]
+            ai_level = self.AI_LEVEL_NUM_TO_NAME_MAP[self.__ai_name]
             self.__setup_match_page(self.__logged_in_username, self.__ai_name, ai_level=ai_level, game_state_string=game_state_string, player2_starts=player2_starts, player1_num_pieces=player1pieces, player2_num_pieces=player2pieces)
 
         # if the player 2 name is not an AI name, the game is a local game
@@ -846,13 +842,13 @@ class Graphical_UI(UI):
 
         MultiClassBoardAttributes.set_player_colour(new_colour, 1)
 
-        # since green is the default colour for player 2, if player 1's colour is changed to green, player 2's colour should be changed to yellow
-        if new_colour == "green":
-            MultiClassBoardAttributes.set_player_colour("yellow", 2)
+        # if player 1's colour is changed to the default player 2 colour, player 2's colour should be changed to the default player 1 colour
+        if new_colour == MultiClassBoardAttributes.DEFAULT_PLAYER_2_COLOUR:
+            MultiClassBoardAttributes.set_player_colour(MultiClassBoardAttributes.DEFAULT_PLAYER_1_COLOUR, 2)
 
-        # since yellow is the default colour for player 2, if player 1's colour is changed to yellow, player 2's colour should be changed to green
-        elif new_colour == "yellow":
-            MultiClassBoardAttributes.set_player_colour("green", 2)
+        # if player 1's colour is changed to the default player 2 colour, player 2's colour should be changed to the default player 1 colour
+        elif new_colour == MultiClassBoardAttributes.DEFAULT_PLAYER_1_COLOUR:
+            MultiClassBoardAttributes.set_player_colour(MultiClassBoardAttributes.DEFAULT_PLAYER_2_COLOUR, 2)
 
     def __handle_login(self, username, password):
 
@@ -906,11 +902,11 @@ class Graphical_UI(UI):
         image.thumbnail((400, 400))
 
         # storing the image in an instance variable to prevent garbage collection
-        self.__disp_board_background_img = ImageTk.PhotoImage(image)
+        self.DISP_BOARD_BACKGROUND_IMG = ImageTk.PhotoImage(image)
         
         # add the background board image to the underlying Tkinter canvas
         canvas = self.__display_board_window['-CANVAS-']
-        canvas.TKCanvas.create_image(235, 215, image=self.__disp_board_background_img , anchor="center")
+        canvas.TKCanvas.create_image(235, 215, image=self.DISP_BOARD_BACKGROUND_IMG , anchor="center")
         
         # draw the pieces on the board
         self.__draw_pieces_on_disp_board()
@@ -926,7 +922,7 @@ class Graphical_UI(UI):
 
             ai_level = None
             if self.__ai_mode:
-                ai_level = self.__ai_name_to_level_num_map[player2_name]
+                ai_level = self.AI_NAME_TO_LEVEL_NUM_MAP[player2_name]
             
             self.__setup_match_page(player1_name, player2_name, ai_level=ai_level)
 
@@ -1072,7 +1068,7 @@ class Graphical_UI(UI):
         
         """returns the AI name corresponding to the given difficulty level"""
 
-        return self.__ai_name_to_level_num_map[difficulty_level]
+        return self.AI_NAME_TO_LEVEL_NUM_MAP[difficulty_level]
 
     def __create_game_object(self, name1, name2, ai_level, game_state_string, player2_starts, player1pieces, player2pieces):
 

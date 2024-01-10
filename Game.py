@@ -18,7 +18,7 @@ class Game:
         else:
             self.__player2 = Player(player2_name, MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
 
-        self.__player_lst = [self.__player1, self.__player2]
+        self.__player_tuple = (self.__player1, self.__player2)
 
         self.__game_over = False
 
@@ -129,10 +129,10 @@ class Game:
         self.__current_player, self.__non_current_player = self.__non_current_player, self.__current_player
 
     def get_player_name(self, player_number):
-        return self.__player_lst[player_number - 1].get_name()
+        return self.__player_tuple[player_number - 1].get_name()
     
     def get_player_colour(self, player_number):
-        return self.__player_lst[player_number - 1].get_piece_colour()
+        return self.__player_tuple[player_number - 1].get_piece_colour()
     
     def get_player_piece_count(self, player_number):
-        return self.__player_lst[player_number - 1].get_piece_count()
+        return self.__player_tuple[player_number - 1].get_piece_count()

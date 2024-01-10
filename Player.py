@@ -85,7 +85,7 @@ class EasyAIPlayer(AIPlayer):
         if len(corner_move_lst) > 0: # checks if no captures are found
             return random.choice(corner_move_lst)
 
-        return board.get_random_normal_move()
+        return board.get_random_normal_move(self.get_piece_colour())
 
 
 class MediumAIPlayer(AIPlayer):

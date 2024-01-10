@@ -47,7 +47,7 @@ class Board:
         # self.__edit_board_for_testing()
 
         # player objects are also stored in Board solely for MCTS. All other player related methods are in the Game class
-        self.__player_lst = [player1, player2]
+        self.__player_tuple = (player1, player2)
 
 
         # maps a text representation of a track to a tuple containing the LoopedTrack objects for the inner and outer tracks
@@ -209,7 +209,7 @@ class Board:
     def __is_valid_coordinate(self, coordinate):
 
         """Returns True if coordinate is a valid coordinate on the board otherwise returns False.
-        A valid coordinate is a tuple of the form (x, y) where x and y are integers between 0 and 5 inclusive"""
+        A valid coordinate is a tuple of the form (x, y) where x and y are integers between 0 and 5 inclusive"""        
 
         if coordinate[0] < MultiClassBoardAttributes.MIN_ROW_INDEX or coordinate[0] > MultiClassBoardAttributes.MAX_ROW_INDEX:
             return False
@@ -496,9 +496,9 @@ class Board:
         
         return False
         
-    def move_piece(self, move_obj, undo=False):
+    def __move_piece_with_undo_arg(self, move_obj, undo=False):
 
-        """Moves the piece at start_loc to end_loc. If undo is True, the move is made in reverse."""
+        """Makes the move specified by move_obj. If undo is True, the move is made in reverse."""
 
         # decrement the piece count of the player that has had a piece captured
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
@@ -515,6 +515,14 @@ class Board:
         
         else:
             self.__switch_piece_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
+
+    def move_piece(self, move_obj):
+            
+            """Makes the move specified by move_obj. This public method is used by the Game class to make a move.
+            This method calls the __move_piece_with_undo_arg method with undo=False because this method is only
+            part of the undoing process and undoing is handled by the undo_move method."""
+    
+            self.__move_piece_with_undo_arg(move_obj, undo=False)
 
     def __update_tracks_after_move(self, move_obj, undo=False):
 
@@ -536,10 +544,10 @@ class Board:
         """Decrements the piece count of the player that has had a piece captured"""
 
         if end_colour == MultiClassBoardAttributes.player_1_colour:
-            self.__player_lst[0].remove_piece()
+            self.__player_tuple[0].remove_piece()
 
         elif end_colour == MultiClassBoardAttributes.player_2_colour:
-            self.__player_lst[1].remove_piece()
+            self.__player_tuple[1].remove_piece()
 
     def undo_move(self, move_obj):
 
@@ -666,7 +674,7 @@ class Board:
 
         if start_loc not in edge_locs:
             return None
-                
+
         return self.__get_adjacent_move(start_loc)
             
     def __get_adjacent_move(self, start_loc):
@@ -679,28 +687,17 @@ class Board:
             
         return None
 
-    def get_random_normal_move(self):
+    def get_random_normal_move(self, player_colour):
 
-        """Returns a random normal move (non-capturing move) that can be made on the board for the Easy AI opponent"""
+        """Returns a random normal move (non-capturing move) that can be made. Used by the Easy AI opponent."""
 
-        shuffled_board = shuffle_2D_array(self.__board)
-
-        for row in shuffled_board:
-            for loc in row:
-                
-                # if the location is occupied by a piece of the player's colour, return a random adjacent move f one is found
-                if loc.get_piece_colour() == MultiClassBoardAttributes.player_2_colour:
-                    move = self.__get_adjacent_move(loc)
-                    if move:
-                        return move
- 
-        return None
+        return random.choice(self.get_player_legal_moves(player_colour))
 
     def get_piece_count(self, player_number):
         
         """Returns the number of pieces the player with the number specified by player_number has on the board"""
 
-        return self.__player_lst[player_number - 1].get_piece_count()
+        return self.__player_tuple[player_number - 1].get_piece_count()
 
     def get_game_state_string(self):
         
