@@ -100,7 +100,7 @@ class Game:
 
         return move_obj
 
-    def undo_move(self):
+    def undo_and_return_move(self):
 
         """Calls method in Board to undo the last move made on the board and returns the move object. The move object is popped off the move history stack."""
 

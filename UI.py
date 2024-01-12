@@ -1039,7 +1039,7 @@ class Graphical_UI(UI):
         If the last move was made by the AI, the move is undone twice to undo the AI's move and the human's move."""
 
         # the move object representing the move that was undone
-        move_obj = self.__game.undo_move()
+        move_obj = self.__game.undo_and_return_move()
 
         if move_obj == None:
             sg.popup("No moves to undo", keep_on_top=True)
