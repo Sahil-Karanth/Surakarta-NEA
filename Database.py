@@ -8,8 +8,12 @@ class Database:
     """Class for interacting with the database. Used inside of the UI class."""
 
     def __init__(self, db_name):
+
+        # connect to the database
         self.__conn = sqlite3.connect(db_name)
-        self.__cursor = self.__conn.cursor() # cursor object used to execute SQL commands
+
+        # cursor object used to execute SQL commands
+        self.__cursor = self.__conn.cursor()
         
     def create_users_table(self):
         
@@ -36,7 +40,9 @@ class Database:
 
     def create_saved_games_table(self):
 
-        """Creates the SavedGames table if it doesn't already exist."""
+        """Creates the SavedGames table if it doesn't already exist. Note that player 2's colour doesn't
+        need to be stored because it can be inferred from player 1's colour (yellow if player 1 is green else
+        green)"""
 
         self.__cursor.execute(
 
@@ -372,9 +378,11 @@ class Database:
     
 
 
-db = Database("database.db")
+# db = Database("database.db")
 
-# db.save_game_state("f", "$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$green$.$.$.$.$.$.$.$.$orange$.$.$", "testopp1", False, 1, 1)
+# state_str = ".$.$.$.$.$.$.$green$.$.$green$.$.$.$.$.$.$.$.$.$.$red$.$.$.$red$.$.$.$.$.$.$.$.$.$."
+
+# db.save_game_state("admin", state_str, "bob", False, 2, 2, "red")
 
 # db.delete_table("Users")
 # db.delete_table("GameHistory")

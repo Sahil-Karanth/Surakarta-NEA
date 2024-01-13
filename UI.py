@@ -65,7 +65,7 @@ class Graphical_UI(UI):
 
     LOAD_GAME_INPUT_PAD = (200, COLUMN_PAD)
 
-    DISP_BOARD_WINDOW_SIZE = (500, 400)
+    DISP_BOARD_WINDOW_SIZE = (500, 450)
     DISP_BOARD_PIECE_SPACING = 43
     DISP_BOARD_INITAL_X = 128
     DISP_BOARD_INITAL_Y = 109
@@ -752,7 +752,7 @@ class Graphical_UI(UI):
         # delete the game from the database
         self.__db.delete_saved_game(game_id)
         sg.popup("Game deleted", title="Game Deleted", keep_on_top=True)
-
+    
         # update the table to not show the deleted game
         self.__load_game_window["saved_games_table"].update(values=self.__db.load_saved_games(self.__logged_in_username))
 
@@ -767,7 +767,7 @@ class Graphical_UI(UI):
             sg.popup(f"No game with that ID exists", title="Error Loading Game", keep_on_top=True)
             return
         
-        # make instance variable to allow the game to be deleted from the database if the user saves the game again in the __handle_save_game method
+        # make instance variable to allow the loaded game to be deleted from the database if the user saves the game again in the __handle_save_game method
         self.__loaded_game_id = game_id
 
         # unpack the loaded game data

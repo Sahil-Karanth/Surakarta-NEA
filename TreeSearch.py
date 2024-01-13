@@ -9,11 +9,18 @@ class Node:
 
     def __init__(self, board, depth, move_obj=None):
         self.__board = board
-        self.__move_obj = move_obj # the move that led to this node
+
+        # the move that led to this node
+        self.__move_obj = move_obj
+
+        # UCB1 parameters
         self.__value = 0
         self.__visited_count = 0
+
         self.__children = []
         self.__parent = None
+
+        # the depth of the node in the tree (root node has depth 0)
         self.__depth = depth
 
     def get_board(self):

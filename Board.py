@@ -34,8 +34,8 @@ class Board:
 
         # data structures for the board
         self.__board = []
-        self.__inner_track = LoopedTrack([GridLocation(i) for i in self.INNER_TRACK_CORDS])
-        self.__outer_track = LoopedTrack([GridLocation(i) for i in self.OUTER_TRACK_CORDS])
+        self.__inner_track = LoopedTrack([GridLocation(i) for i in self.INNER_TRACK_CORDS], MultiClassBoardAttributes.INNER_TRACK_STRING)
+        self.__outer_track = LoopedTrack([GridLocation(i) for i in self.OUTER_TRACK_CORDS], MultiClassBoardAttributes.OUTER_TRACK_STRING)
 
         # populate the board with GridLocation objects
         self.__build_board()
@@ -165,7 +165,7 @@ class Board:
                     self.__outer_track.update_piece(curr_cords, curr_piece_str)
 
                 # update the piece at the corresponding location in the inner track
-                elif curr_cords in self.INNER_TRACK_CORDS:
+                if curr_cords in self.INNER_TRACK_CORDS:
                     self.__inner_track.update_piece(curr_cords, curr_piece_str)
 
     def __get_common_tracks(self, text_track_1, text_track_2):
@@ -714,7 +714,7 @@ class Board:
 
         for loc in flat_board:
             if loc.is_empty():
-                game_state_lst.append(MultiClassBoardAttributes.SAVED_GAME_STATE_EMPTY_CHAR)
+                game_state_lst.append(self.SAVED_GAME_STATE_EMPTY_CHAR)
             else:
                 game_state_lst.append(loc.get_piece_colour())
 

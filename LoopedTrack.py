@@ -5,10 +5,13 @@ class LoopedTrack:
     """An implementation of a circular list data structure used for the board's two looped tracks.
     LoopedTrack objects contain GridLocation objects as elements and can be traversed in either direction."""
 
-    def __init__(self, grid_location_lst):
+    def __init__(self, grid_location_lst, name):
 
         # underlying list to store the data
         self.__lst = grid_location_lst
+
+        # name of the LoopedTrack
+        self.__name = name
 
         # length of the LoopedTrack
         self.__length = len(self.__lst)
@@ -22,6 +25,12 @@ class LoopedTrack:
     
     def get_length(self):
         return self.__length
+    
+    def get_lst_dryruns(self):
+        return self.__lst
+    
+    def get_name(self):
+        return self.__name
 
     def set_pointer(self, index, pointer_type):
 
