@@ -380,9 +380,9 @@ class Database:
 
 # db = Database("database.db")
 
-# state_str = ".$.$.$.$.$.$.$green$.$.$green$.$.$.$.$.$.$.$.$.$.$red$.$.$.$red$.$.$.$.$.$.$.$.$.$."
+# state_str = ".$.$.$.$.$.$.$green$.$.$green$.$.$.$.$.$.$.$.$.$.$red$.$.$.$.$red$.$.$.$.$.$.$.$.$."
 
-# db.save_game_state("admin", state_str, "bob", False, 2, 2, "red")
+# db.save_game_state("admin", state_str, "Medium AI", False, 2, 2, "red")
 
 # db.delete_table("Users")
 # db.delete_table("GameHistory")

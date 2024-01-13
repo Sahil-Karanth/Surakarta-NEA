@@ -465,7 +465,7 @@ class Board:
             if self.__is_valid_capture(start_location, curr_loc, loop_count):
                 return Move(start_location, curr_loc, MultiClassBoardAttributes.CAPTURE_MOVE_TYPE)
 
-            # stop iteraating if a blocking condition occurs that means a capture cannot be made in the current direction
+            # stop iterating if a blocking condition occurs that means a capture cannot be made in the current direction
             if self.__check_direction_invalid(start_location, curr_loc, loop_count):
                 invalid = True
 
@@ -561,7 +561,9 @@ class Board:
             # update the board to reflect the undo move
             self.__spawn_piece(move_obj.get_start_colour(), move_obj.get_start_loc())
             self.__spawn_piece(move_obj.get_end_colour(), move_obj.get_end_loc())
-        
+
+            print("sdfasdfasdf")
+
         elif move_obj.get_move_type() == MultiClassBoardAttributes.NORMAL_MOVE_TYPE:
             self.__move_piece_with_undo_arg(move_obj, undo=True)
 

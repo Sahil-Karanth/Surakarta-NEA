@@ -106,7 +106,7 @@ class Game:
 
         if self.__move_history_stack.is_empty():
             return None
-
+    
         # pop the last move off the move history stack
         move_obj = self.__move_history_stack.pop()
 
