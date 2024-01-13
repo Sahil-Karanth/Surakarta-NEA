@@ -1,6 +1,12 @@
 class Stack:
 
-    """Implements a stack data structure"""
+    """Implements a stack data structure
+    
+    ####################################################################
+    CLASS A SKILL: Stack data structure
+    ####################################################################
+
+    """
 
     def __init__(self):
         self.__stack = []

@@ -6,7 +6,14 @@ from Stack import Stack
 
 class Game:
 
-    """The Game class manages the game state. It contains the board, the players, and the move history stack."""
+    """The Game class manages the game state. It contains the board, the players, and the move history stack.
+    
+    ####################################################################
+    CLASS A SKILL: Stack data structure (see comments in make_and_return_move and undo_and_return_move methods)
+    CLASS A SKILL: Complex OOP model with encapsulation and composition
+    ####################################################################
+
+    """
 
     def __init__(self, player1name, player2_name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
         
@@ -88,7 +95,13 @@ class Game:
 
     def make_and_return_move(self, start_location, end_location, move_type):
 
-        """Makes a move on the board and returns the move object. The move object is pushed onto the move history stack."""
+        """Makes a move on the board and returns the move object. The move object is pushed onto the move history stack.
+        
+        ####################################################################
+        CLASS A SKILL: Stack data structure (pushing onto the stack in this method)
+        ####################################################################
+
+        """
 
         move_obj = Move(start_location, end_location, move_type)
 
@@ -102,7 +115,15 @@ class Game:
 
     def undo_and_return_move(self):
 
-        """Calls method in Board to undo the last move made on the board and returns the move object. The move object is popped off the move history stack."""
+        """Calls method in Board to undo the last move made on the board and returns the move object.
+        The move object is popped off the move history stack.
+        
+        ####################################################################
+        CLASS A SKILL: Stack data structure (popping off the stack in this method)
+        CLASS A SKILL: Undoing a move and passing information to the Board class's undo_move method
+        ####################################################################
+
+        """
 
         if self.__move_history_stack.is_empty():
             return None

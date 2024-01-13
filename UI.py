@@ -4,21 +4,8 @@ import re
 from MultiClassBoardAttributes import MultiClassBoardAttributes
 import PySimpleGUI as sg
 import textwrap
-import time
 from PIL import ImageTk, Image
 from Database import Database
-
-# todo
-    # make easy AI not randomly move back into a corner
-    # move maps to class attributes and some of the UI stuff like text and images to class attributes
-
-# ! to add to coursework document:
-
-
-# ? to ask:
-    # in the Board class' get_loc_single_capture method is the repeated code okay
-        # slight difference which might make the method code long/confusing if I try and make it more general
-
 
 class UI:
 
@@ -38,7 +25,16 @@ class UI:
   
 class Graphical_UI(UI):
 
-    """Graphical User Interface class for the game. Inherits from the UI class."""
+    """Graphical User Interface class for the game. Inherits from the UI class.
+    
+    ####################################################################
+    CLASS A SKILL: Updating the UI based on user interaction such as moving pieces, navigating 
+    through the application's pages and displaying information such as stats, saved games and game history
+
+    CLASS A SKILL: Complex OOP model with encapsulation, inheritance, polymorphism and composition
+    ####################################################################
+    
+    """
 
     BUTTON_SIZE = 30
     FONT = "Helvetica"
@@ -981,6 +977,10 @@ class Graphical_UI(UI):
         min_row_index = MultiClassBoardAttributes.MIN_ROW_INDEX
         max_row_index = MultiClassBoardAttributes.MAX_ROW_INDEX
 
+        ####################################################################
+        # CLASS A SKILL: Regex for the validation of board coordinates
+        ####################################################################
+
         pattern = fr'^[{min_row_index}-{max_row_index}],[{min_row_index}-{max_row_index}]$'
         if bool(re.match(pattern, key)):
             return True
@@ -1036,7 +1036,13 @@ class Graphical_UI(UI):
     def __undo_move(self, ai_mode=False):
 
         """Undoes the last move made on the board and updates the GUI board display. If the last move was a capture move, the piece that was captured is restored to the board.
-        If the last move was made by the AI, the move is undone twice to undo the AI's move and the human's move."""
+        If the last move was made by the AI, the move is undone twice to undo the AI's move and the human's move.
+        
+        ####################################################################
+        CLASS A SKILL: Undoing a move and passing information to the Game class's undo_and_return_move method
+        ####################################################################
+
+        """
 
         # the move object representing the move that was undone
         move_obj = self.__game.undo_and_return_move()
@@ -1237,7 +1243,13 @@ class Graphical_UI(UI):
 
 class Terminal_UI(UI):
     
-    """Terminal user interface for the game. Inherits from the UI class. Only supports local play."""
+    """Terminal user interface for the game. Inherits from the UI class. Only supports local play.
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation, inheritance, polymorphism and composition
+    ####################################################################
+
+    """
 
     # constants used to display the board
     EMPTY_SPACE_CHAR = "."
@@ -1267,6 +1279,10 @@ class Terminal_UI(UI):
         pattern = fr'^[{min_row_index}-{max_row_index}],[{min_row_index}-{max_row_index}]$'
 
         while not valid:
+
+            ####################################################################
+            # CLASS A SKILL: Regex for the validation of board coordinates
+            ####################################################################
 
             choice = input(prompt)
             if bool(re.match(pattern, choice)):

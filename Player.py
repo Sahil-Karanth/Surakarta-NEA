@@ -43,7 +43,13 @@ class Player:
     
 class AIPlayer(Player):
 
-    """An abstract base class for AI opponents. AI opponent classes inherit from this class and implement the get_move method"""
+    """An abstract base class for AI opponents. AI opponent classes inherit from this class and implement the get_move method
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation and inheritance
+    ####################################################################
+    
+    """
     
     def __init__(self, name, piece_colour, piece_count=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
         super().__init__(name, piece_colour, piece_count)
@@ -57,14 +63,27 @@ class AIPlayer(Player):
 
 class EasyAIPlayer(AIPlayer):
 
-    """An Easy AI opponent that inherits from the AIPlayer class and implements the get_move method"""
+    """An Easy AI opponent that inherits from the AIPlayer class and implements the get_move method
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
+    ####################################################################
+    
+    """
 
     def __init__(self, piece_colour, piece_count):
         super().__init__("Easy AI", piece_colour, piece_count)
     
     def get_move(self, board):
         
-        """Uses a greedy algorithm to make moves. It will capture if possible and otherwise will move pieces towards the corner if possible. Else it will make a random move"""
+        """Uses a greedy algorithm to make moves. It will capture if possible and otherwise will move pieces
+        towards the corner if possible. Else it will make a random move
+        
+        ####################################################################
+        CLASS A SKILL: Greedy algorithm for Easy AI
+        ####################################################################
+        
+        """
 
         corner_move_lst = []
         shuffled_board = shuffle_2D_array(board.get_board_state())
@@ -90,7 +109,13 @@ class EasyAIPlayer(AIPlayer):
 
 class MediumAIPlayer(AIPlayer):
 
-    """A Medium AI opponent that inherits from the AIPlayer class and implements the get_move method"""
+    """A Medium AI opponent that inherits from the AIPlayer class and implements the get_move method
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
+    ####################################################################
+    
+    """
     
     def __init__(self, piece_colour, piece_count):
         super().__init__("Medium AI", piece_colour, piece_count)
@@ -105,7 +130,13 @@ class MediumAIPlayer(AIPlayer):
     
 class HardAIPlayer(AIPlayer):
 
-    """A Hard AI opponent that inherits from the AIPlayer class and implements the get_move method"""
+    """A Hard AI opponent that inherits from the AIPlayer class and implements the get_move method
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
+    ####################################################################
+    
+    """
         
     def __init__(self, piece_colour, piece_count):
         super().__init__("Hard AI", piece_colour, piece_count)

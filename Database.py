@@ -5,7 +5,14 @@ from datetime import datetime
 
 class Database:
 
-    """Class for interacting with the database. Used inside of the UI class."""
+    """Class for interacting with the database. Used inside of the UI class.
+    
+    ####################################################################
+    CLASS A SKILL: Cross-table parameterised SQL queries (see get_user_stats, load_saved_games and get_user_game_history methods)
+    CLASS A SKILL: Complex OOP model with encapsulation
+    ####################################################################
+
+    """
 
     def __init__(self, db_name):
 

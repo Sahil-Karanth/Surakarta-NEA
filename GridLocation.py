@@ -4,7 +4,12 @@ from MultiClassBoardAttributes import MultiClassBoardAttributes
 class GridLocation:
 
     """represnts information about a location on the board such as
-    the piece on it, its coordinates and which of the looped tracks it sits on"""
+    the piece on it, its coordinates and which of the looped tracks it sits on
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation and composition
+    
+    """
 
     # outer track cordinates have row (2 or 3) and column (2 or 3)
     OUTER_TRACK_NUMBERS = (2, 3)

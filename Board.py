@@ -8,8 +8,14 @@ import random
 
 class Board:
 
-    """Represents the board for the game. The main board is represented by a 2D array of GridLocation objects. The board also contains two LoopedTrack objects
-    representing the inner and outer looped tracks of the board."""
+    """Represents the board for the game. The main board is represented by a 2D array of GridLocation objects.
+    The board also contains two LoopedTrack objects representing the inner and outer looped tracks of the board.
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation and composition
+    ####################################################################
+    
+    """
     
     NUM_BOARD_LOOPS = 4
     SAVED_GAME_STATE_SEPARATOR = "$"
@@ -270,7 +276,14 @@ class Board:
 
     def __check_normal_legal(self, start_loc, end_loc, player):
 
-        """Returns True if a normal move from start_loc to end_loc (non-capturing move) is legal for the player provided as an argument otherwise returns False"""
+        """Returns True if a normal move from start_loc to end_loc (non-capturing move) is legal for the player provided as an
+        argument otherwise returns False
+        
+        ####################################################################
+        CLASS A SKILL: Determining if a normal move to an adjacent location is legal
+        ####################################################################
+        
+        """
 
         start_cord = start_loc.get_cords()
         end_cord = end_loc.get_cords()
@@ -322,7 +335,13 @@ class Board:
 
     def __check_capture_legal(self, start_loc, end_loc, player):
 
-        """Returns True if a capture move from start_loc to end_loc is legal for the player provided as an argument otherwise returns False"""
+        """Returns True if a capture move from start_loc to end_loc is legal for the player provided as an argument otherwise returns False
+        
+        ####################################################################
+        CLASS A SKILL: Determining if a capturing move is legal
+        ####################################################################
+        
+        """
 
         start_cords = start_loc.get_cords()
         end_cords = end_loc.get_cords()
@@ -520,7 +539,13 @@ class Board:
             
             """Makes the move specified by move_obj. This public method is used by the Game class to make a move.
             This method calls the __move_piece_with_undo_arg method with undo=False because this method is only
-            part of the undoing process and undoing is handled by the undo_move method."""
+            part of the undoing process and undoing is handled by the undo_move method.
+            
+            ####################################################################
+            CLASS A SKILL: Moving a piece on the board and updating the LoopedTrack objects
+            ####################################################################
+            
+            """
     
             self.__move_piece_with_undo_arg(move_obj, undo=False)
 
@@ -551,7 +576,13 @@ class Board:
 
     def undo_move(self, move_obj):
 
-        """Undoes the move specified by move_obj by making the move in reverse"""
+        """Undoes the move specified by move_obj by making the move in reverse
+        
+        ####################################################################
+        CLASS A SKILL: Undoing a move
+        ####################################################################
+        
+        """
 
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
             
@@ -706,7 +737,13 @@ class Board:
         """Returns a string representation of the current game state. Pieces are represented
         by their colour and empty locations are represented by a pre-determined character. Pieces
         are separated by a pre-determined character. The first and last characters are not
-        separator characters."""
+        separator characters.
+        
+        ####################################################################
+        CLASS B SKILL: Serialising a board object's into a string for storage in a database
+        ####################################################################
+
+        """
 
         # convert the 2D array into a 1D array
         flat_board = twoD_to_oneD_array(self.__board)
