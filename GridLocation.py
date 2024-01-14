@@ -8,7 +8,8 @@ class GridLocation:
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation and composition
-    
+    ####################################################################
+
     """
 
     # outer track cordinates have row (2 or 3) and column (2 or 3)
@@ -46,7 +47,7 @@ class GridLocation:
 
     def __set_initial_piece(self):
 
-        """determines which piece should be placed on a location at the start of the game"""
+        """determines which piece should be placed on the location at the start of the game"""
 
         if self.__cords[0] in self.PLAYER_1_ROWS:
             return Piece(MultiClassBoardAttributes.player_1_colour)

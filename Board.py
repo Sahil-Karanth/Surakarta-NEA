@@ -18,9 +18,12 @@ class Board:
     """
     
     NUM_BOARD_LOOPS = 4
+
+    # character used to separate pieces in the game state string
     SAVED_GAME_STATE_SEPARATOR = "$"
     SAVED_GAME_STATE_EMPTY_CHAR = "."
 
+    # coordinates of locations on the outer and inner tracks
     OUTER_TRACK_CORDS = [
         (5,2), (4,2), (3,2), (2,2), (1,2), (0,2),
         (2,0), (2,1), (2,2), (2,3), (2,4), (2,5),
@@ -50,11 +53,8 @@ class Board:
         if game_state_string:
             self.__load_game_state(game_state_string)
 
-        # self.__edit_board_for_testing()
-
         # player objects are also stored in Board solely for MCTS. All other player related methods are in the Game class
         self.__player_tuple = (player1, player2)
-
 
         # maps a text representation of a track to a tuple containing the LoopedTrack objects for the inner and outer tracks
         self.track_text_to_tuple_map = {
@@ -73,74 +73,10 @@ class Board:
     def get_board_state(self):
         return self.__board
     
-    def __edit_board_for_testing(self):
-        for row in self.__board:
-            for loc in row:
-                loc.set_piece(None)
-
-        outer_lst = [GridLocation(i) for i in self.OUTER_TRACK_CORDS]
-        inner_lst = [GridLocation(i) for i in self.INNER_TRACK_CORDS]
-
-        YELLOW_TEST_OUTER_LOOP = [(0,3)]
-        GREEN_TEST_OUTER_LOOP = []
-
-        YELLOW_TEST_INNER_LOOP = []
-        GREEN_TEST_INNER_LOOP = [(5,1)]
-
-        for i in outer_lst:
-            if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
-                i.set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-            elif i.get_cords() in GREEN_TEST_OUTER_LOOP:
-                i.set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-            else:
-                i.set_piece(None)
-
-        for i in inner_lst:
-            if i.get_cords() in YELLOW_TEST_INNER_LOOP:
-                i.set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-            elif i.get_cords() in GREEN_TEST_INNER_LOOP:
-                i.set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-            else:
-                i.set_piece(None)
-
-
-        self.__outer_track = LoopedTrack(outer_lst)
-        self.__inner_track = LoopedTrack(inner_lst)
-
-        # self.__board[1][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[1][5].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-
-        # self.__board[4][4].set_piece(Piece("y"))
-        # self.__board[2][0].set_piece(Piece("g"))
-
-        # self.__board[0][0].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[0][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        self.__board[0][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # # self.__board[0][4].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[0][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-
-        # # self.__board[1][1].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[1][2].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # # self.__board[1][3].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[1][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-
-        # # self.__board[2][5].set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
-        # self.__board[2][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-
-        # self.__board[4][0].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # self.__board[4][1].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # # self.__board[4][3].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # # self.__board[4][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # self.__board[4][5].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-
-        # self.__board[5][0].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        self.__board[5][1].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # self.__board[5][3].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-        # self.__board[5][4].set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
-
     def __load_game_state(self, game_state_string):
 
-        """Updates the pieces at each GridLocation in the board to match the game state string passed in as an argument"""
+        """Updates the pieces at each GridLocation in the board 2D array and LoopedTrack objects 
+        to match the game_state_string passed in as an argument"""
         
         # split the game state string into a list of strings representing the pieces at each location
         game_state_lst = game_state_string.split(self.SAVED_GAME_STATE_SEPARATOR)
@@ -206,6 +142,7 @@ class Board:
 
         for i in range(MultiClassBoardAttributes.MAX_ROW_INDEX + 1):
             for j in range(MultiClassBoardAttributes.MAX_ROW_INDEX + 1):
+
                 location = GridLocation((i, j))
                 board.append(location)
 
@@ -227,7 +164,7 @@ class Board:
     
     def __is_valid_cord_pair(self, cord1, cord2):
         
-        """Returns True if cord1 and cord2 are valid coordinates on the board otherwise returns False"""
+        """Returns True if cord1 and cord2 are valid coordinates in the form (x,y) on the board otherwise returns False"""
 
         if not (self.__is_valid_coordinate(cord1) and self.__is_valid_coordinate(cord2)):
             return False
@@ -251,7 +188,7 @@ class Board:
         
     def __get_adjacent_locations(self, loc):
 
-        """Returns a list of the grid locations on the board that are adjacent to the loc GridLocation object passed in as an argument"""
+        """Returns a list of the GridLocation objects on the board that are adjacent to the loc GridLocation object passed in as an argument"""
 
         cords = loc.get_cords()
         adjacent_lst = []
@@ -276,7 +213,7 @@ class Board:
 
     def __check_normal_legal(self, start_loc, end_loc, player):
 
-        """Returns True if a normal move from start_loc to end_loc (non-capturing move) is legal for the player provided as an
+        """Returns True if a normal adjacent move from start_loc to end_loc (non-capturing move) is legal for the player provided as an
         argument otherwise returns False
         
         ####################################################################
@@ -335,7 +272,7 @@ class Board:
 
     def __check_capture_legal(self, start_loc, end_loc, player):
 
-        """Returns True if a capture move from start_loc to end_loc is legal for the player provided as an argument otherwise returns False
+        """Returns True if a capture move from start_loc to end_loc is legal for the player object provided as an argument otherwise returns False
         
         ####################################################################
         CLASS A SKILL: Determining if a capturing move is legal
@@ -372,11 +309,11 @@ class Board:
                 # right_move and left_move are Move objects representing the legal captures (or None if no legal capture is found in that direction) that can be made iterating through the looped_track
                 right_move, left_move = self.__get_capture_either_direction(start_loc, ind, looped_track)
 
-                # legal capture found by iterating right through the looped_track  
+                # legal capture found by iterating right through the looped_track which matches the attempted capture
                 if right_move and right_move.get_end_cords() == end_loc.get_cords():
                     return True
                 
-                # legal capture found by iterating left through the looped_track
+                # legal capture found by iterating left through the looped_track which matches the attempted capture
                 elif left_move and left_move.get_end_cords() == end_loc.get_cords():
                     return True
                 
@@ -439,8 +376,8 @@ class Board:
     def __get_capture_either_direction(self, start_location, ind, looped_track):
 
         """Returns a Move object if a capture can be made in either direction starting at the piece at ind in looped_track. Otherwise it returns False.
-        If a valid capture cannot be made with adjacent locations, further locations are checked until either a valid capture is found or
-        the direction being checked is can no longer have a valid capture on it."""
+        If a valid capture cannot be made with adjacent locations, the next locations in each direction are checked until either a valid capture is found or
+        the direction being checked can no longer have a valid capture on it."""
 
         if looped_track == None:
             return False
@@ -462,7 +399,7 @@ class Board:
     
     def __search_direction_for_capture(self, start_location, looped_track, direction):
 
-        """Returns a move object if a valid capture is found in the direction specified by direction. Otherwise it returns False."""
+        """Returns a Move object if a valid capture is found in the direction specified by direction. Otherwise it returns False."""
 
         invalid = False
         loop_count = 0
@@ -521,7 +458,7 @@ class Board:
 
         # decrement the piece count of the player that has had a piece captured
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
-            self.__update_piece_counts(move_obj.get_end_colour())
+            self.__decrement_piece_count(move_obj.get_end_colour())
 
 
         # update the LoopedTrack objects to reflect the move
@@ -538,8 +475,8 @@ class Board:
     def move_piece(self, move_obj):
             
             """Makes the move specified by move_obj. This public method is used by the Game class to make a move.
-            This method calls the __move_piece_with_undo_arg method with undo=False because this method is only
-            part of the undoing process and undoing is handled by the undo_move method.
+            This method calls the __move_piece_with_undo_arg method with undo=False because this argument is only True
+            as a part of the undoing process and undoing is handled by the undo_move method.
             
             ####################################################################
             CLASS A SKILL: Moving a piece on the board and updating the LoopedTrack objects
@@ -553,18 +490,23 @@ class Board:
 
         """Updates the inner and outer tracks to reflect the move specified by move_obj. If undo is True, the move is made in reverse."""
 
+        # switch the positions of the pieces at the start and end locations in the LoopedTrack objects
         self.__inner_track.switch_piece_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
         self.__outer_track.switch_piece_positions(move_obj.get_start_loc(), move_obj.get_end_loc())
 
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
+
             if undo:
+                # add the piece used to capture back to its starting location in the LoopedTrack objects
                 self.__inner_track.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
                 self.__outer_track.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
+
             else:
+                # remove the piece used to capture from its starting location in the LoopedTrack objects
                 self.__inner_track.remove_piece(move_obj.get_start_cords())
                 self.__outer_track.remove_piece(move_obj.get_start_cords())
     
-    def __update_piece_counts(self, end_colour):
+    def __decrement_piece_count(self, end_colour):
 
         """Decrements the piece count of the player that has had a piece captured"""
 
@@ -593,8 +535,6 @@ class Board:
             self.__spawn_piece(move_obj.get_start_colour(), move_obj.get_start_loc())
             self.__spawn_piece(move_obj.get_end_colour(), move_obj.get_end_loc())
 
-            print("sdfasdfasdf")
-
         elif move_obj.get_move_type() == MultiClassBoardAttributes.NORMAL_MOVE_TYPE:
             self.__move_piece_with_undo_arg(move_obj, undo=True)
 
@@ -609,7 +549,7 @@ class Board:
     
     def __get_loc_legal_moves(self, loc, player):
 
-        """Returns a list of legal moves that can be made from loc"""
+        """Returns a list of legal moves that can be made from loc (GridLocation object) by player (Player object)"""
 
         legal_moves = []
 
@@ -628,7 +568,7 @@ class Board:
     
     def get_player_legal_moves(self, player_colour):
 
-        """Returns a list of legal moves that can be made by player"""
+        """Returns a list of legal moves that can be made by the player specified by player_colour"""
 
         legal_moves = []
 
@@ -662,7 +602,7 @@ class Board:
 
     def get_loc_single_capture(self, start_loc):
         
-        """returns a possible capture with the piece at loc"""
+        """returns a possible capture with the piece at start_loc if one is available otherwise returns None"""
 
         # get the LoopedTrack objects for the inner and outer tracks that start_loc is on
         track_tuple = self.__get_track_from_text(start_loc.get_track())
@@ -688,7 +628,8 @@ class Board:
 
     def __get_edge_locations(self):
 
-        """Returns a list of 4 GridLocation objects that are on the edge of the board"""
+        """Returns a list of 4 GridLocation objects that are on the edge of the board. This is not a constant
+        because pieces at each edge location can change."""
 
         edge_locs = [
             self.__board[MultiClassBoardAttributes.MIN_ROW_INDEX][MultiClassBoardAttributes.MIN_ROW_INDEX],
@@ -701,7 +642,7 @@ class Board:
 
     def get_corner_move(self, start_loc):
 
-        """Returns a move using a corner location to move out of the corner if one is available otherwise returns None"""
+        """Returns a move using a corner location to move out of the corner if one is available and legal otherwise returns None"""
 
         edge_locs = self.__get_edge_locations()
 
@@ -722,7 +663,7 @@ class Board:
 
     def get_random_normal_move(self, player_colour):
 
-        """Returns a random normal move (non-capturing move) that can be made. Used by the Easy AI opponent."""
+        """Returns a random normal adjacent move (non-capturing move) that can be made. Used by the Easy AI opponent."""
 
         return random.choice(self.get_player_legal_moves(player_colour))
 
@@ -736,7 +677,7 @@ class Board:
         
         """Returns a string representation of the current game state. Pieces are represented
         by their colour and empty locations are represented by a pre-determined character. Pieces
-        are separated by a pre-determined character. The first and last characters are not
+        are separated by a pre-determined character. The first and last characters of the string are not
         separator characters.
         
         ####################################################################

@@ -1,6 +1,6 @@
 class Piece:
 
-    """A class to represent a piece's colour on the Surakarta board"""
+    """A class to represent a piece on the Surakarta board"""
 
     def __init__(self, colour):
         self.__colour = colour

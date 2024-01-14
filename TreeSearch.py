@@ -65,7 +65,7 @@ class Node:
     def get_value(self):
         return self.__value
     
-    def update_value(self, value):
+    def add_to_value(self, value):
         """updates the value of the node by adding the value passed in to the current value.
         This is called when the node is visited during an MCTS simulation."""
 
@@ -244,7 +244,7 @@ class GameTree:
         # terminate the loop when the root node has had its value and visited count updated
         while node != None:
             node.increment_visited_count()
-            node.update_value(result)
+            node.add_to_value(result)
             node = node.get_parent()
 
     def __run_MCTS_iteration(self):

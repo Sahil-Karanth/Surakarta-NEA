@@ -63,7 +63,7 @@ class AIPlayer(Player):
 
 class EasyAIPlayer(AIPlayer):
 
-    """An Easy AI opponent that inherits from the AIPlayer class and implements the get_move method
+    """An Easy AI opponent that inherits from the AIPlayer class and implements the get_move method with a greedy algorithm
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
@@ -110,6 +110,7 @@ class EasyAIPlayer(AIPlayer):
 class MediumAIPlayer(AIPlayer):
 
     """A Medium AI opponent that inherits from the AIPlayer class and implements the get_move method
+    with the Monte Carlo Tree Search algorithm running for 20 seconds per move.
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
@@ -122,7 +123,7 @@ class MediumAIPlayer(AIPlayer):
 
     def get_move(self, board):
 
-        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 30 seconds per move"""
+        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 20 seconds per move"""
         
         game_tree = GameTree(board)
         return game_tree.get_next_move()
@@ -131,6 +132,7 @@ class MediumAIPlayer(AIPlayer):
 class HardAIPlayer(AIPlayer):
 
     """A Hard AI opponent that inherits from the AIPlayer class and implements the get_move method
+    with the Monte Carlo Tree Search algorithm running for 40 seconds per move.
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
@@ -143,7 +145,7 @@ class HardAIPlayer(AIPlayer):
 
     def get_move(self, board):
 
-        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 50 seconds per move"""
+        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 40 seconds per move"""
 
         pass
 

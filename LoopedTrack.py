@@ -5,9 +5,11 @@ class LoopedTrack:
     """An implementation of a circular list data structure used for the board's two looped tracks.
     LoopedTrack objects contain GridLocation objects as elements and can be traversed in either direction.
     
+    ####################################################################
     CLASS A SKILL: Circular list data structure
     CLASS A SKILL: Complex OOP model with encapsulation and composition
-
+    ####################################################################
+    
     """
 
     def __init__(self, grid_location_lst, name):

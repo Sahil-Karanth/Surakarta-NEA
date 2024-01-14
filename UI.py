@@ -25,7 +25,7 @@ class UI:
   
 class Graphical_UI(UI):
 
-    """Graphical User Interface class for the game. Inherits from the UI class.
+    """Graphical User Interface class for the program. Inherits from the UI class.
     
     ####################################################################
     CLASS A SKILL: Updating the UI based on user interaction such as moving pieces, navigating 
@@ -1243,7 +1243,7 @@ class Graphical_UI(UI):
 
 class Terminal_UI(UI):
     
-    """Terminal user interface for the game. Inherits from the UI class. Only supports local play.
+    """Terminal user interface for the program. Inherits from the UI class. Only supports local play.
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, polymorphism and composition
