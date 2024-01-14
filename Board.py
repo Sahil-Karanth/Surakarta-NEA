@@ -305,16 +305,31 @@ class Board:
             starting_indexes = self.__get_looped_track_loc_indexes(looped_track, start_loc)
 
             for ind in starting_indexes:
+                
+                # set the looped_track right pointer to the index where start_loc is found
+                looped_track.set_pointer(ind, "right")
 
-                # right_move and left_move are Move objects representing the legal captures (or None if no legal capture is found in that direction) that can be made iterating through the looped_track
-                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, looped_track)
+                # skip the first location because it is the same as start_loc
+                looped_track.get_next_right()
+
+                # Move object representing a legal capture if one is found iterating right through the LoopedTrack
+                right_move = self.__search_direction_for_capture(start_loc, looped_track, "right")
 
                 # legal capture found by iterating right through the looped_track which matches the attempted capture
                 if right_move and right_move.get_end_cords() == end_loc.get_cords():
                     return True
                 
+                # set the looped_track left pointer to the index where start_loc is found
+                looped_track.set_pointer(ind, "left")
+
+                # skip the first location because it is the same as start_loc
+                looped_track.get_next_left()
+
+                # Move object representing a legal capture if one is found iterating left through the LoopedTrack
+                left_move = self.__search_direction_for_capture(start_loc, looped_track, "left")
+
                 # legal capture found by iterating left through the looped_track which matches the attempted capture
-                elif left_move and left_move.get_end_cords() == end_loc.get_cords():
+                if left_move and left_move.get_end_cords() == end_loc.get_cords():
                     return True
                 
         return False
@@ -373,33 +388,12 @@ class Board:
         
         return False
     
-    def __get_capture_either_direction(self, start_location, ind, looped_track):
-
-        """Returns a Move object if a capture can be made in either direction starting at the piece at ind in looped_track. Otherwise it returns False.
-        If a valid capture cannot be made with adjacent locations, the next locations in each direction are checked until either a valid capture is found or
-        the direction being checked can no longer have a valid capture on it."""
-
-        if looped_track == None:
-            return False
-
-        looped_track.set_pointer(ind, "right")
-        looped_track.set_pointer(ind, "left")
-
-        # the first two vaalues will be the same (the value at ind) so we can skip them
-        looped_track.get_next_right()
-        looped_track.get_next_left()
-
-        # a Move object representing a valid capture if one is found iterating right through the LoopedTrack
-        right_search = self.__search_direction_for_capture(start_location, looped_track, "right")
-
-        # a Move object representing a valid capture if one is found iterating left through the LoopedTrack        
-        left_search = self.__search_direction_for_capture(start_location, looped_track, "left")
-
-        return (right_search, left_search)
-    
     def __search_direction_for_capture(self, start_location, looped_track, direction):
 
-        """Returns a Move object if a valid capture is found in the direction specified by direction. Otherwise it returns False."""
+        """Returns a Move object if a valid capture is found in the direction specified by direction, starting iteration
+        with the location specified by the corresponding pointer of looped_track. Otherwise it returns False
+        If a valid capture cannot be made with adjacent locations, the next locations in each direction are checked until either
+        a valid capture is found or the direction being checked can no longer have a valid capture on it."""
 
         invalid = False
         loop_count = 0
@@ -616,14 +610,28 @@ class Board:
 
             for ind in starting_indexes:
 
-                # unlike in the __check_capture_legal method, we're not checking for the legality of a specific capture so we can just return the first capture found
-                right_move, left_move = self.__get_capture_either_direction(start_loc, ind, track)
+                # set the track right pointer to the index where start_loc is found and skip the first location because it is the same as start_loc
+                track.set_pointer(ind, "right")
+                track.get_next_right()
+
+                # Move object representing a legal capture if one is found iterating right through the LoopedTrack
+                right_move = self.__search_direction_for_capture(start_loc, track, "right")
+
+                # not checking for the legality of a specific capture
                 if right_move:
                     return right_move
                 
-                elif left_move:
+                # set the track left pointer to the index where start_loc is found and skip the first location because it is the same as start_loc
+                track.set_pointer(ind, "left")
+                track.get_next_left()
+
+                # Move object representing a legal capture if one is found iterating left through the LoopedTrack
+                left_move = self.__search_direction_for_capture(start_loc, track, "left")
+
+                # not checking for the legality of a specific capture
+                if left_move:
                     return left_move
-            
+
         return None
 
     def __get_edge_locations(self):
