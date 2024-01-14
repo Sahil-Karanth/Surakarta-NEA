@@ -110,35 +110,39 @@ class EasyAIPlayer(AIPlayer):
 class MediumAIPlayer(AIPlayer):
 
     """A Medium AI opponent that inherits from the AIPlayer class and implements the get_move method
-    with the Monte Carlo Tree Search algorithm running for 20 seconds per move.
+    with the Monte Carlo Tree Search algorithm running for 10 seconds per move.
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
     ####################################################################
     
     """
+
+    TIME_FOR_MOVE = 10 # seconds
     
     def __init__(self, piece_colour, piece_count):
         super().__init__("Medium AI", piece_colour, piece_count)
 
     def get_move(self, board):
 
-        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 20 seconds per move"""
+        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 15 seconds per move"""
         
-        game_tree = GameTree(board)
+        game_tree = GameTree(board, self.TIME_FOR_MOVE)
         return game_tree.get_next_move()
 
     
 class HardAIPlayer(AIPlayer):
 
     """A Hard AI opponent that inherits from the AIPlayer class and implements the get_move method
-    with the Monte Carlo Tree Search algorithm running for 40 seconds per move.
+    with the Monte Carlo Tree Search algorithm running for 30 seconds per move.
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
     ####################################################################
     
     """
+
+    TIME_FOR_MOVE = 30 # seconds
         
     def __init__(self, piece_colour, piece_count):
         super().__init__("Hard AI", piece_colour, piece_count)
@@ -147,7 +151,8 @@ class HardAIPlayer(AIPlayer):
 
         """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 40 seconds per move"""
 
-        pass
+        game_tree = GameTree(board, self.TIME_FOR_MOVE)
+        return game_tree.get_next_move()
 
 
 

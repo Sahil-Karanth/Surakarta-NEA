@@ -87,8 +87,6 @@ class GameTree:
     LOSS = -1
     DRAW = 0
     WIN = 1
-
-    TIME_FOR_MOVE = 40 # seconds
     
     # moves before early stop 
     MOVES_PER_ROLLOUT = 500
@@ -96,12 +94,15 @@ class GameTree:
     # exploration constant for the UCB1 formula
     EXPLORATION_CONSTANT = 2
 
-    def __init__(self, root_board):
+    def __init__(self, root_board, time_for_move):
 
         self.__root = Node(root_board, depth=0)
 
         # the maximum depth of a node in the tree
         self.__current_tree_depth = 0
+
+        # time allowed for the MCTS algorithm to run
+        self.__time_for_move = time_for_move
 
         self.__current_node = self.__root
 
@@ -282,14 +283,14 @@ class GameTree:
 
         num_iterations = 0
 
-        while time.time() - start_time < GameTree.TIME_FOR_MOVE:
+        while time.time() - start_time < self.__time_for_move:
             self.__run_MCTS_iteration()
             num_iterations += 1
 
         # best node/move to make is the child of the root node with the highest UCB1 value
         best_node = max(self.__root.get_children(), key=lambda node: node.get_value())
         
-        print(f"MCTS RAN FOR: {GameTree.TIME_FOR_MOVE} SECONDS")
+        print(f"MCTS RAN FOR: {self.__time_for_move} SECONDS")
         print(f"BEST NODE'S VALUE = {best_node.get_value()}")
         print("NUM MCTS ITERATIONS = ", num_iterations)
         print("MAX TREE DEPTH = ", self.__current_tree_depth)
