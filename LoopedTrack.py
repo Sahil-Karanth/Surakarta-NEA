@@ -33,9 +33,6 @@ class LoopedTrack:
     def get_length(self):
         return self.__length
     
-    def get_lst_dryruns(self):
-        return self.__lst
-    
     def get_name(self):
         return self.__name
 

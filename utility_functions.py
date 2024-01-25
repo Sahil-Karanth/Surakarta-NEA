@@ -1,5 +1,4 @@
 import random
-from copy import deepcopy
 
 def oneD_to_twoD_array(lst, width):
 
@@ -18,11 +17,11 @@ def shuffle_2D_array(arr):
     """returns a 2D array with the same elements as the specified 2D array but with the elements shuffled.
     Elements are shuffled between rows and columns."""
     
-    arr_copy = deepcopy(arr)
+    width = len(arr[0])
 
     arr = twoD_to_oneD_array(arr)
     random.shuffle(arr)
-    arr = oneD_to_twoD_array(arr, len(arr_copy[0]))
+    arr = oneD_to_twoD_array(arr, width)
 
     return arr
 

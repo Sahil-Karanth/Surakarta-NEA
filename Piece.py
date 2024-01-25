@@ -10,7 +10,3 @@ class Piece:
     
     def get_piece_colour(self):
         return self.__colour
-    
-
-
-    

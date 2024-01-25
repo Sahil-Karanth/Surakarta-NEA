@@ -149,7 +149,7 @@ class HardAIPlayer(AIPlayer):
 
     def get_move(self, board):
 
-        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 40 seconds per move"""
+        """Uses the Monte Carlo Tree Search algorithm to make moves. The algorithm is run for 30 seconds per move"""
 
         game_tree = GameTree(board, self.TIME_FOR_MOVE)
         return game_tree.get_next_move()

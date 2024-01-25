@@ -56,6 +56,12 @@ class Board:
         # player objects are also stored in Board solely for MCTS. All other player related methods are in the Game class
         self.__player_tuple = (player1, player2)
 
+        """
+        ####################################################################
+        CLASS B SKILL: Dictionary
+        ####################################################################
+        """
+
         # maps a text representation of a track to a tuple containing the LoopedTrack objects for the inner and outer tracks
         self.track_text_to_tuple_map = {
             MultiClassBoardAttributes.INNER_TRACK_STRING: (self.__inner_track, None),
@@ -489,7 +495,7 @@ class Board:
         if move_obj.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
 
             if undo:
-                # add the piece used to capture back to its starting location in the LoopedTrack objects
+                # add the piece that was captured back to its starting location in the LoopedTrack objects
                 self.__inner_track.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
                 self.__outer_track.update_piece(move_obj.get_end_cords(), move_obj.get_end_colour())
 

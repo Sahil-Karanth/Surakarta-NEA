@@ -226,7 +226,8 @@ class GameTree:
                 return terminal_board_result
             
             # get the colour of the current player based on the depth of the current node
-            rollout_colour = self.__get_current_player_colour(self.__current_node.get_depth() + num_moves)
+            current_depth = self.__current_node.get_depth() + num_moves
+            rollout_colour = self.__get_current_player_colour(current_depth)
 
             simulated_move = rollout_board.get_single_random_legal_move(rollout_colour)
             rollout_board.move_piece(simulated_move)

@@ -14,6 +14,9 @@ class Database:
 
     """
 
+    NUM_RANDOM_BYTES_HASH = 16
+    NUM_HASH_ITERATIONS = 100000
+
     def __init__(self, db_name):
 
         # connect to the database
@@ -157,8 +160,8 @@ class Database:
         """Adds a user to the database. The password is hashed and salted before being stored."""
 
         # hash and salt the password
-        salt = os.urandom(16)
-        hashed_password = hashlib.pbkdf2_hmac('sha512', password.encode(), salt, 100000)
+        salt = os.urandom(self.NUM_RANDOM_BYTES_HASH)
+        hashed_password = hashlib.pbkdf2_hmac('sha512', password.encode(), salt, self.NUM_HASH_ITERATIONS)
         hashed_password = salt.hex() + hashed_password.hex()
 
         # get the current date
@@ -364,8 +367,6 @@ class Database:
 
         return self.__cursor.fetchall()
 
-        # self.__cursor.execute("SELECT historical_game_id, game_date, opponent, winner FROM GameHistory WHERE username = ?;", (username,))
-        # return self.__cursor.fetchall()
 
     def update_stored_piece_colour(self, username, new_colour):
         
@@ -383,20 +384,3 @@ class Database:
 
         self.__conn.commit()
     
-
-
-# db = Database("database.db")
-
-# state_str = ".$.$.$.$.$.$.$green$.$.$green$.$.$.$.$.$.$.$.$.$.$red$.$.$.$.$red$.$.$.$.$.$.$.$.$."
-
-# db.save_game_state("admin", state_str, "Medium AI", False, 2, 2, "red")
-
-# db.delete_table("Users")
-# db.delete_table("GameHistory")
-# db.delete_table("AIGameStats")
-# db.delete_table("SavedGames")
-
-# db.create_users_table()
-# db.create_game_history_table()
-# db.create_AI_game_stats_table()
-# db.create_saved_games_table()
