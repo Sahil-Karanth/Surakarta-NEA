@@ -36,20 +36,21 @@ class Graphical_UI(UI):
     
     """
 
-    BUTTON_SIZE = 30
+    LARGE_BUTTON_SIZE = 30
     FONT = "Helvetica"
+    LARGE_BUTTON_FONT_PARAMS = (FONT, LARGE_BUTTON_SIZE)
     TITLE_FONT_SIZE = 60
     BUTTON_DIMENSIONS = (10, 1)
     COLUMN_PAD = 12
     LOGIN_PAD = 10
     PARAGRAPH_FONT_SIZE = 15
 
-    HOME_BUTTON_PAD = (15, 10)
+    HOME_PAGE_BUTTONS_PAD = (15, 10)
     BUTTON_FRAME_BORDER_WIDTH = 3
 
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold")
     PARAGRAPH_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE)
-    SUBMIT_BUTTON_FONT_PARAMS = (FONT, 15)
+    SMALL_BUTTON_FONT_PARAMS = (FONT, 15)
 
     LOGIN_WINDOW_HEIGHT = 270
     SIGNUP_WINDOW_HEIGHT = 350
@@ -62,15 +63,23 @@ class Graphical_UI(UI):
     LOAD_GAME_INPUT_PAD = (200, COLUMN_PAD)
 
     DISP_BOARD_WINDOW_SIZE = (500, 450)
+    DISP_BOARD_IMAGE_SIZE = (400, 400)
+    DISP_BOARD_IMAGE_CENTRE = (235, 215)
     DISP_BOARD_PIECE_SPACING = 43
     DISP_BOARD_INITAL_X = 128
     DISP_BOARD_INITAL_Y = 109
     DISP_BOARD_PIECE_RADIUS = 15
 
     STATS_WINDOW_SIZE = (500, 500)
+    CHANGE_PIECE_COLOUR_WINDOW_SIZE = (300, 150)
+    SIGNUP_WINDOW_DIMENSIONS = (300, 350)
+    LOGIN_WINDOW_DIMENSIONS = (300, 270)
+    LOAD_GAME_WINDOW_DIMENSIONS = (500, 550)
+
+    PLAYER_NAME_TEXTWRAP_LENGTH = 10
 
     AVAILABLE_PIECE_COLOURS = ["yellow", "green", "red", "lightblue", "orange", "black"]
-    AI_RESERVED_NAMES = ["Easy AI", "Medium AI", "Hard AI"]
+    AI_RESERVED_NAMES = [MultiClassBoardAttributes.EASY_AI_NAME, MultiClassBoardAttributes.MEDIUM_AI_NAME, MultiClassBoardAttributes.HARD_AI_NAME]
 
     PIECE_IMAGES_PATH = "images/piece_images/"
     BOARD_IMAGES_PATH = "images/board_images/"
@@ -82,18 +91,24 @@ class Graphical_UI(UI):
     # display board background image
     DISP_BOARD_BACKGROUND_IMG = None
 
+    """
+    ####################################################################
+    CLASS B SKILL: Dictionary
+    ####################################################################
+    """
+
     # maps difficulty level numbers to AI level names
     AI_NAME_TO_LEVEL_NUM_MAP = {
-        1: "Easy AI",
-        2: "Medium AI",
-        3: "Hard AI"
+        1: MultiClassBoardAttributes.EASY_AI_NAME,
+        2: MultiClassBoardAttributes.MEDIUM_AI_NAME,
+        3: MultiClassBoardAttributes.HARD_AI_NAME
     }
 
     # maps AI level names to difficulty level numbers
     AI_LEVEL_NUM_TO_NAME_MAP = {
-        "Easy AI": 1,
-        "Medium AI": 2,
-        "Hard AI": 3
+        MultiClassBoardAttributes.EASY_AI_NAME: 1,
+        MultiClassBoardAttributes.MEDIUM_AI_NAME: 2,
+        MultiClassBoardAttributes.HARD_AI_NAME: 3
     }
 
     def __init__(self):
@@ -147,29 +162,23 @@ class Graphical_UI(UI):
         ).finalize()
 
         if maximise:
-            self.__maximise_window(window)
+            window.maximize()
 
         return window
 
     def get_UI_type(self):
         return self.__UI_type
     
-    def __maximise_window(self, window):
-
-        """Maximises the window without an animation"""
-
-        window.TKroot.geometry("{0}x{1}+0+0".format(window.TKroot.winfo_screenwidth(), window.TKroot.winfo_screenheight()))
-    
     def __setup_home_page(self):
 
         """Creates the home page window. This is the first window that is displayed when the program is run."""
 
-        new_game_button = sg.Button("New Game", pad=self.HOME_BUTTON_PAD, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="new_game_button")
-        load_game_button = sg.Button("Load Game", pad=self.HOME_BUTTON_PAD, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="load_game_button")
-        show_stats_button = sg.Button("Show Stats", pad=self.HOME_BUTTON_PAD, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="show_stats_button")
-        login_button = sg.Button("Login", pad=self.HOME_BUTTON_PAD, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="login_button")
-        signup_button = sg.Button("Sign Up", pad=self.HOME_BUTTON_PAD, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="signup_button")
-        help_button = sg.Button("Help", pad=self.HOME_BUTTON_PAD, font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="help_button")
+        new_game_button = sg.Button("New Game", pad=self.HOME_PAGE_BUTTONS_PAD, font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="new_game_button")
+        load_game_button = sg.Button("Load Game", pad=self.HOME_PAGE_BUTTONS_PAD, font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="load_game_button")
+        show_stats_button = sg.Button("Show Stats", pad=self.HOME_PAGE_BUTTONS_PAD, font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="show_stats_button")
+        login_button = sg.Button("Login", pad=self.HOME_PAGE_BUTTONS_PAD, font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="login_button")
+        signup_button = sg.Button("Sign Up", pad=self.HOME_PAGE_BUTTONS_PAD, font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="signup_button")
+        help_button = sg.Button("Help", pad=self.HOME_PAGE_BUTTONS_PAD, font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="help_button")
 
         buttons_layout = [
             [new_game_button, login_button],
@@ -210,10 +219,10 @@ class Graphical_UI(UI):
         layout = [
             [sg.Text("piece colour", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
             [sg.Combo(self.AVAILABLE_PIECE_COLOURS, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")],
-            [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=self.SUBMIT_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_change_piece_colour_button")]
+            [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=self.SMALL_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_change_piece_colour_button")]
         ]
 
-        return self.__create_window("Change Piece Colour", layout, "center", modal=True, keep_on_top=True, size=(300, 150), maximise=False, disable_close=False)
+        return self.__create_window("Change Piece Colour", layout, "center", modal=True, keep_on_top=True, size=self.CHANGE_PIECE_COLOUR_WINDOW_SIZE, maximise=False, disable_close=False)
 
     def __make_login_or_signup_window(self, login_or_signup):
             
@@ -223,7 +232,6 @@ class Graphical_UI(UI):
             raise ValueError("login_or_signup parameter of the __make_login_or_signup_window method must be either 'login' or 'signup'")
             
         drop_down_menu_layout = []
-        modal_height = self.LOGIN_WINDOW_HEIGHT
 
         if login_or_signup == "signup":
 
@@ -233,8 +241,11 @@ class Graphical_UI(UI):
                 [sg.Combo(self.AVAILABLE_PIECE_COLOURS, font=self.PARAGRAPH_FONT_PARAMS, expand_x=True, enable_events=True,  readonly=True, key="piece_colour_choice")]
             ]
 
-            # signup window is taller than the login window because of the piece colour dropdown menu
-            modal_height = self.SIGNUP_WINDOW_HEIGHT 
+            # signup window has a greater height than the login window
+            modal_dimensions = self.SIGNUP_WINDOW_DIMENSIONS
+        
+        elif login_or_signup == "login":
+            modal_dimensions = self.LOGIN_WINDOW_DIMENSIONS
         
         layout = [
             [sg.Text("Username", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
@@ -242,10 +253,10 @@ class Graphical_UI(UI):
             [sg.Text("Password", pad=(0, self.LOGIN_PAD), font=self.PARAGRAPH_FONT_PARAMS)],
             [sg.InputText("", pad=(0, self.LOGIN_PAD), key=f"{login_or_signup}_password_input", password_char="*", font=self.PARAGRAPH_FONT_PARAMS)],
             [drop_down_menu_layout],
-            [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=self.SUBMIT_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key=f"{login_or_signup}_submit_button")]
+            [sg.Button("Submit", pad=(0, self.COLUMN_PAD), font=self.SMALL_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key=f"{login_or_signup}_submit_button")]
         ]
 
-        return self.__create_window(login_or_signup.title(), layout, "center", modal=True, keep_on_top=True, size=(300, modal_height), maximise=False, disable_close=False)
+        return self.__create_window(login_or_signup.title(), layout, "center", modal=True, keep_on_top=True, size=modal_dimensions, maximise=False, disable_close=False)
 
     def __get_new_game_text_and_input_layout(self, disp_text, inp_default_text, inp_key):
 
@@ -298,9 +309,9 @@ class Graphical_UI(UI):
         # main page layout
         layout = [
             [self.__create_menu()],
-            [sg.Button("Local Play", font=(self.FONT, self.BUTTON_SIZE), pad=self.GAME_MODE_BUTTON_PAD, size=self.BUTTON_DIMENSIONS, key="local_play_button"), sg.Button("AI Play", font=(self.FONT, self.BUTTON_SIZE), pad=self.GAME_MODE_BUTTON_PAD, size=self.BUTTON_DIMENSIONS, key="AI_play_button")],
+            [sg.Button("Local Play", font=self.LARGE_BUTTON_FONT_PARAMS, pad=self.GAME_MODE_BUTTON_PAD, size=self.BUTTON_DIMENSIONS, key="local_play_button"), sg.Button("AI Play", font=self.LARGE_BUTTON_FONT_PARAMS, pad=self.GAME_MODE_BUTTON_PAD, size=self.BUTTON_DIMENSIONS, key="AI_play_button")],
             [AI_input_col, Local_input_col],
-            [sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_local_play_button", visible=False), sg.Button("Submit", font=(self.FONT, self.BUTTON_SIZE), size=self.BUTTON_DIMENSIONS, key="submit_AI_play_button", visible=False)],
+            [sg.Button("Submit", font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_local_play_button", visible=False), sg.Button("Submit", font=self.LARGE_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_AI_play_button", visible=False)],
         ]
 
         self.__main_window.close() # close the previous window (home page)
@@ -441,14 +452,14 @@ class Graphical_UI(UI):
         layout = [
             [sg.Text("Enter a Game ID to Load", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Input("", pad=self.LOAD_GAME_INPUT_PAD, key="loading_game_id_input", font=self.PARAGRAPH_FONT_PARAMS, justification="center")],
-            [sg.Button("Load", pad=(0, self.COLUMN_PAD), font=self.SUBMIT_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_loading_game_id_button")],
+            [sg.Button("Load", pad=(0, self.COLUMN_PAD), font=self.SMALL_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_loading_game_id_button")],
             [saved_games_table],
             [sg.Text("Enter a Game ID to Delete", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
             [sg.Input("", pad=self.LOAD_GAME_INPUT_PAD, key="deleting_game_id_input", font=self.PARAGRAPH_FONT_PARAMS, justification="center")],
-            [sg.Button("Delete", pad=(0, self.COLUMN_PAD), font=self.SUBMIT_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_deleting_game_id_button")],
+            [sg.Button("Delete", pad=(0, self.COLUMN_PAD), font=self.SMALL_BUTTON_FONT_PARAMS, size=self.BUTTON_DIMENSIONS, key="submit_deleting_game_id_button")],
         ]
 
-        load_game_window = self.__create_window("Load Game", layout, "center", size=(500, 550), maximise=False, modal=True, disable_close=False, keep_on_top=True)
+        load_game_window = self.__create_window("Load Game", layout, "center", size=self.LOAD_GAME_WINDOW_DIMENSIONS, maximise=False, modal=True, disable_close=False, keep_on_top=True)
 
         return load_game_window
 
@@ -524,19 +535,19 @@ class Graphical_UI(UI):
         move_option = sg.Radio("Move", key="move_type_radio_move", group_id="move_type_radio", font=self.SUBHEADING_FONT_PARAMS)
         capture_option = sg.Radio("Capture", key="move_type_radio_capture", group_id="move_type_radio", font=self.SUBHEADING_FONT_PARAMS)
 
-        submit_move_button = sg.Button("Submit Move", font=(self.FONT, 15), key="submit_move_button")
-        undo_move_button = sg.Button("Undo Move", font=(self.FONT, 15), key="undo_move_button")
+        submit_move_button = sg.Button("Submit Move", font=self.SMALL_BUTTON_FONT_PARAMS, key="submit_move_button")
+        undo_move_button = sg.Button("Undo Move", font=self.SMALL_BUTTON_FONT_PARAMS, key="undo_move_button")
 
         # button to show the display board window
-        show_display_board_button = sg.Button("show board", key="show_board_button", font=(self.FONT, 15))
+        show_display_board_button = sg.Button("show board", key="show_board_button", font=self.SMALL_BUTTON_FONT_PARAMS)
 
         # text to show the number of pieces captured by each player
         pieces_captured_player1_text = self.__get_pieces_captured_display_text(1)
         pieces_captured_player2_text = self.__get_pieces_captured_display_text(2)
 
         # layout to show the number of pieces captured by each player
-        player1_captured_layout = [[sg.Text(pieces_captured_player1_text, key="player1_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
-        player2_captured_layout = [[sg.Text(pieces_captured_player2_text, key="player2_captured_text", font=self.PARAGRAPH_FONT_PARAMS, pad=(50, 0))]]
+        player1_captured_layout = [[sg.Text(pieces_captured_player1_text, key="player1_captured_text", font=self.PARAGRAPH_FONT_PARAMS)]]
+        player2_captured_layout = [[sg.Text(pieces_captured_player2_text, key="player2_captured_text", font=self.PARAGRAPH_FONT_PARAMS)]]
         
         # main layout for the match page
         layout = [
@@ -581,7 +592,7 @@ class Graphical_UI(UI):
             # textwrap the player names to prevent the text from being too long and pushing the board off the screen
             player_name = self.__game.get_player_name(player_number)
             padded_player_name = self.__pad_player_name(player_name)
-            text_wrapped_player_name = textwrap.fill(padded_player_name, 10)
+            text_wrapped_player_name = textwrap.fill(padded_player_name, self.PLAYER_NAME_TEXTWRAP_LENGTH)
     
             return f"{text_wrapped_player_name} captured pieces: {player_num_captured}"
 
@@ -590,8 +601,8 @@ class Graphical_UI(UI):
         """Pads the given player_name with spaces before the name if it is shorter than 10 characters
         until it is 10 characters long. Returns the padded player name."""
 
-        if len(player_name) < 10:
-            return (" " * (10 - len(player_name))) + player_name
+        if len(player_name) < self.PLAYER_NAME_TEXTWRAP_LENGTH:
+            return (" " * (self.PLAYER_NAME_TEXTWRAP_LENGTH - len(player_name))) + player_name
 
         else:
             return player_name
@@ -895,14 +906,15 @@ class Graphical_UI(UI):
         image = Image.open(image_path)
 
         # Resize the image to fit the canvas
-        image.thumbnail((400, 400))
+        image.thumbnail(self.DISP_BOARD_IMAGE_SIZE)
 
         # storing the image in an instance variable to prevent garbage collection
         self.DISP_BOARD_BACKGROUND_IMG = ImageTk.PhotoImage(image)
         
         # add the background board image to the underlying Tkinter canvas
         canvas = self.__display_board_window['-CANVAS-']
-        canvas.TKCanvas.create_image(235, 215, image=self.DISP_BOARD_BACKGROUND_IMG , anchor="center")
+
+        canvas.TKCanvas.create_image(self.DISP_BOARD_IMAGE_CENTRE[0], self.DISP_BOARD_IMAGE_CENTRE[1], image=self.DISP_BOARD_BACKGROUND_IMG , anchor="center")
         
         # draw the pieces on the board
         self.__draw_pieces_on_disp_board()
@@ -977,9 +989,11 @@ class Graphical_UI(UI):
         min_row_index = MultiClassBoardAttributes.MIN_ROW_INDEX
         max_row_index = MultiClassBoardAttributes.MAX_ROW_INDEX
 
+        """
         ####################################################################
-        # CLASS A SKILL: Regex for the validation of board coordinates
+        CLASS A SKILL: Regex for the validation of board coordinates
         ####################################################################
+        """
 
         pattern = fr'^[{min_row_index}-{max_row_index}],[{min_row_index}-{max_row_index}]$'
         if bool(re.match(pattern, key)):
@@ -1280,9 +1294,11 @@ class Terminal_UI(UI):
 
         while not valid:
 
+            """
             ####################################################################
-            # CLASS A SKILL: Regex for the validation of board coordinates
+            CLASS A SKILL: Regex for the validation of board coordinates
             ####################################################################
+            """
 
             choice = input(prompt)
             if bool(re.match(pattern, choice)):

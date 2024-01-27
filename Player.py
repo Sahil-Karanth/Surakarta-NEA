@@ -72,7 +72,7 @@ class EasyAIPlayer(AIPlayer):
     """
 
     def __init__(self, piece_colour, piece_count):
-        super().__init__("Easy AI", piece_colour, piece_count)
+        super().__init__(MultiClassBoardAttributes.EASY_AI_NAME, piece_colour, piece_count)
     
     def get_move(self, board):
         
@@ -121,7 +121,7 @@ class MediumAIPlayer(AIPlayer):
     TIME_FOR_MOVE = 10 # seconds
     
     def __init__(self, piece_colour, piece_count):
-        super().__init__("Medium AI", piece_colour, piece_count)
+        super().__init__(MultiClassBoardAttributes.MEDIUM_AI_NAME, piece_colour, piece_count)
 
     def get_move(self, board):
 
@@ -145,7 +145,7 @@ class HardAIPlayer(AIPlayer):
     TIME_FOR_MOVE = 30 # seconds
         
     def __init__(self, piece_colour, piece_count):
-        super().__init__("Hard AI", piece_colour, piece_count)
+        super().__init__(MultiClassBoardAttributes.HARD_AI_NAME, piece_colour, piece_count)
 
     def get_move(self, board):
 

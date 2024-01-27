@@ -17,6 +17,9 @@ class MultiClassBoardAttributes:
     OUTER_TRACK_STRING = "OUTER"
     BOTH_TRACK_STRING = "BOTH"
 
+    EASY_AI_NAME = "Easy AI"
+    MEDIUM_AI_NAME = "Medium AI"
+    HARD_AI_NAME = "Hard AI"
     MIN_ROW_INDEX = 0
     MAX_ROW_INDEX = 5
     NUM_STARTING_PIECES_EACH = 12

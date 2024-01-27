@@ -18,4 +18,3 @@ if __name__ == "__main__":
             print("Invalid input. Please try again.")
     
     ui.play_game()
-

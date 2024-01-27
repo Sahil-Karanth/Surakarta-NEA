@@ -19,6 +19,12 @@ class Game:
 
     """
 
+    AI_NAME_TO_CLASS_MAP = {
+        MultiClassBoardAttributes.EASY_AI_NAME: EasyAIPlayer,
+        MultiClassBoardAttributes.MEDIUM_AI_NAME: MediumAIPlayer,
+        MultiClassBoardAttributes.HARD_AI_NAME: HardAIPlayer,
+    }
+
     def __init__(self, player1name, player2_name, ai_level=None, game_state_string=None, player2_starts=False, player1_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH, player2_num_pieces=MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH):
 
         self.__player1 = Player(player1name, MultiClassBoardAttributes.player_1_colour, player1_num_pieces)
@@ -47,13 +53,7 @@ class Game:
 
         """Returns an AI player object using the class specified by ai_name with a piece count of player2_num_pieces"""
 
-        difficulty_dict = {
-            "Easy AI": EasyAIPlayer,
-            "Medium AI": MediumAIPlayer,
-            "Hard AI": HardAIPlayer,
-        }
-
-        return difficulty_dict[ai_name](MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
+        return self.AI_NAME_TO_CLASS_MAP[ai_name](MultiClassBoardAttributes.player_2_colour, player2_num_pieces)
 
     def get_ai_move(self):
 

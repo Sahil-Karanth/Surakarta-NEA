@@ -2,6 +2,7 @@ import sqlite3
 import hashlib
 import os
 from datetime import datetime
+from MultiClassBoardAttributes import MultiClassBoardAttributes
 
 class Database:
 
@@ -175,7 +176,7 @@ class Database:
         # add a record for each AI difficulty to the AIGameStats table for the new user
         AI_game_stat_id = self.__get_new_primary_key("AIGameStats", "AI_game_stat_id")
     
-        for difficulty in ["Easy AI", "Medium AI", "Hard AI"]:
+        for difficulty in [MultiClassBoardAttributes.EASY_AI_NAME, MultiClassBoardAttributes.MEDIUM_AI_NAME, MultiClassBoardAttributes.HARD_AI_NAME]:
             self.__cursor.execute("INSERT INTO AIGameStats VALUES (?, ?, ?, ?, ?);", (AI_game_stat_id, user_id, difficulty, 0, 0))
             AI_game_stat_id += 1
 
