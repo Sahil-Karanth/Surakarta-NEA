@@ -50,7 +50,7 @@ class Board:
         self.__build_board()
 
         # ! DELETE ME
-        # self.__edit_board_for_testing()
+        self.__edit_board_for_testing()
 
         # edit the pieces at certain GridLocation objects to match the game state string
         if game_state_string:

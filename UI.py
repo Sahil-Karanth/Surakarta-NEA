@@ -662,7 +662,8 @@ class Graphical_UI(UI):
 
             if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_number_captured_pieces_display() # update the number of pieces captured by each player
-                self.__end_if_game_over() # check if human has won --> only need to check if the game is over after a capture move
+                self.__end_if_game_over() # only need to check if the game is over after a capture move
+                return
             
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
