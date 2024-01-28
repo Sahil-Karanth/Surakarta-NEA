@@ -23,7 +23,7 @@ class UI:
     def play_game(self):
         raise NotImplementedError
   
-class Graphical_UI(UI):
+class GraphicalUI(UI):
 
     """Graphical User Interface class for the program. Inherits from the UI class.
     
@@ -1270,7 +1270,7 @@ class Graphical_UI(UI):
 
         self.__main_window.close()
 
-class Terminal_UI(UI):
+class TerminalUI(UI):
     
     """Terminal user interface for the program. Inherits from the UI class. Only supports local play.
     

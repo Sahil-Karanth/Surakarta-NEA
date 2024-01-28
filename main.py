@@ -1,4 +1,4 @@
-from UI import Terminal_UI, Graphical_UI
+from UI import TerminalUI, GraphicalUI
 
 if __name__ == "__main__":
 
@@ -7,11 +7,11 @@ if __name__ == "__main__":
         ui_type = input("Enter 't' for terminal UI or 'g' for graphical UI: ")
 
         if ui_type == 't':
-            ui = Terminal_UI()
+            ui = TerminalUI()
             valid_ui_type = True
 
         elif ui_type == 'g':
-            ui = Graphical_UI()
+            ui = GraphicalUI()
             valid_ui_type = True
 
         else:
