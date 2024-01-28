@@ -524,8 +524,7 @@ class Graphical_UI(UI):
 
         # text to show whose turn it is
         player_turn_layout = [
-            [sg.Text(f"{self.__game.get_player_name(1)}'s Turn", key="player1_turn_text", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS, visible=True)],
-            [sg.Text(f"{self.__game.get_player_name(2)}'s Turn", key="player2_turn_text", pad=(0, self.COLUMN_PAD), font=self.PARAGRAPH_FONT_PARAMS, visible=False)],
+            [sg.Text(f"{self.__game.get_player_name(1)}'s Turn ({self.__game.get_player_colour(1)})", key="player1_turn_text", pad=(0, self.COLUMN_PAD), font=self.SUBHEADING_FONT_PARAMS)],
         ]
 
         # current player turn in a frame for formatting purposes
@@ -967,16 +966,16 @@ class Graphical_UI(UI):
 
         # switches the current player display to player 2's name if the game is loaded and it is player 2's turn immediately after loading the game
         if game_is_loaded and self.__game.get_current_player_name() == self.__game.get_player_name(2):
-            current_text.update(f"{self.__game.get_player_name(2)}'s Turn")
+            current_text.update(f"{self.__game.get_player_name(2)}'s Turn ({self.__game.get_player_colour(2)})")
             return
 
         # switch to player 2's turn
         if self.__game.get_current_player_name() == self.__game.get_player_name(1):
-            current_text.update(f"{self.__game.get_player_name(2)}'s Turn")
+            current_text.update(f"{self.__game.get_player_name(2)}'s Turn ({self.__game.get_player_colour(2)})")
         
         # switch to player 1's turn
         elif self.__game.get_current_player_name() == self.__game.get_player_name(2):
-            current_text.update(f"{self.__game.get_player_name(1)}'s Turn")
+            current_text.update(f"{self.__game.get_player_name(1)}'s Turn ({self.__game.get_player_colour(1)})")
 
     def __is_board_position(self, key):
 

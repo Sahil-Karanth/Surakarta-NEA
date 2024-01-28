@@ -28,8 +28,11 @@ class LoopedTrack:
         self.__left_pointer = 0
 
     def __str__(self):
-        return str(self.__lst)
+
+        data = [(loc.get_cords(), loc.get_piece_colour()) for loc in self.__lst]
+        return str(data)
     
+
     def get_length(self):
         return self.__length
     

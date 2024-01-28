@@ -48,7 +48,10 @@ class Board:
 
         # populate the board with GridLocation objects
         self.__build_board()
-        
+
+        # ! DELETE ME
+        # self.__edit_board_for_testing()
+
         # edit the pieces at certain GridLocation objects to match the game state string
         if game_state_string:
             self.__load_game_state(game_state_string)
@@ -78,6 +81,47 @@ class Board:
 
     def get_board_state(self):
         return self.__board
+    
+
+
+
+
+    def __edit_board_for_testing(self):
+        for row in self.__board:
+            for loc in row:
+                loc.set_piece(None)
+
+        outer_lst = [GridLocation(i) for i in self.OUTER_TRACK_CORDS]
+        inner_lst = [GridLocation(i) for i in self.INNER_TRACK_CORDS]
+
+        YELLOW_TEST_OUTER_LOOP = []
+        GREEN_TEST_OUTER_LOOP = []
+
+        YELLOW_TEST_INNER_LOOP = [(4,4)]
+        GREEN_TEST_INNER_LOOP = [(1,4)]
+
+        for i in outer_lst:
+            if i.get_cords() in YELLOW_TEST_OUTER_LOOP:
+                i.set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+            elif i.get_cords() in GREEN_TEST_OUTER_LOOP:
+                i.set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+            else:
+                i.set_piece(None)
+
+        for i in inner_lst:
+            if i.get_cords() in YELLOW_TEST_INNER_LOOP:
+                i.set_piece(Piece(MultiClassBoardAttributes.player_1_colour))
+            elif i.get_cords() in GREEN_TEST_INNER_LOOP:
+                i.set_piece(Piece(MultiClassBoardAttributes.player_2_colour))
+            else:
+                i.set_piece(None)
+
+
+        self.__outer_track = LoopedTrack(outer_lst, MultiClassBoardAttributes.OUTER_TRACK_STRING)
+        self.__inner_track = LoopedTrack(inner_lst, MultiClassBoardAttributes.INNER_TRACK_STRING)
+
+        self.__board[4][4].set_piece(Piece("yellow"))
+        self.__board[1][4].set_piece(Piece("green"))
     
     def __load_game_state(self, game_state_string):
 
