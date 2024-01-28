@@ -660,18 +660,22 @@ class Graphical_UI(UI):
             # make move on board and GUI
             self.__update_game_and_UI_after_move(start_loc, end_loc, move_type)
 
+            # unhighlight the selected locations
+            self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
+            self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
+
             if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_number_captured_pieces_display() # update the number of pieces captured by each player
+
                 self.__end_if_game_over() # only need to check if the game is over after a capture move
-                return
             
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
             prev_move_legal = False # the AI should not make a move if the user's move was illegal
 
-        # unhighlight the selected locations
-        self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
-        self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
+            # unhighlight the selected locations
+            self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
+            self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
 
         if ai_mode and prev_move_legal:
             move = self.__game.get_ai_move() # get the AI's move
@@ -731,11 +735,18 @@ class Graphical_UI(UI):
             
             """Changes the piece colour of the player. This method is used when a logged in user changes their piece colour"""
 
+            if not new_piece_colour:
+                sg.popup("Please select a piece colour", title="Error Changing Piece Colour", keep_on_top=True)
+                return
+
             # update the piece colours in the MultiClassBoardAttributes class (for the current running application)
             self.__update_piece_colour(new_piece_colour)
     
             # update the new piece colour in the database
             self.__db.update_stored_piece_colour(self.__logged_in_username, new_piece_colour)
+
+            sg.popup("Piece colour changed", title="Piece Colour Changed", keep_on_top=True)
+
             self.__change_piece_colour_window.close()
     
     def __handle_delete_saved_game(self, game_id):
@@ -770,7 +781,8 @@ class Graphical_UI(UI):
         # load game data from the database
         loaded_game_data = self.__db.load_game_state(game_id)
 
-        if not loaded_game_data:
+        # check if the game ID is valid (i.e. the user has a saved game with that ID)
+        if not loaded_game_data or loaded_game_data[1] != self.__logged_in_username:
             sg.popup(f"No game with that ID exists", title="Error Loading Game", keep_on_top=True)
             return
         
@@ -840,8 +852,11 @@ class Graphical_UI(UI):
             self.__db.save_game_state(self.__logged_in_username, game_state_string, self.__game.get_player_name(2), player2_starts, self.__game.get_player_piece_count(1), self.__game.get_player_piece_count(2), MultiClassBoardAttributes.player_1_colour)
             sg.popup("Game saved", title="Game Saved", keep_on_top=True)
 
-        else:
+        elif self.__current_page != "match_page":
             sg.popup("You can only save a game from the match page", title="Error Saving Game", keep_on_top=True)
+
+        elif not self.__logged_in:
+            sg.popup("You must be logged in to save a game", title="Error Saving Game", keep_on_top=True)
 
     def __update_piece_colour(self, new_colour):
 

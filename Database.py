@@ -385,3 +385,25 @@ class Database:
 
         self.__conn.commit()
     
+
+
+# db = Database("database.db")
+
+# state_str = ".$green$.$.$.$.$.$.$.$.$.$.$.$.$.$.$green$.$.$yellow$.$.$.$.$.$.$.$yellow$.$.$.$.$.$.$.$."
+
+# db.save_game_state("testuser", state_str, "Medium AI", False, 2, 2, "yellow")
+        
+
+# # delete all tables
+
+# db.delete_table("Users")
+# db.delete_table("SavedGames")
+# db.delete_table("GameHistory")
+# db.delete_table("AIGameStats")
+
+# # create all tables
+
+# db.create_users_table()
+# db.create_saved_games_table()
+# db.create_game_history_table()
+# db.create_AI_game_stats_table()
