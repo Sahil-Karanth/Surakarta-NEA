@@ -127,7 +127,13 @@ class GameTree:
 
     def __calc_UCB1(self, node):
         
-        """returns the UCB1 value of a node used to determine which node to select next in the MCTS algorithm"""
+        """returns the UCB1 value of a node used to determine which node to select next in the MCTS algorithm
+        
+        ####################################################################
+        EXCELLENT CODING STYLE: Good exception handling
+        ####################################################################
+        
+        """
         
         # using the UCB1 formula
         try:

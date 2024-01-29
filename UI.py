@@ -667,7 +667,7 @@ class GraphicalUI(UI):
             if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_number_captured_pieces_display() # update the number of pieces captured by each player
 
-                self.__end_if_game_over() # only need to check if the game is over after a capture move
+                end_game = self.__end_if_game_over() # only need to check if the game is over after a capture move
             
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
@@ -677,7 +677,7 @@ class GraphicalUI(UI):
             self.__toggle_highlight_board_position(self.__highlighted_board_positions[1])
             self.__toggle_highlight_board_position(self.__highlighted_board_positions[0])
 
-        if ai_mode and prev_move_legal:
+        if ai_mode and prev_move_legal and not end_game:
             move = self.__game.get_ai_move() # get the AI's move
 
             # make the AI's move on the board and GUI
@@ -722,7 +722,7 @@ class GraphicalUI(UI):
 
             # remove the game from the database if it was loaded
             if self.__game_is_loaded:
-                self.__db.delete_saved_game(self.__logged_in_username)
+                self.__db.delete_saved_game(self.__loaded_game_id)
 
             # add game to game history if the user is logged in
             if self.__logged_in:
@@ -730,6 +730,8 @@ class GraphicalUI(UI):
 
             self.__reset_game_variables()
             self.__setup_home_page() # go back to the home page after a match has ended
+
+            return True
 
     def __handle_change_piece_colour(self, new_piece_colour):
             
@@ -753,17 +755,11 @@ class GraphicalUI(UI):
 
         """Deletes the game with the given ID from the database provided that saved game data has been loaded and the user is logged in"""
 
-        if not self.__saved_games:
-            raise ValueError("Attempting to delete a saved game when save data has not been loaded from the database yet")
-
-        if not self.__logged_in:
-            raise ValueError("Attempting to delete a saved game when the user is not logged in")
-
         # list of game IDs of the user's saved games
         game_id_lst = [i[0] for i in self.__saved_games]
 
         # check if the game ID is valid (i.e. the user has a saved game with that ID)
-        if int(game_id) not in game_id_lst:
+        if not self.__saved_games or int(game_id) not in game_id_lst:
             sg.popup(f"No game with that ID exists", title="Error Deleting Game", keep_on_top=True)
             return
 
@@ -782,7 +778,7 @@ class GraphicalUI(UI):
         loaded_game_data = self.__db.load_game_state(game_id)
 
         # check if the game ID is valid (i.e. the user has a saved game with that ID)
-        if not loaded_game_data or loaded_game_data[1] != self.__logged_in_username:
+        if not loaded_game_data or loaded_game_data[0] != self.__logged_in_username:
             sg.popup(f"No game with that ID exists", title="Error Loading Game", keep_on_top=True)
             return
         
@@ -790,7 +786,7 @@ class GraphicalUI(UI):
         self.__loaded_game_id = game_id
 
         # unpack the loaded game data
-        game_state_string, player2_name, player2_starts, player1pieces, player2pieces, player1_colour = loaded_game_data
+        username, game_state_string, player2_name, player2_starts, player1pieces, player2pieces, player1_colour = loaded_game_data
 
         # update the player 1 colour in the MultiClassBoardAttributes class to be the colour that the user had when they saved the game
         self.__update_piece_colour(player1_colour)

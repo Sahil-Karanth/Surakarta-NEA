@@ -316,7 +316,16 @@ class Database:
 
         """Returns the data stored for a saved game given its saved_game_id."""
 
-        self.__cursor.execute("SELECT game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces, player1_colour FROM SavedGames WHERE saved_game_id = ?;", (saved_game_id,))
+        self.__cursor.execute(
+            """
+
+            SELECT username, game_state_string, opponent_name, player2_starts, player1_num_pieces, player2_num_pieces, player1_colour FROM SavedGames
+                INNER JOIN Users ON Users.user_id = SavedGames.user_id
+            WHERE saved_game_id = ?;
+
+            """, (saved_game_id,)
+        )
+        
         return self.__cursor.fetchone()
     
     def delete_saved_game(self, saved_game_id):
@@ -389,9 +398,25 @@ class Database:
 
 # db = Database("database.db")
 
-# state_str = ".$green$.$.$.$.$.$.$.$.$.$.$.$.$.$.$green$.$.$yellow$.$.$.$.$.$.$.$yellow$.$.$.$.$.$.$.$."
+# db.delete_saved_game(10)
 
-# db.save_game_state("testuser", state_str, "Medium AI", False, 2, 2, "yellow")
+# state_str = ".$green$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$lightblue$.$.$.$.$.$.$.$."
+# state_str = ".$green$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$red$.$.$.$.$.$.$.$."
+
+# db.save_game_state("a", state_str, "Billy B", False, 1, 1, "red")
+
+
+# db.save_game_state("Sally G", state_str, "Medium AI", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "Medium AI", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "Easy AI", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "Easy AI", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "Hard AI", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "James L", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "Joe B", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "Jarvis M", False, 1, 1, "lightblue")
+# db.save_game_state("Sally G", state_str, "Billy B", False, 1, 1, "lightblue")
+
+
         
 
 # # delete all tables
