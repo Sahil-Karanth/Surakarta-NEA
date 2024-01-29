@@ -401,7 +401,7 @@ class Database:
 # db.delete_saved_game(10)
 
 # state_str = ".$green$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$lightblue$.$.$.$.$.$.$.$."
-# state_str = ".$green$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$red$.$.$.$.$.$.$.$."
+# state_str = ".$green$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$.$yellow$.$.$.$.$.$.$.$."
 
 # db.save_game_state("a", state_str, "Billy B", False, 1, 1, "red")
 
@@ -411,7 +411,7 @@ class Database:
 # db.save_game_state("Sally G", state_str, "Easy AI", False, 1, 1, "lightblue")
 # db.save_game_state("Sally G", state_str, "Easy AI", False, 1, 1, "lightblue")
 # db.save_game_state("Sally G", state_str, "Hard AI", False, 1, 1, "lightblue")
-# db.save_game_state("Sally G", state_str, "James L", False, 1, 1, "lightblue")
+# db.save_game_state("TestAcc1", state_str, "James L", False, 1, 1, "green")
 # db.save_game_state("Sally G", state_str, "Joe B", False, 1, 1, "lightblue")
 # db.save_game_state("Sally G", state_str, "Jarvis M", False, 1, 1, "lightblue")
 # db.save_game_state("Sally G", state_str, "Billy B", False, 1, 1, "lightblue")

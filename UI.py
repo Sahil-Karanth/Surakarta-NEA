@@ -1,5 +1,5 @@
 from Game import Game
-from utility_functions import oneD_to_twoD_array
+from UtilityFunctions import oneD_to_twoD_array
 import re
 from MultiClassBoardAttributes import MultiClassBoardAttributes
 import PySimpleGUI as sg
@@ -81,10 +81,10 @@ class GraphicalUI(UI):
     AVAILABLE_PIECE_COLOURS = ["yellow", "green", "red", "lightblue", "orange", "black"]
     AI_RESERVED_NAMES = [MultiClassBoardAttributes.EASY_AI_NAME, MultiClassBoardAttributes.MEDIUM_AI_NAME, MultiClassBoardAttributes.HARD_AI_NAME]
 
-    PIECE_IMAGES_PATH = "images/piece_images/"
-    BOARD_IMAGES_PATH = "images/board_images/"
+    PIECE_IMAGES_PATH = "Images/PieceImages/"
+    BOARD_IMAGES_PATH = "Images/BoardImages/"
 
-    with open("help_page_text.txt", "r") as f:  
+    with open("HelpPageText.txt", "r") as f:  
         ABOUT_SURAKARTA_TEXT = textwrap.fill(f.readline(), 140)
         RULES_TEXT = textwrap.fill(f.readline(), 140)
 
@@ -654,6 +654,8 @@ class GraphicalUI(UI):
         
         # prev_move_legal is used to determine whether the AI should make a move after the user has made a move
         prev_move_legal = True
+
+        end_game = False
 
         if self.__game.is_legal_move(start_loc, end_loc, move_type): # check if the attempted move is legal
 

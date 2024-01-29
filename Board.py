@@ -1,7 +1,7 @@
 from LoopedTrack import LoopedTrack
 from GridLocation import GridLocation
 from MultiClassBoardAttributes import MultiClassBoardAttributes
-from utility_functions import oneD_to_twoD_array, shuffle_2D_array, twoD_to_oneD_array
+from UtilityFunctions import oneD_to_twoD_array, shuffle_2D_array, twoD_to_oneD_array
 from Piece import Piece
 from Move import Move
 import random

@@ -1,6 +1,6 @@
 from MultiClassBoardAttributes import MultiClassBoardAttributes
 import random
-from utility_functions import shuffle_2D_array
+from UtilityFunctions import shuffle_2D_array
 from TreeSearch import GameTree
 
 class Player:
