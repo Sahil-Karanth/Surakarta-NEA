@@ -297,13 +297,5 @@ class GameTree:
         # best node/move to make is the child of the root node with the highest UCB1 value
         best_node = max(self.__root.get_children(), key=lambda node: node.get_value())
         
-        print(f"MCTS RAN FOR: {self.__time_for_move} SECONDS")
-        print(f"BEST NODE'S VALUE = {best_node.get_value()}")
-        print("NUM MCTS ITERATIONS = ", num_iterations)
-        print("MAX TREE DEPTH = ", self.__current_tree_depth)
-
-        print("ALL IMMEDIATE CHILDREN VALUES")
-        print([(node.get_value(), node.get_move_obj().__str__()) for node in self.__root.get_children()])
-
         return best_node.get_move_obj()
 
