@@ -44,22 +44,14 @@ class GraphicalUI(UI):
     COLUMN_PAD = 12
     LOGIN_PAD = 10
     PARAGRAPH_FONT_SIZE = 15
-
     HOME_PAGE_BUTTONS_PAD = (15, 10)
     BUTTON_FRAME_BORDER_WIDTH = 3
-
     SUBHEADING_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE, "bold")
     PARAGRAPH_FONT_PARAMS = (FONT, PARAGRAPH_FONT_SIZE)
     SMALL_BUTTON_FONT_PARAMS = (FONT, 15)
-
-    LOGIN_WINDOW_HEIGHT = 270
-    SIGNUP_WINDOW_HEIGHT = 350
-
     SLIDER_SIZE = (40, 15)
     GAME_MODE_BUTTON_PAD = (100, 100)
-
     PIECE_BUTTON_PAD = (30, 30)
-
     LOAD_GAME_INPUT_PAD = (200, COLUMN_PAD)
 
     DISP_BOARD_WINDOW_SIZE = (500, 450)
@@ -70,13 +62,16 @@ class GraphicalUI(UI):
     DISP_BOARD_INITAL_Y = 109
     DISP_BOARD_PIECE_RADIUS = 15
 
-    STATS_WINDOW_SIZE = (500, 500)
+    LOGIN_WINDOW_HEIGHT = 270
+    SIGNUP_WINDOW_HEIGHT = 350
+    STATS_WINDOW_DIMENSIONS = (500, 500)
     CHANGE_PIECE_COLOUR_WINDOW_SIZE = (300, 150)
     SIGNUP_WINDOW_DIMENSIONS = (300, 350)
     LOGIN_WINDOW_DIMENSIONS = (300, 270)
     LOAD_GAME_WINDOW_DIMENSIONS = (500, 550)
 
     PLAYER_NAME_TEXTWRAP_LENGTH = 10
+    HELP_PAGE_TEXTWRAP_LENGTH = 140
 
     AVAILABLE_PIECE_COLOURS = ["yellow", "green", "red", "lightblue", "orange", "black"]
     AI_RESERVED_NAMES = [MultiClassBoardAttributes.EASY_AI_NAME, MultiClassBoardAttributes.MEDIUM_AI_NAME, MultiClassBoardAttributes.HARD_AI_NAME]
@@ -85,8 +80,8 @@ class GraphicalUI(UI):
     BOARD_IMAGES_PATH = "Images/BoardImages/"
 
     with open("HelpPageText.txt", "r") as f:  
-        ABOUT_SURAKARTA_TEXT = textwrap.fill(f.readline(), 140)
-        RULES_TEXT = textwrap.fill(f.readline(), 140)
+        ABOUT_SURAKARTA_TEXT = textwrap.fill(f.readline(), HELP_PAGE_TEXTWRAP_LENGTH)
+        RULES_TEXT = textwrap.fill(f.readline(), HELP_PAGE_TEXTWRAP_LENGTH)
 
     # display board background image
     DISP_BOARD_BACKGROUND_IMG = None
@@ -486,7 +481,7 @@ class GraphicalUI(UI):
             [game_history_table],
         ]
 
-        stats_window = self.__create_window("Stats", layout, "center", size=self.STATS_WINDOW_SIZE, maximise=False, modal=False, disable_close=False, keep_on_top=True)
+        stats_window = self.__create_window("Stats", layout, "center", size=self.STATS_WINDOW_DIMENSIONS, maximise=False, modal=False, disable_close=False, keep_on_top=True)
 
         return stats_window
 
