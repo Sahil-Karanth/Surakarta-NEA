@@ -24,7 +24,7 @@ class MultiClassBoardAttributes:
     MIN_ROW_INDEX = 0
     MAX_ROW_INDEX = 5
     
-    NUM_STARTING_PIECES_EACH = 12
+    NUM_STARTING_PIECES_EACH = 2
 
     @staticmethod
     def set_player_colour(colour, player_num):

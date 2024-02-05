@@ -70,6 +70,10 @@ class GraphicalUI(UI):
     LOGIN_WINDOW_DIMENSIONS = (300, 270)
     LOAD_GAME_WINDOW_DIMENSIONS = (500, 550)
 
+    # ! DELETE ME
+    first = True
+    second = False
+
     PLAYER_NAME_TEXTWRAP_LENGTH = 10
     HELP_PAGE_TEXTWRAP_LENGTH = 140
 
@@ -192,6 +196,9 @@ class GraphicalUI(UI):
 
         if self.__main_window:
             self.__main_window.close()
+
+        # in case the user was just in a match and exited to the home page
+        self.__reset_game_variables()
 
         self.__current_page = "home_page"
         self.__main_window = self.__create_window("Surakarta", layout, "center")
@@ -581,7 +588,17 @@ class GraphicalUI(UI):
                 raise ValueError("player_number parameter of the __get_pieces_captured_display_text method must be either 1 or 2")
 
             # calculate the number of pieces captured by the player (starting pieces - pieces left for the other player)
-            player_num_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(other_player_num)
+            player_num_captured = 10 + MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(other_player_num)
+
+            # ! DELETE ME also change the 10 above
+            if self.first:
+                player_num_captured = 10
+                self.first = False
+                self.second = True
+
+            elif self.second:
+                player_num_captured = 10
+                self.second = False
 
             # textwrap the player names to prevent the text from being too long and pushing the board off the screen
             player_name = self.__game.get_player_name(player_number)
@@ -694,6 +711,9 @@ class GraphicalUI(UI):
         self.__ai_name = None
         self.__highlighted_board_positions = []
 
+        if self.__display_board_window:
+            self.__display_board_window.close()
+
     def __end_if_game_over(self):
 
         """Uses the game object's set_game_status method to update the game's status and ends the game with a popup if necessary"""
@@ -702,6 +722,11 @@ class GraphicalUI(UI):
         self.__game.set_game_status()
 
         if self.__game.is_game_over():
+
+            # draw the final board state on the display board window
+            if self.__display_board_window:
+                self.__draw_pieces_on_disp_board()
+
             winning_player = self.__game.get_winning_player()
 
             sg.popup(f"{winning_player.get_name()} has won the game!", title="Game Over", keep_on_top=True)
@@ -726,9 +751,12 @@ class GraphicalUI(UI):
                 self.__db.add_game_to_history(self.__logged_in_username, self.__game.get_player_name(2), winning_player.get_name())
 
             self.__reset_game_variables()
-            self.__setup_home_page() # go back to the home page after a match has ended
+
+            self.__setup_home_page()
 
             return True
+        
+        return False
 
     def __handle_change_piece_colour(self, new_piece_colour):
             
@@ -1256,10 +1284,6 @@ class GraphicalUI(UI):
             # make a move in a match
             elif event == "submit_move_button":
                 self.__make_move_on_display(values, self.__ai_mode)
-
-                # redraw the pieces on the display board if it is open
-                if disp_win_open:
-                    self.__draw_pieces_on_disp_board()
 
         self.__main_window.close()
 
