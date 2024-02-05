@@ -42,7 +42,7 @@ class GraphicalUI(UI):
     TITLE_FONT_SIZE = 60
     BUTTON_DIMENSIONS = (10, 1)
     COLUMN_PAD = 12
-    LOGIN_PAD = 10
+    LOGIN_PAD = 10 
     PARAGRAPH_FONT_SIZE = 15
     HOME_PAGE_BUTTONS_PAD = (15, 10)
     BUTTON_FRAME_BORDER_WIDTH = 3
@@ -69,10 +69,6 @@ class GraphicalUI(UI):
     SIGNUP_WINDOW_DIMENSIONS = (300, 350)
     LOGIN_WINDOW_DIMENSIONS = (300, 270)
     LOAD_GAME_WINDOW_DIMENSIONS = (500, 550)
-
-    # ! DELETE ME
-    first = True
-    second = False
 
     PLAYER_NAME_TEXTWRAP_LENGTH = 10
     HELP_PAGE_TEXTWRAP_LENGTH = 140
@@ -588,17 +584,7 @@ class GraphicalUI(UI):
                 raise ValueError("player_number parameter of the __get_pieces_captured_display_text method must be either 1 or 2")
 
             # calculate the number of pieces captured by the player (starting pieces - pieces left for the other player)
-            player_num_captured = 10 + MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(other_player_num)
-
-            # ! DELETE ME also change the 10 above
-            if self.first:
-                player_num_captured = 10
-                self.first = False
-                self.second = True
-
-            elif self.second:
-                player_num_captured = 10
-                self.second = False
+            player_num_captured = MultiClassBoardAttributes.NUM_STARTING_PIECES_EACH - self.__game.get_player_piece_count(other_player_num)
 
             # textwrap the player names to prevent the text from being too long and pushing the board off the screen
             player_name = self.__game.get_player_name(player_number)
@@ -791,6 +777,9 @@ class GraphicalUI(UI):
         # delete the game from the database
         self.__db.delete_saved_game(game_id)
         sg.popup("Game deleted", title="Game Deleted", keep_on_top=True)
+
+        # remove the game from the list of saved games
+        self.__saved_games = [i for i in self.__saved_games if i[0] != int(game_id)]
     
         # update the table to not show the deleted game
         self.__load_game_window["saved_games_table"].update(values=self.__db.load_saved_games(self.__logged_in_username))
