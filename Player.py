@@ -110,7 +110,7 @@ class EasyAIPlayer(AIPlayer):
 class MediumAIPlayer(AIPlayer):
 
     """A Medium AI opponent that inherits from the AIPlayer class and implements the get_move method
-    with the Monte Carlo Tree Search algorithm running for 10 seconds per move.
+    with the Monte Carlo Tree Search algorithm running for 15 seconds per move.
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, and polymorphism
@@ -118,7 +118,7 @@ class MediumAIPlayer(AIPlayer):
     
     """
 
-    TIME_FOR_MOVE = 10 # seconds
+    TIME_FOR_MOVE = 15 # seconds
     
     def __init__(self, piece_colour, piece_count):
         super().__init__(MultiClassBoardAttributes.MEDIUM_AI_NAME, piece_colour, piece_count)

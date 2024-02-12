@@ -79,6 +79,7 @@ class GameTree:
     CLASS A SKILL: Monte Carlo Tree Search (MCTS)
     CLASS A SKILL: Tree data structure and tree traversal
     ClASS A SKILL: Complex OOP model with encapsulation and composition
+    GOOD CODING STYLE: Use of constants
     ####################################################################
 
     """

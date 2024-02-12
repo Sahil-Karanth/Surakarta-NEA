@@ -8,6 +8,7 @@ class GridLocation:
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation and composition
+    GOOD CODING STYLE: Use of constants
     ####################################################################
 
     """

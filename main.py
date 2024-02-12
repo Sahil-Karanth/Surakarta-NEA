@@ -3,7 +3,9 @@ from UI import TerminalUI, GraphicalUI
 if __name__ == "__main__":
 
     valid_ui_type = False
+
     while not valid_ui_type:
+        
         ui_type = input("Enter 't' for terminal UI or 'g' for graphical UI: ")
 
         if ui_type == 't':

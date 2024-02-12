@@ -32,6 +32,10 @@ class GraphicalUI(UI):
     through the application's pages and displaying information such as stats, saved games and game history
 
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, polymorphism and composition
+
+    GOOD CODING STYLE: Well-designed user interface
+
+    GOOD CODING STYLE: Use of constants
     ####################################################################
     
     """
@@ -134,7 +138,7 @@ class GraphicalUI(UI):
         self.__ai_name = None
 
         # database object
-        self.__db = Database("database.db")
+        self.__db = Database("Database.db")
         self.__saved_games = None # stored to enable deletion of saved games
 
         self.__current_page = None
@@ -618,7 +622,7 @@ class GraphicalUI(UI):
         self.__update_current_player_display()
         self.__game.switch_current_player()
 
-    def __make_move_on_display(self, values, ai_mode=False):
+    def __make_move_on_display(self, values, disp_board_open, ai_mode=False):
 
         """Makes the move on the GUI board and the game object's board if the move is legal"""
 
@@ -667,7 +671,7 @@ class GraphicalUI(UI):
             if move_type == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_number_captured_pieces_display() # update the number of pieces captured by each player
 
-                end_game = self.__end_if_game_over() # only need to check if the game is over after a capture move
+                end_game = self.__end_if_game_over(disp_board_open) # only need to check if the game is over after a capture move
             
         else:
             sg.popup("ILLEGAL MOVE", keep_on_top=True)
@@ -685,7 +689,7 @@ class GraphicalUI(UI):
 
             if move.get_move_type() == MultiClassBoardAttributes.CAPTURE_MOVE_TYPE:
                 self.__update_number_captured_pieces_display()
-                self.__end_if_game_over() # check if AI has won
+                self.__end_if_game_over(disp_board_open) # check if AI has won
 
     def __reset_game_variables(self):
 
@@ -697,10 +701,8 @@ class GraphicalUI(UI):
         self.__ai_name = None
         self.__highlighted_board_positions = []
 
-        if self.__display_board_window:
-            self.__display_board_window.close()
 
-    def __end_if_game_over(self):
+    def __end_if_game_over(self, disp_board_open):
 
         """Uses the game object's set_game_status method to update the game's status and ends the game with a popup if necessary"""
 
@@ -710,7 +712,7 @@ class GraphicalUI(UI):
         if self.__game.is_game_over():
 
             # draw the final board state on the display board window
-            if self.__display_board_window:
+            if disp_board_open:
                 self.__draw_pieces_on_disp_board()
 
             winning_player = self.__game.get_winning_player()
@@ -735,10 +737,6 @@ class GraphicalUI(UI):
             # add game to game history if the user is logged in
             if self.__logged_in:
                 self.__db.add_game_to_history(self.__logged_in_username, self.__game.get_player_name(2), winning_player.get_name())
-
-            self.__reset_game_variables()
-
-            self.__setup_home_page()
 
             return True
         
@@ -1272,7 +1270,21 @@ class GraphicalUI(UI):
 
             # make a move in a match
             elif event == "submit_move_button":
-                self.__make_move_on_display(values, self.__ai_mode)
+                self.__make_move_on_display(values, disp_win_open, self.__ai_mode)
+
+                if disp_win_open:
+                    self.__draw_pieces_on_disp_board()
+
+                if self.__game.is_game_over():
+
+                    # draw the final board state on the display board window
+                    if disp_win_open:
+                        self.__display_board_window.close()
+
+                    # return to the home page and reset the game variables
+                    disp_win_open = False
+                    self.__reset_game_variables()
+                    self.__setup_home_page()
 
         self.__main_window.close()
 
@@ -1282,6 +1294,8 @@ class TerminalUI(UI):
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation, inheritance, polymorphism and composition
+    GOOD CODING STYLE: Well-designed user interface
+    GOOD CODING STYLE: Use of constants
     ####################################################################
 
     """

@@ -15,6 +15,7 @@ class Game:
     ####################################################################
     CLASS A SKILL: Stack data structure (see comments in make_and_return_move and undo_and_return_move methods)
     CLASS A SKILL: Complex OOP model with encapsulation and composition
+    GOOD CODING STYLE: Use of constants
     ####################################################################
 
     """

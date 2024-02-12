@@ -1,6 +1,12 @@
 class MultiClassBoardAttributes:
 
-    """This class contains attributes about the Surakarta board that need to be accessed by multiple classes."""
+    """This class contains attributes about the Surakarta board that need to be accessed by multiple classes.
+    
+    ####################################################################
+    GOOD CODING STYLE: Use of constants
+    ####################################################################
+
+    """
 
     # can be changed using set_player_colour
     player_1_colour = "yellow"
@@ -24,7 +30,7 @@ class MultiClassBoardAttributes:
     MIN_ROW_INDEX = 0
     MAX_ROW_INDEX = 5
     
-    NUM_STARTING_PIECES_EACH = 2
+    NUM_STARTING_PIECES_EACH = 12
 
     @staticmethod
     def set_player_colour(colour, player_num):

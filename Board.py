@@ -13,6 +13,7 @@ class Board:
     
     ####################################################################
     CLASS A SKILL: Complex OOP model with encapsulation and composition
+    GOOD CODING STYLE: Use of constants
     ####################################################################
     
     """
@@ -142,7 +143,13 @@ class Board:
 
     def __build_board(self):
 
-        """Populates the board with GridLocation objects"""
+        """Populates the board with GridLocation objects
+        
+        ####################################################################
+        CLASS B SKILL: Multi-dimensional array
+        ####################################################################
+        
+        """
 
         board = []
 
@@ -387,7 +394,13 @@ class Board:
         """Returns a Move object if a valid capture is found in the direction specificed by the direction argument, iterating
         through looped_track starting at the occurence of start_location in looped_track at start_loc_index. Otherwise it returns False.
         If a valid capture cannot be made with adjacent locations, the next locations in each direction are checked until either
-        a valid capture is found or the direction being checked can no longer have a valid capture on it."""
+        a valid capture is found or the direction being checked can no longer have a valid capture on it.
+        
+        ####################################################################
+        CLASS A SKILL: Circular list data structure traversal
+        ####################################################################
+        
+        """
 
         invalid = False
         loop_count = 0

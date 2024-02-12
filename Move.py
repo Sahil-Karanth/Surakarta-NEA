@@ -3,7 +3,13 @@ class Move:
     """Represents a move in the game. Stores the start and end locations of the move, the type of move
     and the colour of the start and end location pieces at the time of the move. Start and end location
     piece colours are stored to ensure the integrity of a move object if referenced at a later point in
-    the game since pieces at a location can change"""
+    the game since pieces at a location can change
+    
+    ####################################################################
+    CLASS A SKILL: Complex OOP model with encapsulation and composition
+    ####################################################################
+    
+    """
 
     def __init__(self, start_loc, end_loc, move_type):
         self.__start_loc = start_loc
