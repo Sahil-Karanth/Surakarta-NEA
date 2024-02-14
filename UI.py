@@ -6,6 +6,10 @@ import PySimpleGUI as sg
 import textwrap
 from PIL import ImageTk, Image
 from Database import Database
+import os
+
+working_dir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(working_dir)
 
 class UI:
 
